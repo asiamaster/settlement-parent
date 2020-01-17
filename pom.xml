@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>settlement</module>
+		<module>settlement-service</module>
 	</modules>
 
 	<properties>
