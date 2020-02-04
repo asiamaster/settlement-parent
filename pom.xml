@@ -13,6 +13,8 @@
 
 	<modules>
 		<module>settlement-service</module>
+		<module>settlement-sdk</module>
+		<module>settlement-sdk</module>
 	</modules>
 
 	<properties>
