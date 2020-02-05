@@ -14,7 +14,6 @@
 	<modules>
 		<module>settlement-service</module>
 		<module>settlement-sdk</module>
-		<module>settlement-sdk</module>
 	</modules>
 
 	<properties>
@@ -37,7 +36,7 @@
 		<targetXMLPackage>mapper</targetXMLPackage>
 		<!-- 依赖版本 -->
 		<springloaded.version>1.2.8.RELEASE</springloaded.version>
-		<sharp-sword.version>3.6.1-SNAPSHOT</sharp-sword.version>
+		<sharp-sword.version>3.6.3-SNAPSHOT</sharp-sword.version>
 	</properties>
 
 	<!--地利 -->

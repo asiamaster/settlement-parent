@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.settlement.dao.SettleOrderMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.SettleOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="market_id" jdbcType="BIGINT" property="marketId" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="business_code" jdbcType="VARCHAR" property="businessCode" />
+    <result column="business_type" jdbcType="TINYINT" property="businessType" />
+    <result column="business_dep_id" jdbcType="BIGINT" property="businessDepId" />
+    <result column="business_dep_name" jdbcType="VARCHAR" property="businessDepName" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="customer_phone" jdbcType="VARCHAR" property="customerPhone" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="submitter_id" jdbcType="BIGINT" property="submitterId" />
+    <result column="submitter_name" jdbcType="VARCHAR" property="submitterName" />
+    <result column="submitter_dep_id" jdbcType="BIGINT" property="submitterDepId" />
+    <result column="submitter_dep_name" jdbcType="VARCHAR" property="submitterDepName" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="way" jdbcType="TINYINT" property="way" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+    <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+    <result column="account_number" jdbcType="VARCHAR" property="accountNumber" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="bank_card_holder" jdbcType="VARCHAR" property="bankCardHolder" />
+    <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
+    <result column="edit_enable" jdbcType="TINYINT" property="editEnable" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, market_id, app_id, code, business_code, business_type, business_dep_id, business_dep_name, 
+    customer_id, customer_name, customer_phone, amount, submitter_id, submitter_name, 
+    submitter_dep_id, submitter_dep_name, submit_time, type, way, state, operator_id, 
+    operator_name, operate_time, account_number, bank_name, bank_card_holder, serial_number, 
+    edit_enable, notes, return_url
+  </sql>
+</mapper>
