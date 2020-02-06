@@ -5,6 +5,7 @@ import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**

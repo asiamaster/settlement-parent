@@ -5,6 +5,8 @@ import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 
+import javax.persistence.*;
+
 /**
  * 由MyBatis Generator工具自动生成
  * 
