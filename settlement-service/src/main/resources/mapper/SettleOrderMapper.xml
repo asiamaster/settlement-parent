@@ -35,12 +35,78 @@
     <result column="edit_enable" jdbcType="TINYINT" property="editEnable" />
     <result column="notes" jdbcType="VARCHAR" property="notes" />
     <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />
+    <result column="version" jdbcType="INTEGER" property="version"/>
   </resultMap>
   <sql id="Base_Column_List">
-    id, market_id, app_id, code, business_code, business_type, business_dep_id, business_dep_name, 
-    customer_id, customer_name, customer_phone, amount, submitter_id, submitter_name, 
-    submitter_dep_id, submitter_dep_name, submit_time, type, way, state, operator_id, 
-    operator_name, operate_time, account_number, bank_name, bank_card_holder, serial_number, 
-    edit_enable, notes, return_url
+    `id`, `market_id`, `app_id`, `code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
+    `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
+    `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
+    `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
+    `edit_enable`, `notes`, `return_url`,`version`
   </sql>
+
+  <!-- 用于单表的条件判断 -->
+  <sql id="LIST_CONDITION">
+    <if test="marketId != null">
+      and `market_id` = #{marketId}
+    </if>
+    <if test="appId != null">
+      and `app_id` = #{appId}
+    </if>
+    <if test="businessCode != null and businessCode != ''">
+      and `business_code` = #{businessCode}
+    </if>
+    <if test="code != null and code != ''">
+      and `code` = #{code}
+    </if>
+    <if test="businessTypeList != null and businessTypeList.size() > 0">
+      and `business_type` in
+      <foreach collection="businessTypeList" item="businessType" separator="," open="(" close=")">
+        #{businessType}
+      </foreach>
+    </if>
+    <if test="customerId != null">
+      and `customer_id` = #{customerId}
+    </if>
+    <if test="operatorId != null">
+      and `operator_id` = #{operatorId}
+    </if>
+    <if test="type != null">
+      and `type` = #{type}
+    </if>
+    <if test="way != null">
+      and `way` = #{way}
+    </if>
+    <if test="state != null">
+      and `state` = #{state}
+    </if>
+    <if test="operateTimeStart != null and operateTimeStart != ''">
+      and `operate_time` &gt;= #{operateTimeStart}
+    </if>
+    <if test="operateTimeEnd != null and operateTimeEnd != ''">
+      and `operate_time` &lt;= #{operateTimeEnd}
+    </if>
+  </sql>
+  <!-- 根据条件查询 -->
+  <select id="list" parameterType="com.dili.settlement.dto.SettleOrderDto" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from settle_order where 1=1
+        <include refid="LIST_CONDITION"/>
+    <if test="sort != null and sort != '' and order != null and order != ''">
+      ORDER BY ${sort} ${order}
+    </if>
+  </select>
+
+  <!-- 根据id、version修改状态 -->
+  <update id="updateState" parameterType="com.dili.settlement.domain.SettleOrder">
+    update settle_order set state = #{state},version = version + 1 where id = #{id} and version = #{version}
+  </update>
+
+  <!-- 根据结算单号查询结算单 -->
+  <select id="getByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"></include>
+    from settle_order where `code` = #{code}
+  </select>
 </mapper>

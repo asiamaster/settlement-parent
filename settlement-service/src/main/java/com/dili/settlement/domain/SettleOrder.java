@@ -107,6 +107,9 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`return_url`")
     private String returnUrl;
 
+    @Column(name = "`version`")
+    private Integer version;
+
     /**
      * @return id
      */
@@ -585,5 +588,13 @@ public class SettleOrder extends BaseDomain {
      */
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

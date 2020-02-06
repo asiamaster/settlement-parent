@@ -2,12 +2,14 @@ package com.dili.settlement.api;
 
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.EditEnableEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.service.CodeService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 结算单相关api
@@ -31,6 +34,11 @@ public class SettleOrderApi {
     @Resource
     private SettleOrderService settleOrderService;
 
+    /**
+     * 提交结算单接口
+     * @param settleOrder
+     * @return
+     */
     @RequestMapping(value = "/save")
     public BaseOutput<SettleOrder> save(@RequestBody SettleOrder settleOrder) {
         try {
@@ -39,11 +47,102 @@ public class SettleOrderApi {
             settleOrder.setState(SettleStateEnum.WAIT_DEAL.getCode());
             settleOrder.setSubmitTime(DateUtil.nowDateTime());
             settleOrder.setEditEnable(settleOrder.getEditEnable() == null ? EditEnableEnum.YES.getCode() : settleOrder.getEditEnable());
-            settleOrderService.save();
+            settleOrderService.save(settleOrder);
+            return BaseOutput.success().setData(settleOrder);
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getErrorMsg());
         } catch (Exception e) {
             LOGGER.error("method save", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 根据结算单编号取消
+     * @param code
+     * @return
+     */
+    @RequestMapping(value = "/cancelByCode")
+    public BaseOutput<String> cancelByCode(String code) {
+        try {
+            if (StrUtil.isBlank(code)) {
+                return BaseOutput.failure("结算单号为空");
+            }
+            settleOrderService.cancelByCode(code);
+            return BaseOutput.success();
+        } catch (BusinessException e) {
+            return BaseOutput.failure(e.getErrorMsg());
+        } catch (Exception e) {
+            LOGGER.error("method cancelByCode", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 查询结算单列表
+     * @param query
+     * @return
+     */
+    @RequestMapping(value = "/list")
+    public BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query) {
+        try {
+            List<SettleOrder> itemList = settleOrderService.list(query);
+            return BaseOutput.success().setData(itemList);
+        } catch (Exception e) {
+            LOGGER.error("method list", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 分页查询结算单列表
+     * @param query
+     * @return
+     */
+    @RequestMapping(value = "/listPage")
+    public PageOutput<List<SettleOrder>> listPage(@RequestBody SettleOrderDto query) {
+        try {
+            return settleOrderService.listPagination(query);
+        } catch (Exception e) {
+            LOGGER.error("method listPage", e);
+            return PageOutput.failure();
+        }
+    }
+
+    /**
+     * 根据id查询结算单
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/getById")
+    public BaseOutput<SettleOrder> getById(Long id) {
+        try {
+            if (id == null) {
+                return BaseOutput.failure("ID为空");
+            }
+            SettleOrder po = settleOrderService.get(id);
+            return BaseOutput.success().setData(po);
+        } catch (Exception e) {
+            LOGGER.error("method getById", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 根据结算单号查询结算单
+     * @param code
+     * @return
+     */
+    @RequestMapping(value = "/getByCode")
+    public BaseOutput<SettleOrder> getByCode(String code) {
+        try {
+            if (StrUtil.isBlank(code)) {
+                return BaseOutput.failure("结算单号为空");
+            }
+            SettleOrder po = settleOrderService.getByCode(code);
+            return BaseOutput.success().setData(po);
+        } catch (Exception e) {
+            LOGGER.error("method getByCode", e);
             return BaseOutput.failure();
         }
     }
@@ -63,7 +162,7 @@ public class SettleOrderApi {
             throw new BusinessException("", "业务类型为空");
         }
         if (StrUtil.isBlank(settleOrder.getBusinessCode())) {
-            throw new BusinessException("", "业务编码为空");
+            throw new BusinessException("", "业务单号为空");
         }
         if (settleOrder.getCustomerId() == null) {
             throw new BusinessException("", "客户ID为空");

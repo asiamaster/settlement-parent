@@ -20,6 +20,15 @@
         <java.version>13</java.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.dili</groupId>
+            <artifactId>ss-core</artifactId>
+            <version>${sharp-sword.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>settlement-sdk</finalName>
         <resources>
