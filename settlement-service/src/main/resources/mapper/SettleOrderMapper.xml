@@ -109,4 +109,21 @@
         <include refid="Base_Column_List"></include>
     from settle_order where `code` = #{code}
   </select>
+
+  <!-- 结算修改 -->
+  <update id="updateSettle" parameterType="com.dili.settlement.domain.SettleOrder">
+    update settle_order set
+        way = #{way},
+        state = #{state},
+        operator_id = #{operatorId},
+        operator_name = #{operatorName},
+        operate_time = #{operateTime},
+        account_number = #{accountNumber},
+        bank_name = #{bankName},
+        bank_card_holder = #{bankCardHolder},
+        serial_number = #{serialNumber},
+        notes = #{notes},
+        version = version + 1
+    where id = #{id} and version = #{version}
+  </update>
 </mapper>

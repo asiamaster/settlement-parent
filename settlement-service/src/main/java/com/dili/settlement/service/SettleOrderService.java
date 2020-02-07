@@ -50,4 +50,15 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @return
      */
     SettleOrder getByCode(String code);
+
+    /**
+     * 实现缴费处理逻辑  更改状态、增加金额
+     * @param po
+     */
+    void pay(SettleOrder po, SettleOrderDto settleOrderDto);
+    /**
+     * 实现退款处理逻辑  更改状态、扣减金额
+     * @param po
+     */
+    void refund(SettleOrder po, SettleOrderDto settleOrderDto);
 }

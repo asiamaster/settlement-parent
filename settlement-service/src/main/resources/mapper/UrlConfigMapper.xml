@@ -14,33 +14,6 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, business_type, type, url
+    `id`, `business_type`, `type`, `url`
   </sql>
-  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    select 
-    <include refid="Base_Column_List" />
-    from url_config
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <update id="updateBy" parameterType="com.dili.settlement.domain.UrlConfig">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    update url_config
-    <set>
-      <if test="businessType != null">
-        business_type = #{businessType,jdbcType=TINYINT},
-      </if>
-      <if test="type != null">
-        type = #{type,jdbcType=TINYINT},
-      </if>
-      <if test="url != null">
-        url = #{url,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
 </mapper>

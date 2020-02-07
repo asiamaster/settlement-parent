@@ -1,8 +1,10 @@
 package com.dili.settlement.api;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.SettleResultDto;
 import com.dili.settlement.enums.EditEnableEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.service.CodeService;
@@ -143,6 +145,74 @@ public class SettleOrderApi {
             return BaseOutput.success().setData(po);
         } catch (Exception e) {
             LOGGER.error("method getByCode", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 处理支付逻辑
+     * @param settleOrderDto
+     * @return
+     */
+    @RequestMapping(value = "/pay")
+    public BaseOutput<SettleResultDto> pay(@RequestBody SettleOrderDto settleOrderDto) {
+        try {
+            if (CollUtil.isEmpty(settleOrderDto.getIdList())) {
+                return BaseOutput.failure("ID列表为空");
+            }
+            SettleResultDto settleResultDto = new SettleResultDto();
+            settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
+            for (Long id : settleOrderDto.getIdList()) {
+                SettleOrder po = settleOrderService.get(id);
+                if (po == null) {
+                    settleResultDto.failure(null);
+                    continue;
+                }
+                try {
+                    settleOrderService.pay(po, settleOrderDto);
+                    settleResultDto.success(po);
+                } catch (Exception e) {
+                    LOGGER.error(po.getCode(), e);
+                    settleResultDto.failure(po);
+                }
+            }
+            return BaseOutput.success().setData(settleResultDto);
+        } catch (Exception e) {
+            LOGGER.error("method pay", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 处理退款逻辑
+     * @param settleOrderDto
+     * @return
+     */
+    @RequestMapping(value = "/refund")
+    public BaseOutput<SettleResultDto> refund(@RequestBody SettleOrderDto settleOrderDto) {
+        try {
+            if (CollUtil.isEmpty(settleOrderDto.getIdList())) {
+                return BaseOutput.failure("ID列表为空");
+            }
+            SettleResultDto settleResultDto = new SettleResultDto();
+            settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
+            for (Long id : settleOrderDto.getIdList()) {
+                SettleOrder po = settleOrderService.get(id);
+                if (po == null) {
+                    settleResultDto.failure(null);
+                    continue;
+                }
+                try {
+                    settleOrderService.refund(po, settleOrderDto);
+                    settleResultDto.success(po);
+                } catch (Exception e) {
+                    LOGGER.error(po.getCode(), e);
+                    settleResultDto.failure(po);
+                }
+            }
+            return BaseOutput.success().setData(settleResultDto);
+        } catch (Exception e) {
+            LOGGER.error("method refund", e);
             return BaseOutput.failure();
         }
     }

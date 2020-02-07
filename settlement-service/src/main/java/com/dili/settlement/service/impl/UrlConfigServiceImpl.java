@@ -16,4 +16,16 @@ public class UrlConfigServiceImpl extends BaseServiceImpl<UrlConfig, Long> imple
     public UrlConfigMapper getActualDao() {
         return (UrlConfigMapper)getDao();
     }
+
+    @Override
+    public String getUrl(Integer businessType, Integer type) {
+        UrlConfig query = new UrlConfig();
+        query.setBusinessType(businessType);
+        query.setType(type);
+        UrlConfig po = listByExample(query).stream().findFirst().orElse(null);
+        if (po == null) {
+            return "";
+        }
+        return po.getUrl();
+    }
 }

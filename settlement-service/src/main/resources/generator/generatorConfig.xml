@@ -48,8 +48,8 @@
         <!-- Controller生成插件 -->
         <!-- targetProject和targetPackage必填 -->
         <plugin type="${myController.Plugin}">
-            <property name="targetProject" value="${targetJavaProject}"></property>
-            <property name="targetPackage" value="${targetControllerPackage}"></property>
+            <!--<property name="targetProject" value="${targetJavaProject}"></property>
+            <property name="targetPackage" value="${targetControllerPackage}"></property>-->
             <!-- 如果不配置，则不会在类上继承 -->
             <!--<property name="controllerSuperClass" value="com.dili.ss.base.BaseControllerImpl"></property>-->
             <!-- 如果不配置，则不会在接口上继承 -->
@@ -88,7 +88,7 @@
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>-->
         <!-- 生成指定表模型 -->
-        <table domainObjectName="UrlConfig" tableName="url_config">
+        <table domainObjectName="SettleConfig" tableName="settle_config">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
     </context>

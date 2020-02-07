@@ -28,4 +28,11 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @return
      */
     SettleOrder getByCode(String code);
+
+    /**
+     * 结算修改
+     * @param po
+     * @return
+     */
+    int updateSettle(SettleOrder po);
 }

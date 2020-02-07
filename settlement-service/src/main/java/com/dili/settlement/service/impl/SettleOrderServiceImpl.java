@@ -5,7 +5,9 @@ import com.dili.settlement.dao.SettleOrderMapper;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.service.FundAccountService;
 import com.dili.settlement.service.SettleOrderService;
+import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
@@ -14,6 +16,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,6 +25,9 @@ import java.util.List;
  */
 @Service
 public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> implements SettleOrderService {
+
+    @Resource
+    private FundAccountService fundAccountService;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -91,5 +97,50 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Override
     public SettleOrder getByCode(String code) {
         return getActualDao().getByCode(code);
+    }
+
+    @Transactional
+    @Override
+    public void pay(SettleOrder po, SettleOrderDto settleOrderDto) {
+        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+        //way;operatorId;operatorName;operateTime;serialNumber,notes;
+        po.setState(SettleStateEnum.DEAL.getCode());
+        po.setWay(settleOrderDto.getWay());
+        po.setOperatorId(settleOrderDto.getOperatorId());
+        po.setOperatorName(settleOrderDto.getOperatorName());
+        po.setOperateTime(DateUtil.nowDateTime());
+        po.setSerialNumber(settleOrderDto.getSerialNumber());
+        po.setNotes(settleOrderDto.getNotes());
+        int i = getActualDao().updateSettle(po);
+        if (i != 1) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+        fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
+    }
+
+    @Transactional
+    @Override
+    public void refund(SettleOrder po, SettleOrderDto settleOrderDto) {
+        if (!po.getState().equals(SettleStateEnum.DEAL)) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+        //way,state,operatorId,operatorName,operateTime,accountNumber,bankName,bankCardHolder,serialNumber,notes
+        po.setState(SettleStateEnum.DEAL.getCode());
+        po.setWay(settleOrderDto.getWay());
+        po.setOperatorId(settleOrderDto.getOperatorId());
+        po.setOperatorName(settleOrderDto.getOperatorName());
+        po.setOperateTime(DateUtil.nowDateTime());
+        po.setAccountNumber(settleOrderDto.getAccountNumber());
+        po.setBankName(settleOrderDto.getBankName());
+        po.setBankCardHolder(settleOrderDto.getBankCardHolder());
+        po.setSerialNumber(settleOrderDto.getSerialNumber());
+        po.setNotes(settleOrderDto.getNotes());
+        int i = getActualDao().updateSettle(po);
+        if (i != 1) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
     }
 }
