@@ -23,6 +23,11 @@ public class SettleConfigApi {
     @Resource
     private SettleConfigService settleConfigService;
 
+    /**
+     * 查询结算配置列表
+     * @param query
+     * @return
+     */
     @RequestMapping(value = "/list")
     public BaseOutput<List<SettleConfig>> list(@RequestBody SettleConfig query) {
         try {
