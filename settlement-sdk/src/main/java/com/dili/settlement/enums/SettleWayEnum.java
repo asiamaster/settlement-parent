@@ -1,23 +1,25 @@
 package com.dili.settlement.enums;
 
 /**
- * 结算配置 组编码枚举
+ * 结算方式枚举
  */
-public enum GroupCodeEnum {
-    SETTLE_WAY_PAY(101, "支付方式"),
-    SETTLE_WAY_REFUND(102, "退款方式"),
-    SETTLE_SIGN_CALLBACK(201, "回调签名");
+public enum SettleWayEnum {
+    CASH(1, "现金"),
+    POS(2, "POS"),
+    BANK(3, "银行卡"),
+    ALI_PAY(4, "支付宝"),
+    WECHAT_PAY(5, "微信");
 
     private int code;
     private String name;
 
-    GroupCodeEnum(int code, String name) {
+    SettleWayEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static GroupCodeEnum getByCode(int code) {
-        for (GroupCodeEnum temp : GroupCodeEnum.values()) {
+    public static SettleWayEnum getByCode(int code) {
+        for (SettleWayEnum temp : SettleWayEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -26,7 +28,7 @@ public enum GroupCodeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (GroupCodeEnum temp : GroupCodeEnum.values()) {
+        for (SettleWayEnum temp : SettleWayEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }
