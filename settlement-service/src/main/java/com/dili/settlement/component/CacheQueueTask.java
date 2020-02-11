@@ -1,0 +1,28 @@
+package com.dili.settlement.component;
+
+import com.dili.settlement.dto.CallbackDto;
+
+import java.util.concurrent.Callable;
+
+/**
+ * 用于处理执行失败数据处理
+ */
+public class CacheQueueTask implements Callable<Boolean> {
+    @Override
+    public Boolean call() {
+        while (true) {
+            CallbackDto callbackDto = CallbackHolder.pollCache();
+            if (callbackDto == null) {
+                continue;
+            }
+            if (callbackDto.drop()) {
+                continue;
+            }
+            if (callbackDto.prepare()) {
+                CallbackHolder.offerExecute(callbackDto);
+            } else {
+                CallbackHolder.offerCache(callbackDto);
+            }
+        }
+    }
+}

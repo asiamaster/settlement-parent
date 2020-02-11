@@ -2,6 +2,7 @@ package com.dili.settlement.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.SettleResultDto;
@@ -170,6 +171,7 @@ public class SettleOrderApi {
                 }
                 try {
                     settleOrderService.pay(po, settleOrderDto);
+                    CallbackHolder.offerSource(po);//触发回调
                     settleResultDto.success(po);
                 } catch (Exception e) {
                     LOGGER.error(po.getCode(), e);
@@ -204,6 +206,7 @@ public class SettleOrderApi {
                 }
                 try {
                     settleOrderService.refund(po, settleOrderDto);
+                    CallbackHolder.offerSource(po);//触发回调
                     settleResultDto.success(po);
                 } catch (Exception e) {
                     LOGGER.error(po.getCode(), e);

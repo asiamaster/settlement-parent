@@ -7,12 +7,48 @@ import java.util.Map;
  */
 public class CallbackDto {
 
-    //次数
+    //当前次数
+    private int currentTimes;
+    //最大次数
     private int times;
+    //间隔时间
+    private int interval;
     //可执行时间(用于判断是否已到可执行时间)
     private long mills;
     private String url;
     private Map<String, String> data;
+
+    /**
+     * 执行失败时调用
+     */
+    public void failure() {
+        this.currentTimes += 1;
+        this.mills = System.currentTimeMillis() + (this.currentTimes * this.interval * 1000);
+    }
+
+    /**
+     * 是否达到再次执行的条件
+     * @return
+     */
+    public boolean prepare() {
+        return this.currentTimes < this.times && System.currentTimeMillis() > this.mills;
+    }
+
+    /**
+     * 是否达到丢弃条件
+     * @return
+     */
+    public boolean drop() {
+        return this.currentTimes >= this.times;
+    }
+
+    public int getCurrentTimes() {
+        return currentTimes;
+    }
+
+    public void setCurrentTimes(int currentTimes) {
+        this.currentTimes = currentTimes;
+    }
 
     public int getTimes() {
         return times;
@@ -20,6 +56,14 @@ public class CallbackDto {
 
     public void setTimes(int times) {
         this.times = times;
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
     }
 
     public long getMills() {

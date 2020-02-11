@@ -26,13 +26,13 @@ public class SettleConfig extends BaseDomain {
     private Integer groupCode;
 
     @Column(name = "`code`")
-    private Byte code;
+    private Integer code;
 
     @Column(name = "`val`")
     private String val;
 
     @Column(name = "`state`")
-    private Byte state;
+    private Integer state;
 
     @Column(name = "`notes`")
     private String notes;
@@ -90,14 +90,14 @@ public class SettleConfig extends BaseDomain {
      */
     @FieldDef(label="code")
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Byte getCode() {
+    public Integer getCode() {
         return code;
     }
 
     /**
      * @param code
      */
-    public void setCode(Byte code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 
@@ -122,14 +122,14 @@ public class SettleConfig extends BaseDomain {
      */
     @FieldDef(label="state")
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Byte getState() {
+    public Integer getState() {
         return state;
     }
 
     /**
      * @param state
      */
-    public void setState(Byte state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 

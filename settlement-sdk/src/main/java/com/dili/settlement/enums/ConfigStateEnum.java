@@ -4,7 +4,8 @@ package com.dili.settlement.enums;
  * 结算配置 状态枚举
  */
 public enum ConfigStateEnum {
-    ;
+    ENABLE(1, "可用"),
+    DISABLE(2, "禁用");
     private int code;
     private String name;
 
