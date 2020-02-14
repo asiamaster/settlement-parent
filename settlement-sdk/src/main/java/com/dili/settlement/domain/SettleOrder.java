@@ -1,9 +1,13 @@
 package com.dili.settlement.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.ss.util.MoneyUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -65,6 +69,9 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`submitter_dep_name`")
     private String submitterDepName;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`submit_time`")
     private LocalDateTime submitTime;
 
@@ -83,6 +90,9 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`operator_name`")
     private String operatorName;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`operate_time`")
     private LocalDateTime operateTime;
 
@@ -110,6 +120,18 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`version`")
     private Integer version;
 
+    //是否进行枚举、字典值转换
+    @Transient
+    private Boolean convert;
+    //业务名称 用businessType值进行转换
+    @Transient
+    private String businessName;
+    @Transient
+    private String typeName;
+    @Transient
+    private String wayName;
+    @Transient
+    private String stateName;
     /**
      * @return id
      */
@@ -596,5 +618,56 @@ public class SettleOrder extends BaseDomain {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Boolean getConvert() {
+        return convert;
+    }
+
+    public void setConvert(Boolean convert) {
+        this.convert = convert;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getWayName() {
+        return wayName;
+    }
+
+    public void setWayName(String wayName) {
+        this.wayName = wayName;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    /**
+     * 获取金额展示
+     * @return
+     */
+    public String getAmountView() {
+        if (this.amount == null) {
+            return null;
+        }
+        return MoneyUtils.centToYuan(this.amount);
     }
 }

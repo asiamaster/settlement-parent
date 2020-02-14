@@ -22,7 +22,7 @@
 		<!-- MyBatis Generator -->
 		<!-- Java接口和实体类 -->
 		<targetJavaProject>${basedir}/src/main/java</targetJavaProject>
-		<targetMapperPackage>com.dili.settlement.dao</targetMapperPackage>
+		<targetMapperPackage>com.dili.settlement.mapper</targetMapperPackage>
 		<targetModelPackage>com.dili.settlement.domain</targetModelPackage>
 		<targetServicePackage>com.dili.settlement.service</targetServicePackage>
 		<targetProviderPackage>com.dili.settlement.provider</targetProviderPackage>

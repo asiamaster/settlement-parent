@@ -27,7 +27,7 @@ public class UrlConfigApi {
      * @return
      */
     @RequestMapping(value = "/getUrl")
-    public BaseOutput<UrlConfig> getUrl(@RequestBody UrlConfig query) {
+    public BaseOutput<String> getUrl(@RequestBody UrlConfig query) {
         try {
             if (query.getBusinessType() == null) {
                 return BaseOutput.failure("业务类型为空");

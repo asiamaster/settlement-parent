@@ -39,6 +39,11 @@ public class SourceQueueTask implements Callable<Boolean> {
     @Override
     public Boolean call()  {
         while (true) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             SettleOrder settleOrder = CallbackHolder.pollSource();
             if (settleOrder == null) {
                 continue;

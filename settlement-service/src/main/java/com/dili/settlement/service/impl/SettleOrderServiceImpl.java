@@ -1,11 +1,16 @@
 package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.dili.settlement.dao.SettleOrderMapper;
+import com.dili.settlement.mapper.SettleOrderMapper;
+import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.enums.GroupCodeEnum;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.enums.SettleTypeEnum;
+import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.service.FundAccountService;
+import com.dili.settlement.service.SettleConfigService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -17,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -28,6 +35,8 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
 
     @Resource
     private FundAccountService fundAccountService;
+    @Resource
+    private SettleConfigService settleConfigService;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -74,13 +83,43 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
 
     @Override
     public List<SettleOrder> list(SettleOrderDto query) {
-        return getActualDao().list(query);
+        List<SettleOrder> itemList = getActualDao().list(query);
+        if (Boolean.TRUE.equals(query.getConvert())) {
+            convert(itemList);
+        }
+        return itemList;
+    }
+
+    /**
+     * 进行数据转换
+     * @param itemList
+     */
+    private void convert(List<SettleOrder> itemList) {
+        if (CollUtil.isEmpty(itemList)) {
+            return;
+        }
+        Map<Long, List<SettleConfig>> configs = new HashMap<>();
+        for (SettleOrder po : itemList) {
+            List<SettleConfig> configList = configs.get(po.getMarketId());
+            if (configList == null) {
+                configList = settleConfigService.list(po.getMarketId(), GroupCodeEnum.SETTLE_BUSINESS_TYPE.getCode());
+                configs.put(po.getMarketId(), configList);
+            }
+            SettleConfig config = configList.stream().filter(temp -> po.getBusinessType().equals(temp.getCode())).findFirst().orElse(null);
+            po.setBusinessName(config != null ? config.getVal() : "");
+            po.setTypeName(SettleTypeEnum.getNameByCode(po.getType()));
+            po.setStateName(SettleStateEnum.getNameByCode(po.getState()));
+            po.setWayName(po.getWay() != null ? SettleWayEnum.getNameByCode(po.getWay()) : "");
+        }
     }
 
     @Override
     public PageOutput<List<SettleOrder>> listPagination(SettleOrderDto query) {
         PageHelper.startPage(query.getPage(), query.getRows());
         List<SettleOrder> itemList = getActualDao().list(query);
+        if (Boolean.TRUE.equals(query.getConvert())) {
+            convert(itemList);
+        }
 
         Page<SettleOrder> page = (Page)itemList;
         PageOutput<List<SettleOrder>> output = PageOutput.success();
@@ -142,5 +181,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
+    }
+
+    @Override
+    public Long queryTotalAmount(SettleOrderDto settleOrderDto) {
+        return getActualDao().queryTotalAmount(settleOrderDto);
     }
 }

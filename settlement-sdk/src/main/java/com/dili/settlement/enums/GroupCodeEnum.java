@@ -6,7 +6,8 @@ package com.dili.settlement.enums;
 public enum GroupCodeEnum {
     SETTLE_WAY_PAY(101, "支付方式"),
     SETTLE_WAY_REFUND(102, "退款方式"),
-    SETTLE_SIGN_CALLBACK(201, "回调签名");
+    SETTLE_SIGN_CALLBACK(201, "回调签名"),
+    SETTLE_BUSINESS_TYPE(301, "业务类型");
 
     private int code;
     private String name;

@@ -1,6 +1,6 @@
 package com.dili.settlement.service.impl;
 
-import com.dili.settlement.dao.UrlConfigMapper;
+import com.dili.settlement.mapper.UrlConfigMapper;
 import com.dili.settlement.domain.UrlConfig;
 import com.dili.settlement.service.UrlConfigService;
 import com.dili.ss.base.BaseServiceImpl;

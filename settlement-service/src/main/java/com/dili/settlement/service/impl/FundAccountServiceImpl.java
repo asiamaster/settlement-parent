@@ -1,6 +1,6 @@
 package com.dili.settlement.service.impl;
 
-import com.dili.settlement.dao.FundAccountMapper;
+import com.dili.settlement.mapper.FundAccountMapper;
 import com.dili.settlement.domain.FundAccount;
 import com.dili.settlement.service.FundAccountService;
 import com.dili.ss.base.BaseServiceImpl;
@@ -22,6 +22,9 @@ public class FundAccountServiceImpl extends BaseServiceImpl<FundAccount, Long> i
     @Transactional
     @Override
     public void add(Long marketId, Long appId, Long amount) {
+        if (amount == 0L) {
+            return;
+        }
         FundAccount po = queryOne(marketId, appId);
         if (po == null) {
             throw new BusinessException("", "市场应用账户不存在");
@@ -36,6 +39,9 @@ public class FundAccountServiceImpl extends BaseServiceImpl<FundAccount, Long> i
     @Transactional
     @Override
     public void sub(Long marketId, Long appId, Long amount) {
+        if (amount == 0L) {
+            return;
+        }
         FundAccount po = queryOne(marketId, appId);
         if (po == null) {
             throw new BusinessException("", "市场应用账户不存在");

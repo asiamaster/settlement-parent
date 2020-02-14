@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.settlement.dao.SettleOrderMapper">
+<mapper namespace="com.dili.settlement.mapper.SettleOrderMapper">
   <resultMap id="BaseResultMap" type="com.dili.settlement.domain.SettleOrder">
     <!--
       WARNING - @mbg.generated
@@ -126,4 +126,13 @@
         version = version + 1
     where id = #{id} and version = #{version}
   </update>
+
+  <!-- 根据id列表查询总金额 -->
+  <select id="queryTotalAmount" parameterType="com.dili.settlement.domain.SettleOrder" resultType="java.lang.Long">
+    select sum(amount) from settle_order where 1=1
+        and id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+          #{id}
+        </foreach>
+  </select>
 </mapper>

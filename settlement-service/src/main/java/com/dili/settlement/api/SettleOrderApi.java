@@ -151,6 +151,25 @@ public class SettleOrderApi {
     }
 
     /**
+     * 根据id列表查询总额
+     * @param settleOrderDto
+     * @return
+     */
+    @RequestMapping(value = "/queryTotalAmount")
+    public BaseOutput<Long> queryTotalAmount(@RequestBody SettleOrderDto settleOrderDto) {
+        try {
+            if (CollUtil.isEmpty(settleOrderDto.getIdList())) {
+                return BaseOutput.failure("ID列表为空");
+            }
+            Long totalAmount = settleOrderService.queryTotalAmount(settleOrderDto);
+            return BaseOutput.success().setData(totalAmount);
+        } catch (Exception e) {
+            LOGGER.error("method queryTotalAmount");
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
      * 处理支付逻辑
      * @param settleOrderDto
      * @return

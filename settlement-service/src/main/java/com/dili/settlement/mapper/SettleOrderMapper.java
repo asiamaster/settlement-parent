@@ -1,11 +1,10 @@
-package com.dili.settlement.dao;
+package com.dili.settlement.mapper;
 
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.MyMapper;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SettleOrderMapper extends MyMapper<SettleOrder> {
     /**
@@ -35,4 +34,11 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @return
      */
     int updateSettle(SettleOrder po);
+
+    /**
+     * 根据id列表查询总金额
+     * @param settleOrderDto
+     * @return
+     */
+    Long queryTotalAmount(SettleOrderDto settleOrderDto);
 }

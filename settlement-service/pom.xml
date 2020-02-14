@@ -12,7 +12,7 @@
         <!--  MyBatis Generator  -->
         <!--  Java接口和实体类  -->
         <targetJavaProject>${basedir}/src/main/java</targetJavaProject>
-        <targetMapperPackage>com.dili.settlement.dao</targetMapperPackage>
+        <targetMapperPackage>com.dili.settlement.mapper</targetMapperPackage>
         <targetModelPackage>com.dili.settlement.domain</targetModelPackage>
         <targetServicePackage>com.dili.settlement.service</targetServicePackage>
         <targetControllerPackage>com.dili.settlement.controller</targetControllerPackage>
@@ -184,16 +184,6 @@
         </dependency>
         <!-- 内部包  -->
         <dependency>
-            <groupId>com.dili</groupId>
-            <artifactId>commons</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.dili</groupId>
-            <artifactId>uap-sdk</artifactId>
-            <version>2.6.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.1.2</version>
@@ -201,7 +191,7 @@
         <dependency>
             <groupId>com.dili</groupId>
             <artifactId>settlement-sdk</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

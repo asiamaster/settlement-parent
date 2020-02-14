@@ -61,4 +61,11 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @param po
      */
     void refund(SettleOrder po, SettleOrderDto settleOrderDto);
+
+    /**
+     * 根据id列表查询总金额
+     * @param settleOrderDto
+     * @return
+     */
+    Long queryTotalAmount(SettleOrderDto settleOrderDto);
 }

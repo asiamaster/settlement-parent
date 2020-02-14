@@ -21,6 +21,11 @@ public class ExecuteQueueTask implements Callable<Boolean> {
     @Override
     public Boolean call() {
         while (true) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             CallbackDto callbackDto = CallbackHolder.pollExecute();
             if (callbackDto == null) {
                 continue;

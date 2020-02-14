@@ -11,7 +11,7 @@
 
     <groupId>com.dili</groupId>
     <artifactId>settlement-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>settlement-sdk</description>
     <packaging>jar</packaging>
 

@@ -11,6 +11,11 @@ public class CacheQueueTask implements Callable<Boolean> {
     @Override
     public Boolean call() {
         while (true) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             CallbackDto callbackDto = CallbackHolder.pollCache();
             if (callbackDto == null) {
                 continue;

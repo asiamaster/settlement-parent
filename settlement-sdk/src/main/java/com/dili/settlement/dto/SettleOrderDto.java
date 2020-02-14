@@ -17,6 +17,8 @@ public class SettleOrderDto extends SettleOrder {
     private String operateTimeStart;
     //结算结束时间
     private String operateTimeEnd;
+    //id串
+    private String ids;
 
     public List<Long> getIdList() {
         return idList;
@@ -48,5 +50,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setOperateTimeEnd(String operateTimeEnd) {
         this.operateTimeEnd = operateTimeEnd;
+    }
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
     }
 }
