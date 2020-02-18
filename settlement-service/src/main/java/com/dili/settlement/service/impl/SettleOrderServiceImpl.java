@@ -162,7 +162,7 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Transactional
     @Override
     public void refund(SettleOrder po, SettleOrderDto settleOrderDto) {
-        if (!po.getState().equals(SettleStateEnum.DEAL)) {
+        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL)) {
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         //way,state,operatorId,operatorName,operateTime,accountNumber,bankName,bankCardHolder,serialNumber,notes

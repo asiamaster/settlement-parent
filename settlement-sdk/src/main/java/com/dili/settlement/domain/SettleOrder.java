@@ -664,6 +664,7 @@ public class SettleOrder extends BaseDomain {
      * 获取金额展示
      * @return
      */
+    @Transient
     public String getAmountView() {
         if (this.amount == null) {
             return null;
