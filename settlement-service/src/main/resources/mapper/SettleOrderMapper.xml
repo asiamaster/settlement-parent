@@ -86,6 +86,12 @@
     <if test="operateTimeEnd != null and operateTimeEnd != ''">
       and `operate_time` &lt;= #{operateTimeEnd}
     </if>
+    <if test="customerNameMatch != null and customerNameMatch !=''">
+      and `customer_name` like concat('%',#{customerNameMatch},'%')
+    </if>
+    <if test="operatorNameMatch != null and operatorNameMatch !=''">
+      and `operator_name` like concat('%',#{operatorNameMatch},'%')
+    </if>
   </sql>
   <!-- 根据条件查询 -->
   <select id="list" parameterType="com.dili.settlement.dto.SettleOrderDto" resultMap="BaseResultMap">

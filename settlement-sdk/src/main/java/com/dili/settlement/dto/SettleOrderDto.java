@@ -19,6 +19,10 @@ public class SettleOrderDto extends SettleOrder {
     private String operateTimeEnd;
     //id串
     private String ids;
+    //客户名称模糊匹配
+    private String customerNameMatch;
+    //结算员模糊匹配
+    private String operatorNameMatch;
 
     public List<Long> getIdList() {
         return idList;
@@ -58,5 +62,21 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setIds(String ids) {
         this.ids = ids;
+    }
+
+    public String getCustomerNameMatch() {
+        return customerNameMatch;
+    }
+
+    public void setCustomerNameMatch(String customerNameMatch) {
+        this.customerNameMatch = customerNameMatch;
+    }
+
+    public String getOperatorNameMatch() {
+        return operatorNameMatch;
+    }
+
+    public void setOperatorNameMatch(String operatorNameMatch) {
+        this.operatorNameMatch = operatorNameMatch;
     }
 }
