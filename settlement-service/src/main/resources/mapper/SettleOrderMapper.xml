@@ -59,6 +59,9 @@
     <if test="code != null and code != ''">
       and `code` = #{code}
     </if>
+    <if test="businessDepId != null">
+      and `business_dep_id` = #{businessDepId}
+    </if>
     <if test="businessTypeList != null and businessTypeList.size() > 0">
       and `business_type` in
       <foreach collection="businessTypeList" item="businessType" separator="," open="(" close=")">
