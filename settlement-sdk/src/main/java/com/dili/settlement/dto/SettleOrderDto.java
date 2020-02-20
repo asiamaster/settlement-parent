@@ -23,6 +23,8 @@ public class SettleOrderDto extends SettleOrder {
     private String customerNameMatch;
     //结算员模糊匹配
     private String operatorNameMatch;
+    //辅助token
+    private String token;
 
     public List<Long> getIdList() {
         return idList;
@@ -78,5 +80,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setOperatorNameMatch(String operatorNameMatch) {
         this.operatorNameMatch = operatorNameMatch;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
