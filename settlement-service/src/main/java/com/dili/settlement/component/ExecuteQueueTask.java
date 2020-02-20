@@ -24,14 +24,20 @@ public class ExecuteQueueTask implements Callable<Boolean> {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("execute thread sleep", e);
             }
             CallbackDto callbackDto = CallbackHolder.pollExecute();
             if (callbackDto == null) {
                 continue;
             }
-            boolean result = post(callbackDto.getUrl(), callbackDto.getData());
-            if (!result) {
+            try {
+                boolean result = post(callbackDto.getUrl(), callbackDto.getData());
+                if (!result) {
+                    callbackDto.failure();
+                    CallbackHolder.offerCache(callbackDto);
+                }
+            } catch (Exception e) {
+                LOGGER.error("execute task", e);
                 callbackDto.failure();
                 CallbackHolder.offerCache(callbackDto);
             }

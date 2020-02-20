@@ -7,6 +7,8 @@ import com.dili.settlement.enums.GroupCodeEnum;
 import com.dili.settlement.service.SettleConfigService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.settlement.util.GeneralUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -16,7 +18,7 @@ import java.util.concurrent.Callable;
  * 用于处理原始数据
  */
 public class SourceQueueTask implements Callable<Boolean> {
-
+    private static Logger LOGGER = LoggerFactory.getLogger(SourceQueueTask.class);
     //是否签名
     private boolean sign;
     //默认签名秘钥
@@ -42,23 +44,27 @@ public class SourceQueueTask implements Callable<Boolean> {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("source thread sleep", e);
             }
             SettleOrder settleOrder = CallbackHolder.pollSource();
             if (settleOrder == null) {
                 continue;
             }
-            SortedMap<String, String> map = getMapData(settleOrder);
-            if (sign) {
-                String signKey = settleConfigService.getSignKey(settleOrder.getMarketId(), GroupCodeEnum.SETTLE_SIGN_CALLBACK.getCode());
-                sign(map, signKey);
+            try {
+                SortedMap<String, String> map = getMapData(settleOrder);
+                if (sign) {
+                    String signKey = settleConfigService.getSignKey(settleOrder.getMarketId(), GroupCodeEnum.SETTLE_SIGN_CALLBACK.getCode());
+                    sign(map, signKey);
+                }
+                CallbackDto callbackDto = new CallbackDto();
+                callbackDto.setTimes(times);
+                callbackDto.setInterval(interval);
+                callbackDto.setUrl(settleOrder.getReturnUrl());
+                callbackDto.setData(map);
+                CallbackHolder.offerExecute(callbackDto);
+            } catch (Exception e) {
+                LOGGER.error("source task", e);
             }
-            CallbackDto callbackDto = new CallbackDto();
-            callbackDto.setTimes(times);
-            callbackDto.setInterval(interval);
-            callbackDto.setUrl(settleOrder.getReturnUrl());
-            callbackDto.setData(map);
-            CallbackHolder.offerExecute(callbackDto);
         }
     }
 
