@@ -9,9 +9,9 @@ public class PrintDto {
 
     //打印模板名称
     private String name;
-    private Map<String, String> item;
+    private Map<String, Object> item;
 
-    public PrintDto(String name, Map<String, String> item){
+    public PrintDto(String name, Map<String, Object> item){
         this.name = name;
         this.item = item;
     }
@@ -24,11 +24,11 @@ public class PrintDto {
         this.name = name;
     }
 
-    public Map<String, String> getItem() {
+    public Map<String, Object> getItem() {
         return item;
     }
 
-    public void setItem(Map<String, String> item) {
+    public void setItem(Map<String, Object> item) {
         this.item = item;
     }
 }
