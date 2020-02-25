@@ -1,6 +1,6 @@
 package com.dili.settlement.component;
 
-import com.dili.settlement.service.SettleConfigService;
+import com.dili.settlement.service.ApplicationConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class CallbackHandler {
     private int interval;
 
     @Resource
-    private SettleConfigService settleConfigService;
+    private ApplicationConfigService applicationConfigService;
 
     /**
      * 初始化各执行线程
@@ -52,7 +52,7 @@ public class CallbackHandler {
         //添加数据准备任务
         LOGGER.info("----------- start prepare task -----------");
         for (int i = 0; i < prepareThreads; i++) {
-            executorService.submit(new SourceQueueTask(sign, signKey, times, interval, settleConfigService));
+            executorService.submit(new SourceQueueTask(sign, signKey, times, interval, applicationConfigService));
         }
         LOGGER.info("----------- end prepare task -----------");
         //添加回调执行任务

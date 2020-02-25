@@ -1,16 +1,17 @@
 package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.dili.settlement.mapper.SettleOrderMapper;
-import com.dili.settlement.domain.SettleConfig;
+import com.dili.settlement.domain.ApplicationConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.GroupCodeEnum;
+import com.dili.settlement.enums.AppGroupCodeEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.enums.SettleTypeEnum;
 import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.mapper.SettleOrderMapper;
+import com.dili.settlement.service.ApplicationConfigService;
 import com.dili.settlement.service.FundAccountService;
-import com.dili.settlement.service.SettleConfigService;
+import com.dili.settlement.service.MarketApplicationService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
@@ -36,7 +37,9 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Resource
     private FundAccountService fundAccountService;
     @Resource
-    private SettleConfigService settleConfigService;
+    private ApplicationConfigService applicationConfigService;
+    @Resource
+    private MarketApplicationService marketApplicationService;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -45,16 +48,18 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Transactional
     @Override
     public void save(SettleOrder settleOrder) {
-        if (existsBusinessCode(settleOrder.getMarketId(), settleOrder.getAppId(), settleOrder.getBusinessCode())) {
+        if (!marketApplicationService.existsApp(settleOrder.getMarketId(), settleOrder.getAppId())) {
+            throw new BusinessException("", "该应用未允许接入");
+        }
+        if (existsBusinessCode(settleOrder.getAppId(), settleOrder.getBusinessCode())) {
             throw new BusinessException("", "业务单号已存在");
         }
         insertSelective(settleOrder);
     }
 
     @Override
-    public boolean existsBusinessCode(Long marketId, Long appId, String businessCode) {
+    public boolean existsBusinessCode(Long appId, String businessCode) {
         SettleOrderDto query = new SettleOrderDto();
-        query.setMarketId(marketId);
         query.setAppId(appId);
         query.setBusinessCode(businessCode);
         List<SettleOrder> itemList = getActualDao().list(query);
@@ -63,9 +68,44 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
 
     @Transactional
     @Override
+    public void cancelById(Long id) {
+        SettleOrder po = get(id);
+        if (po == null) {
+            throw new BusinessException("", "未查询到结算单记录");
+        }
+        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
+            throw new BusinessException("", "非待处理的结算单无法取消");
+        }
+        po.setState(SettleStateEnum.CANCEL.getCode());
+        int i = getActualDao().updateState(po);
+        if (i != 1) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+    }
+
+    @Transactional
+    @Override
     public void cancelByCode(String code) {
+        SettleOrder po = getActualDao().getByCode(code);
+        if (po == null) {
+            throw new BusinessException("", "未查询到结算单记录");
+        }
+        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
+            throw new BusinessException("", "非待处理的结算单无法取消");
+        }
+        po.setState(SettleStateEnum.CANCEL.getCode());
+        int i = getActualDao().updateState(po);
+        if (i != 1) {
+            throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void cancel(Long appId, String businessCode) {
         SettleOrderDto query = new SettleOrderDto();
-        query.setCode(code);
+        query.setAppId(appId);
+        query.setBusinessCode(businessCode);
         List<SettleOrder> itemList = getActualDao().list(query);
         if (CollUtil.isEmpty(itemList)) {
             throw new BusinessException("", "未查询到结算单记录");
@@ -98,14 +138,14 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         if (CollUtil.isEmpty(itemList)) {
             return;
         }
-        Map<Long, List<SettleConfig>> configs = new HashMap<>();
+        Map<Long, List<ApplicationConfig>> configs = new HashMap<>();
         for (SettleOrder po : itemList) {
-            List<SettleConfig> configList = configs.get(po.getMarketId());
+            List<ApplicationConfig> configList = configs.get(po.getAppId());
             if (configList == null) {
-                configList = settleConfigService.list(po.getMarketId(), GroupCodeEnum.SETTLE_BUSINESS_TYPE.getCode());
+                configList = applicationConfigService.list(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode());
                 configs.put(po.getMarketId(), configList);
             }
-            SettleConfig config = configList.stream().filter(temp -> po.getBusinessType().equals(temp.getCode())).findFirst().orElse(null);
+            ApplicationConfig config = configList.stream().filter(temp -> po.getBusinessType().equals(temp.getCode())).findFirst().orElse(null);
             po.setBusinessName(config != null ? config.getVal() : "");
             po.setTypeName(SettleTypeEnum.getNameByCode(po.getType()));
             po.setStateName(SettleStateEnum.getNameByCode(po.getState()));
@@ -138,6 +178,14 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         return getActualDao().getByCode(code);
     }
 
+    @Override
+    public SettleOrder get(Long appId, String businessCode) {
+        SettleOrderDto query = new SettleOrderDto();
+        query.setAppId(appId);
+        query.setBusinessCode(businessCode);
+        return listByExample(query).stream().findFirst().orElse(null);
+    }
+
     @Transactional
     @Override
     public void pay(SettleOrder po, SettleOrderDto settleOrderDto) {
@@ -162,7 +210,7 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Transactional
     @Override
     public void refund(SettleOrder po, SettleOrderDto settleOrderDto) {
-        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL)) {
+        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         //way,state,operatorId,operatorName,operateTime,accountNumber,bankName,bankCardHolder,serialNumber,notes

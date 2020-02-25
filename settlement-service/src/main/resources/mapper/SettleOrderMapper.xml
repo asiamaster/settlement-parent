@@ -116,7 +116,7 @@
   <select id="getByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
         <include refid="Base_Column_List"></include>
-    from settle_order where `code` = #{code}
+    from settle_order where `code` = #{code} limit 1
   </select>
 
   <!-- 结算修改 -->

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.settlement.mapper.ApplicationConfigMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.ApplicationConfig">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="group_code" jdbcType="INTEGER" property="groupCode" />
+    <result column="code" jdbcType="TINYINT" property="code" />
+    <result column="val" jdbcType="VARCHAR" property="val" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `app_id`, `group_code`, `code`, `val`, `state`, `notes`
+  </sql>
+
+  <sql id="LIST_CONDITION">
+    <if test="appId != null">
+      and `app_id` = #{appId}
+    </if>
+    <if test="groupCode != null">
+      and `group_code` = #{groupCode}
+    </if>
+    <if test="code != null">
+      and `code` = #{code}
+    </if>
+    <if test="state != null">
+      and `state` = #{state}
+    </if>
+    <if test="appIdList != null and appIdList.size() > 0">
+      and `app_id` in
+      <foreach collection="appIdList" item="temp" separator="," open="(" close=")">
+        #{temp}
+      </foreach>
+    </if>
+  </sql>
+
+  <select id="list" parameterType="com.dili.settlement.dto.ApplicationConfigDto" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from application_config where 1=1
+        <include refid="LIST_CONDITION"/>
+  </select>
+</mapper>

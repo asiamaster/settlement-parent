@@ -11,18 +11,17 @@ import java.util.List;
  */
 public interface SettleConfigService extends BaseService<SettleConfig, Long> {
     /**
-     * 根据市场id 分组编码获取唯一加密秘钥(注意数据库数据配置)
-     * @param marketId
+     * 根据分组编码 编码获取唯一加密秘钥(注意数据库数据配置)
      * @param groupCode
+     * @param code
      * @return
      */
-    String getSignKey(Long marketId, int groupCode);
+    String getVal(int groupCode, int code);
 
     /**
      * 查询配置列表
-     * @param marketId
      * @param groupCode
      * @return
      */
-    List<SettleConfig> list(Long marketId, int groupCode);
+    List<SettleConfig> list(int groupCode);
 }

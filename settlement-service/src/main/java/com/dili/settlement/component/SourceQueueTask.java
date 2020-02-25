@@ -3,8 +3,9 @@ package com.dili.settlement.component;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
-import com.dili.settlement.enums.GroupCodeEnum;
-import com.dili.settlement.service.SettleConfigService;
+import com.dili.settlement.enums.AppGroupCodeEnum;
+import com.dili.settlement.enums.SignTypeEnum;
+import com.dili.settlement.service.ApplicationConfigService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.settlement.util.GeneralUtil;
 import org.slf4j.Logger;
@@ -28,14 +29,14 @@ public class SourceQueueTask implements Callable<Boolean> {
     //间隔时间
     private int interval;
     //加载配置
-    private SettleConfigService settleConfigService;
+    private ApplicationConfigService applicationConfigService;
 
-    public SourceQueueTask(boolean sign, String defaultSignKey, int times, int interval, SettleConfigService settleConfigService) {
+    public SourceQueueTask(boolean sign, String defaultSignKey, int times, int interval, ApplicationConfigService applicationConfigService) {
         this.sign = sign;
         this.defaultSignKey = defaultSignKey;
         this.times = times;
         this.interval = interval;
-        this.settleConfigService = settleConfigService;
+        this.applicationConfigService = applicationConfigService;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class SourceQueueTask implements Callable<Boolean> {
             try {
                 SortedMap<String, String> map = getMapData(settleOrder);
                 if (sign) {
-                    String signKey = settleConfigService.getSignKey(settleOrder.getMarketId(), GroupCodeEnum.SETTLE_SIGN_CALLBACK.getCode());
+                    String signKey = applicationConfigService.getVal(settleOrder.getAppId(), AppGroupCodeEnum.APP_SIGN_KEY.getCode(), SignTypeEnum.CALLBACK.getCode());
                     sign(map, signKey);
                 }
                 CallbackDto callbackDto = new CallbackDto();

@@ -1,22 +1,22 @@
 package com.dili.settlement.enums;
 
 /**
- * 路径配置 url类型枚举
+ * 结算配置 组编码枚举
  */
-public enum UrlTypeEnum {
-    DETAIL(1, "详情"),
-    PRINT_DATA(2, "打印数据");
+public enum SettleGroupCodeEnum {
+    SETTLE_WAY_PAY(101, "支付方式"),
+    SETTLE_WAY_REFUND(102, "退款方式");
 
     private int code;
     private String name;
 
-    UrlTypeEnum(int code, String name) {
+    SettleGroupCodeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static UrlTypeEnum getByCode(int code) {
-        for (UrlTypeEnum temp : UrlTypeEnum.values()) {
+    public static SettleGroupCodeEnum getByCode(int code) {
+        for (SettleGroupCodeEnum temp : SettleGroupCodeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -25,7 +25,7 @@ public enum UrlTypeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (UrlTypeEnum temp : UrlTypeEnum.values()) {
+        for (SettleGroupCodeEnum temp : SettleGroupCodeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

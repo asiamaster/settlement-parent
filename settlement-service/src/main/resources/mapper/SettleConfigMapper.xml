@@ -6,7 +6,6 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="market_id" jdbcType="BIGINT" property="marketId" />
     <result column="group_code" jdbcType="INTEGER" property="groupCode" />
     <result column="code" jdbcType="TINYINT" property="code" />
     <result column="val" jdbcType="VARCHAR" property="val" />
@@ -17,6 +16,6 @@
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `market_id`, `group_code`, `code`, `val`, `state`, `notes`
+    `id`, `group_code`, `code`, `val`, `state`, `notes`
   </sql>
 </mapper>

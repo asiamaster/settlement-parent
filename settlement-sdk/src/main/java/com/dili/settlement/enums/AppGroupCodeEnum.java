@@ -3,22 +3,22 @@ package com.dili.settlement.enums;
 /**
  * 结算配置 组编码枚举
  */
-public enum GroupCodeEnum {
-    SETTLE_WAY_PAY(101, "支付方式"),
-    SETTLE_WAY_REFUND(102, "退款方式"),
-    SETTLE_SIGN_CALLBACK(201, "回调签名"),
-    SETTLE_BUSINESS_TYPE(301, "业务类型");
+public enum AppGroupCodeEnum {
+    APP_BUSINESS_TYPE(101, "业务类型"),
+    APP_BUSINESS_URL_DETAIL(102, "业务详情"),
+    APP_BUSINESS_URL_PRINT(103, "打印数据"),
+    APP_SIGN_KEY(201, "回调签名");
 
     private int code;
     private String name;
 
-    GroupCodeEnum(int code, String name) {
+    AppGroupCodeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static GroupCodeEnum getByCode(int code) {
-        for (GroupCodeEnum temp : GroupCodeEnum.values()) {
+    public static AppGroupCodeEnum getByCode(int code) {
+        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -27,7 +27,7 @@ public enum GroupCodeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (GroupCodeEnum temp : GroupCodeEnum.values()) {
+        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

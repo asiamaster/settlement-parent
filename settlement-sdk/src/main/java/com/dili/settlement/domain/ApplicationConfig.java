@@ -9,15 +9,18 @@ import javax.persistence.*;
 
 /**
  * 由MyBatis Generator工具自动生成
- * 
- * This file was generated on 2020-02-07 11:11:14.
+ * 接入应用配置
+ * This file was generated on 2020-02-25 10:34:34.
  */
-@Table(name = "`settle_config`")
-public class SettleConfig extends BaseDomain {
+@Table(name = "`application_config`")
+public class ApplicationConfig extends BaseDomain {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "`app_id`")
+    private Long appId;
 
     @Column(name = "`group_code`")
     private Integer groupCode;
@@ -48,6 +51,22 @@ public class SettleConfig extends BaseDomain {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return app_id
+     */
+    @FieldDef(label="appId")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    public Long getAppId() {
+        return appId;
+    }
+
+    /**
+     * @param appId
+     */
+    public void setAppId(Long appId) {
+        this.appId = appId;
     }
 
     /**
