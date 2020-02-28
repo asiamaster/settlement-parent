@@ -24,96 +24,125 @@ public class SettleOrder extends BaseDomain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //市场ID
     @Column(name = "`market_id`")
     private Long marketId;
 
+    //应用ID
     @Column(name = "`app_id`")
     private Long appId;
 
+    //结算编号
     @Column(name = "`code`")
     private String code;
 
+    //业务编号
     @Column(name = "`business_code`")
     private String businessCode;
 
+    //业务类型
     @Column(name = "`business_type`")
     private Integer businessType;
 
+    //业务部门id
     @Column(name = "`business_dep_id`")
     private Long businessDepId;
 
+    //业务部门名称
     @Column(name = "`business_dep_name`")
     private String businessDepName;
 
+    //客户ID
     @Column(name = "`customer_id`")
     private Long customerId;
 
+    //客户姓名
     @Column(name = "`customer_name`")
     private String customerName;
 
+    //客户手机号
     @Column(name = "`customer_phone`")
     private String customerPhone;
 
+    //金额
     @Column(name = "`amount`")
     private Long amount;
 
+    //提交人ID
     @Column(name = "`submitter_id`")
     private Long submitterId;
 
+    //提交人姓名
     @Column(name = "`submitter_name`")
     private String submitterName;
 
+    //提交人部门ID
     @Column(name = "`submitter_dep_id`")
     private Long submitterDepId;
 
+    //提交人部门名称
     @Column(name = "`submitter_dep_name`")
     private String submitterDepName;
 
+    //提交时间
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`submit_time`")
     private LocalDateTime submitTime;
 
+    //结算类型 枚举 SettleTypeEnum
     @Column(name = "`type`")
     private Integer type;
 
+    //结算方式 枚举 SettleWayEnum
     @Column(name = "`way`")
     private Integer way;
 
+    //结算状态 枚举 SettleStateEnum
     @Column(name = "`state`")
     private Integer state;
 
+    //结算员ID
     @Column(name = "`operator_id`")
     private Long operatorId;
 
+    //结算员姓名
     @Column(name = "`operator_name`")
     private String operatorName;
 
+    //结算时间
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`operate_time`")
     private LocalDateTime operateTime;
 
+    //银行卡号
     @Column(name = "`account_number`")
     private String accountNumber;
 
+    //银行名称
     @Column(name = "`bank_name`")
     private String bankName;
 
+    //银行卡主
     @Column(name = "`bank_card_holder`")
     private String bankCardHolder;
 
+    //流水号
     @Column(name = "`serial_number`")
     private String serialNumber;
 
+    //退款是否可编辑 枚举 EditEnableEnum
     @Column(name = "`edit_enable`")
     private Integer editEnable;
 
+    //备注
     @Column(name = "`notes`")
     private String notes;
 
+    //结算回调url
     @Column(name = "`return_url`")
     private String returnUrl;
 
@@ -126,10 +155,13 @@ public class SettleOrder extends BaseDomain {
     //业务名称 用businessType值进行转换
     @Transient
     private String businessName;
+    //结算类型名称 用type值进行转换
     @Transient
     private String typeName;
+    //结算方式名称 用way值进行转换
     @Transient
     private String wayName;
+    //状态名称 用state值进行转换
     @Transient
     private String stateName;
     /**
