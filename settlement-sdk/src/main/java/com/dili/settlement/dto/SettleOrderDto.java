@@ -26,6 +26,9 @@ public class SettleOrderDto extends SettleOrder {
     //辅助token
     private String token;
 
+    //appId 列表
+    private List<Long> appIdList;
+
     public List<Long> getIdList() {
         return idList;
     }
@@ -88,5 +91,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public List<Long> getAppIdList() {
+        return appIdList;
+    }
+
+    public void setAppIdList(List<Long> appIdList) {
+        this.appIdList = appIdList;
     }
 }
