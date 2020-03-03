@@ -15,6 +15,9 @@ public abstract class OrderValidateServiceImpl implements OrderValidateService {
         if (settleOrderDto.getMarketId() == null) {
             throw new BusinessException("", "市场ID为空");
         }
+        if (StrUtil.isBlank(settleOrderDto.getMarketCode())) {
+            throw new BusinessException("", "市场编码为空");
+        }
         if (settleOrderDto.getAppId() == null) {
             throw new BusinessException("", "应用ID为空");
         }

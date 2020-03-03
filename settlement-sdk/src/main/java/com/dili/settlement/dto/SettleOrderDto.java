@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class SettleOrderDto extends SettleOrder {
 
+    //市场编码
+    private String marketCode;
     //id列表
     private List<Long> idList;
     //业务类型查询列表
@@ -28,6 +30,14 @@ public class SettleOrderDto extends SettleOrder {
 
     //appId 列表
     private List<Long> appIdList;
+
+    public String getMarketCode() {
+        return marketCode;
+    }
+
+    public void setMarketCode(String marketCode) {
+        this.marketCode = marketCode;
+    }
 
     public List<Long> getIdList() {
         return idList;

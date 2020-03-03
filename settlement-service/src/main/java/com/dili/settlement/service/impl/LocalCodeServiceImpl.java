@@ -3,6 +3,7 @@ package com.dili.settlement.service.impl;
 import com.dili.settlement.service.CodeService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.settlement.util.GeneralUtil;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 本地生成编码service 主要利用uuid转化+日期生成编码
@@ -13,19 +14,22 @@ public class LocalCodeServiceImpl implements CodeService {
     private static final String[] seeds = new String[]{"0","1","2","3","4","5","6","7","8","9"};
     private static final int len = seeds.length;
 
+    @Value("${settlement.code.dateformat:yyyyMMdd}")
+    private String format;
+
     @Override
-    public String generate() {
+    public String generate(String type) {
         StringBuilder builder = new StringBuilder();
-        builder.append(DateUtil.formatDateTime("yyyyMMddHHmmss"));
+        builder.append(DateUtil.formatDateTime(format));
         random(builder);
         return builder.toString();
     }
 
     @Override
-    public String generate(String prefix) {
+    public String generate(String prefix, String type) {
         StringBuilder builder = new StringBuilder();
-        builder.append(prefix);
-        builder.append(DateUtil.formatDateTime("yyyyMMddHHmmss"));
+        builder.append(prefix).append("JS");
+        builder.append(DateUtil.formatDateTime(format));
         random(builder);
         return builder.toString();
     }

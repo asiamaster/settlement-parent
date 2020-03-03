@@ -5,6 +5,16 @@ package com.dili.settlement.service;
  */
 public interface CodeService {
 
-    String generate();
-    String generate(String prefix);
+    /**
+     * 生成编号
+     * @return
+     */
+    String generate(String type);
+
+    /**
+     * 根据前缀生成
+     * @param prefix
+     * @return
+     */
+    String generate(String prefix, String type);
 }
