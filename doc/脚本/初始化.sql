@@ -64,17 +64,8 @@ CREATE TABLE `settle_config` (
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
-
 CREATE unique index ix_group_code ON settle_config(`group_code`,`code`);
 
-INSERT INTO `settle_config` (`group_code`, `code`, `val`, `state`, `notes`) VALUES
-	(101, 1, '现金', 1, '初始数据(101支付方式)'),
-	(101, 2, 'POS', 1, '初始数据(101支付方式)'),
-	(101, 3, '银行卡', 1, '初始数据(101支付方式)'),
-	(101, 4, '支付宝', 1, '初始数据(101支付方式)'),
-	(101, 5, '微信', 1, '初始数据(101支付方式)'),
-	(102, 1, '现金', 1, '初始数据(102退款方式)'),
-	(102, 3, '银行卡', 1, '初始数据(102退款方式)');
 
 /** 结算单表 */
 CREATE TABLE `settle_order` (
