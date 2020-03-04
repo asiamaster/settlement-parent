@@ -1,6 +1,7 @@
 package com.dili.settlement.component;
 
 import cn.hutool.core.util.StrUtil;
+import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
 import com.dili.settlement.enums.AppGroupCodeEnum;
@@ -20,30 +21,27 @@ import java.util.concurrent.Callable;
  */
 public class SourceQueueTask implements Callable<Boolean> {
     private static Logger LOGGER = LoggerFactory.getLogger(SourceQueueTask.class);
-    //是否签名
-    private boolean sign;
-    //默认签名秘钥
-    private String defaultSignKey;
-    //重试次数
-    private int times;
-    //间隔时间
-    private int interval;
+
+    private String threadKey;
+    //线程id
+    private int threadId;
+    //回调配置
+    private CallbackConfiguration callbackConfiguration;
     //加载配置
     private ApplicationConfigService applicationConfigService;
 
-    public SourceQueueTask(boolean sign, String defaultSignKey, int times, int interval, ApplicationConfigService applicationConfigService) {
-        this.sign = sign;
-        this.defaultSignKey = defaultSignKey;
-        this.times = times;
-        this.interval = interval;
+    public SourceQueueTask(int threadId, CallbackConfiguration callbackConfiguration, ApplicationConfigService applicationConfigService) {
+        this.threadId = threadId;
+        this.callbackConfiguration = callbackConfiguration;
         this.applicationConfigService = applicationConfigService;
+        this.threadKey = "source-" + this.threadId;
     }
 
     @Override
-    public Boolean call()  {
+    public Boolean call() {
         while (true) {
             try {
-                Thread.sleep(200);
+                Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
             } catch (InterruptedException e) {
                 LOGGER.error("source thread sleep", e);
             }
@@ -53,18 +51,21 @@ public class SourceQueueTask implements Callable<Boolean> {
             }
             try {
                 SortedMap<String, String> map = getMapData(settleOrder);
-                if (sign) {
+                if (callbackConfiguration.getSign()) {
                     String signKey = applicationConfigService.getVal(settleOrder.getAppId(), AppGroupCodeEnum.APP_SIGN_KEY.getCode(), SignTypeEnum.CALLBACK.getCode());
                     sign(map, signKey);
                 }
                 CallbackDto callbackDto = new CallbackDto();
-                callbackDto.setTimes(times);
-                callbackDto.setInterval(interval);
+                callbackDto.setTimes(callbackConfiguration.getTimes());
+                callbackDto.setInterval(callbackConfiguration.getIntervalMills());
                 callbackDto.setUrl(settleOrder.getReturnUrl());
                 callbackDto.setData(map);
+                callbackDto.setRetryRecordId(settleOrder.getRetryRecordId());
+                callbackDto.setBusinessId(settleOrder.getId());
+                callbackDto.setBusinessCode(settleOrder.getCode());
                 CallbackHolder.offerExecute(callbackDto);
             } catch (Exception e) {
-                LOGGER.error("source task", e);
+                LOGGER.error("source task error", e);
             }
         }
     }
@@ -105,7 +106,7 @@ public class SourceQueueTask implements Callable<Boolean> {
             builder.append(key).append("=").append(map.get(key)).append("&");
         }
         if (StrUtil.isBlank(signKey)) {
-            builder.append("signKey=").append(defaultSignKey);
+            builder.append("signKey=").append(callbackConfiguration.getSignKey());
         } else {
             builder.append("signKey=").append(signKey);
         }

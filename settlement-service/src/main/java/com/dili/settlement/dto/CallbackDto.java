@@ -12,18 +12,24 @@ public class CallbackDto {
     //最大次数
     private int times;
     //间隔时间
-    private int interval;
+    private long interval;
     //可执行时间(用于判断是否已到可执行时间)
     private long mills;
     private String url;
     private Map<String, String> data;
 
+    //重试记录ID
+    private Long retryRecordId;
+    //结算单ID
+    private Long businessId;
+    //结算单CODE
+    private String businessCode;
     /**
      * 执行失败时调用
      */
     public void failure() {
         this.currentTimes += 1;
-        this.mills = System.currentTimeMillis() + (this.currentTimes * this.interval * 1000);
+        this.mills = System.currentTimeMillis() + (this.currentTimes * this.interval);
     }
 
     /**
@@ -58,11 +64,11 @@ public class CallbackDto {
         this.times = times;
     }
 
-    public int getInterval() {
+    public long getInterval() {
         return interval;
     }
 
-    public void setInterval(int interval) {
+    public void setInterval(long interval) {
         this.interval = interval;
     }
 
@@ -88,5 +94,29 @@ public class CallbackDto {
 
     public void setData(Map<String, String> data) {
         this.data = data;
+    }
+
+    public Long getRetryRecordId() {
+        return retryRecordId;
+    }
+
+    public void setRetryRecordId(Long retryRecordId) {
+        this.retryRecordId = retryRecordId;
+    }
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
+    }
+
+    public String getBusinessCode() {
+        return businessCode;
+    }
+
+    public void setBusinessCode(String businessCode) {
+        this.businessCode = businessCode;
     }
 }

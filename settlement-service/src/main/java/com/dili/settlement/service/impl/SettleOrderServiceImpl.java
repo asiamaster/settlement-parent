@@ -2,17 +2,12 @@ package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.dili.settlement.domain.ApplicationConfig;
+import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.AppGroupCodeEnum;
-import com.dili.settlement.enums.SettleStateEnum;
-import com.dili.settlement.enums.SettleTypeEnum;
-import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.enums.*;
 import com.dili.settlement.mapper.SettleOrderMapper;
-import com.dili.settlement.service.ApplicationConfigService;
-import com.dili.settlement.service.FundAccountService;
-import com.dili.settlement.service.MarketApplicationService;
-import com.dili.settlement.service.SettleOrderService;
+import com.dili.settlement.service.*;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.PageOutput;
@@ -40,6 +35,8 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     private ApplicationConfigService applicationConfigService;
     @Resource
     private MarketApplicationService marketApplicationService;
+    @Resource
+    private RetryRecordService retryRecordService;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -205,6 +202,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
+        //存入回调重试记录  方便定时任务扫描
+        RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
+        retryRecordService.insertSelective(retryRecord);
+        po.setRetryRecordId(retryRecord.getId());
     }
 
     @Transactional
@@ -229,6 +230,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
+        //存入回调重试记录  方便定时任务扫描
+        RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
+        retryRecordService.insertSelective(retryRecord);
+        po.setRetryRecordId(retryRecord.getId());
     }
 
     @Override

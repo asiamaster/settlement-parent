@@ -3,6 +3,7 @@ package com.dili.settlement.component;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -11,18 +12,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CallbackHolder {
 
     //用于存放原始数据
-    private static final ConcurrentLinkedQueue<SettleOrder> source = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<SettleOrder> SOURCE = new ConcurrentLinkedQueue<>();
     //用于存放执行数据
-    private static final ConcurrentLinkedQueue<CallbackDto> execute = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<CallbackDto> EXECUTE = new ConcurrentLinkedQueue<>();
     //用于存放执行失败数据
-    private static final ConcurrentLinkedQueue<CallbackDto> cache = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentLinkedQueue<CallbackDto> CACHE = new ConcurrentLinkedQueue<>();
+    
+    private static final ConcurrentHashMap<String, Long> THREAD_INFO = new ConcurrentHashMap<>();
 
     /**
      * 放入原始数据
      * @param settleOrder
      */
     public static boolean offerSource(SettleOrder settleOrder) {
-        return source.offer(settleOrder);
+        return SOURCE.offer(settleOrder);
     }
 
     /**
@@ -30,7 +33,7 @@ public class CallbackHolder {
      * @return
      */
     public static SettleOrder pollSource() {
-        return source.poll();
+        return SOURCE.poll();
     }
 
     /**
@@ -39,7 +42,7 @@ public class CallbackHolder {
      * @return
      */
     public static boolean offerExecute(CallbackDto callbackDto) {
-        return execute.offer(callbackDto);
+        return EXECUTE.offer(callbackDto);
     }
 
     /**
@@ -47,7 +50,7 @@ public class CallbackHolder {
      * @return
      */
     public static CallbackDto pollExecute() {
-        return execute.poll();
+        return EXECUTE.poll();
     }
 
     /**
@@ -56,7 +59,7 @@ public class CallbackHolder {
      * @return
      */
     public static boolean offerCache(CallbackDto callbackDto) {
-        return cache.offer(callbackDto);
+        return CACHE.offer(callbackDto);
     }
 
     /**
@@ -64,6 +67,6 @@ public class CallbackHolder {
      * @return
      */
     public static CallbackDto pollCache() {
-        return cache.poll();
+        return CACHE.poll();
     }
 }
