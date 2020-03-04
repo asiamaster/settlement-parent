@@ -164,6 +164,9 @@ public class SettleOrder extends BaseDomain {
     //状态名称 用state值进行转换
     @Transient
     private String stateName;
+    //重试记录ID
+    @Transient
+    private Long retryRecordId;
     /**
      * @return id
      */
@@ -690,6 +693,14 @@ public class SettleOrder extends BaseDomain {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public Long getRetryRecordId() {
+        return retryRecordId;
+    }
+
+    public void setRetryRecordId(Long retryRecordId) {
+        this.retryRecordId = retryRecordId;
     }
 
     /**
