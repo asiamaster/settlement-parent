@@ -1,5 +1,6 @@
-package com.dili.settlement.component;
+package com.dili.settlement.task;
 
+import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.dto.CallbackDto;
 import org.slf4j.Logger;
@@ -10,29 +11,23 @@ import java.util.concurrent.Callable;
 /**
  * 用于处理执行失败数据处理
  */
-public class CacheQueueTask implements Callable<Boolean> {
+public class CacheQueueTask extends QueueTask implements Callable<Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheQueueTask.class);
 
-    private String threadKey;
-    private int threadId;
-    private CallbackConfiguration callbackConfiguration;
-
-    public CacheQueueTask(int threadId, CallbackConfiguration callbackConfiguration) {
-        this.threadId = threadId;
-        this.callbackConfiguration = callbackConfiguration;
-        this.threadKey = "cache-" + this.threadId;
+    public CacheQueueTask(CallbackConfiguration callbackConfiguration) {
+        super(callbackConfiguration);
     }
 
     @Override
     public Boolean call() {
         while (true) {
-            try {
-                Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
-            } catch (InterruptedException e) {
-                LOGGER.error("cache thread sleep", e);
-            }
             CallbackDto callbackDto = CallbackHolder.pollCache();
             if (callbackDto == null) {
+                try {
+                    Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
+                } catch (InterruptedException e) {
+                    LOGGER.error("cache thread sleep", e);
+                }
                 continue;
             }
             try {

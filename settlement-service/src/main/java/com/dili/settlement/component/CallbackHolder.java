@@ -3,7 +3,6 @@ package com.dili.settlement.component;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -17,8 +16,6 @@ public class CallbackHolder {
     private static final ConcurrentLinkedQueue<CallbackDto> EXECUTE = new ConcurrentLinkedQueue<>();
     //用于存放执行失败数据
     private static final ConcurrentLinkedQueue<CallbackDto> CACHE = new ConcurrentLinkedQueue<>();
-    
-    private static final ConcurrentHashMap<String, Long> THREAD_INFO = new ConcurrentHashMap<>();
 
     /**
      * 放入原始数据
