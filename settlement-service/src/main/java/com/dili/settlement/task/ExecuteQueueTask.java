@@ -1,10 +1,11 @@
-package com.dili.settlement.component;
+package com.dili.settlement.task;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.domain.RetryError;
 import com.dili.settlement.dto.CallbackDto;
@@ -22,33 +23,28 @@ import java.util.concurrent.Callable;
 /**
  * 用于执行回调
  */
-public class ExecuteQueueTask implements Callable<Boolean> {
+public class ExecuteQueueTask extends QueueTask implements Callable<Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteQueueTask.class);
 
-    private String threadKey;
-    private int threadId;
-    private CallbackConfiguration callbackConfiguration;
     private RetryRecordService retryRecordService;
     private RetryErrorService retryErrorService;
 
-    public ExecuteQueueTask(int threadId, CallbackConfiguration callbackConfiguration, RetryRecordService retryRecordService, RetryErrorService retryErrorService) {
-        this.threadId = threadId;
-        this.callbackConfiguration = callbackConfiguration;
+    public ExecuteQueueTask(CallbackConfiguration callbackConfiguration, RetryRecordService retryRecordService, RetryErrorService retryErrorService) {
+        super(callbackConfiguration);
         this.retryRecordService = retryRecordService;
         this.retryErrorService = retryErrorService;
-        this.threadKey = "execute-" + this.threadId;
     }
 
     @Override
     public Boolean call() {
         while (true) {
-            try {
-                Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
-            } catch (InterruptedException e) {
-                LOGGER.error("execute thread sleep", e);
-            }
             CallbackDto callbackDto = CallbackHolder.pollExecute();
             if (callbackDto == null) {
+                try {
+                    Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
+                } catch (InterruptedException e) {
+                    LOGGER.error("execute thread sleep", e);
+                }
                 continue;
             }
             try {
@@ -58,8 +54,12 @@ public class ExecuteQueueTask implements Callable<Boolean> {
                 LOGGER.error("execute task error", e);
                 callbackDto.failure();
                 CallbackHolder.offerCache(callbackDto);
-                String content = e.getMessage() != null ? e.getMessage().substring(0,200) : "";
-                retryErrorService.insertSelective(new RetryError(RetryTypeEnum.SETTLE_CALLBACK.getCode(), callbackDto.getBusinessId(), callbackDto.getBusinessCode(), e.getClass().getName(), content));
+                try {
+                    String content = e.getMessage() != null ? e.getMessage().length() > 200 ? e.getMessage().substring(0, 200) : e.getMessage() : "";
+                    retryErrorService.insertSelective(new RetryError(RetryTypeEnum.SETTLE_CALLBACK.getCode(), callbackDto.getBusinessId(), callbackDto.getBusinessCode(), e.getClass().getName(), content));
+                } catch (Exception ex) {
+                    LOGGER.error("execute task error", e);
+                }
             }
         }
     }

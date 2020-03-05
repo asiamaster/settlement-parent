@@ -1,6 +1,7 @@
-package com.dili.settlement.component;
+package com.dili.settlement.task;
 
 import cn.hutool.core.util.StrUtil;
+import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
@@ -19,34 +20,27 @@ import java.util.concurrent.Callable;
 /**
  * 用于处理原始数据
  */
-public class SourceQueueTask implements Callable<Boolean> {
-    private static Logger LOGGER = LoggerFactory.getLogger(SourceQueueTask.class);
+public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
+    private static Logger LOGGER = LoggerFactory.getLogger(PrepareQueueTask.class);
 
-    private String threadKey;
-    //线程id
-    private int threadId;
-    //回调配置
-    private CallbackConfiguration callbackConfiguration;
     //加载配置
     private ApplicationConfigService applicationConfigService;
 
-    public SourceQueueTask(int threadId, CallbackConfiguration callbackConfiguration, ApplicationConfigService applicationConfigService) {
-        this.threadId = threadId;
-        this.callbackConfiguration = callbackConfiguration;
+    public PrepareQueueTask(CallbackConfiguration callbackConfiguration, ApplicationConfigService applicationConfigService) {
+        super(callbackConfiguration);
         this.applicationConfigService = applicationConfigService;
-        this.threadKey = "source-" + this.threadId;
     }
 
     @Override
     public Boolean call() {
         while (true) {
-            try {
-                Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
-            } catch (InterruptedException e) {
-                LOGGER.error("source thread sleep", e);
-            }
             SettleOrder settleOrder = CallbackHolder.pollSource();
             if (settleOrder == null) {
+                try {
+                    Thread.sleep(callbackConfiguration.getTaskThreadSleepMills());
+                } catch (InterruptedException e) {
+                    LOGGER.error("prepare thread sleep", e);
+                }
                 continue;
             }
             try {
@@ -65,7 +59,7 @@ public class SourceQueueTask implements Callable<Boolean> {
                 callbackDto.setBusinessCode(settleOrder.getCode());
                 CallbackHolder.offerExecute(callbackDto);
             } catch (Exception e) {
-                LOGGER.error("source task error", e);
+                LOGGER.error("prepare task error", e);
             }
         }
     }
