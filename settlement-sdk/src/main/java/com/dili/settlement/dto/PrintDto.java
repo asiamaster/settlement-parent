@@ -9,7 +9,8 @@ public class PrintDto {
 
     //打印模板名称
     private String name;
-    private Map<String, Object> item;
+    //打印数据 由业务系统和客户端沟通
+    private Object item;
 
     public PrintDto(String name, Map<String, Object> item){
         this.name = name;
@@ -24,11 +25,11 @@ public class PrintDto {
         this.name = name;
     }
 
-    public Map<String, Object> getItem() {
+    public Object getItem() {
         return item;
     }
 
-    public void setItem(Map<String, Object> item) {
+    public void setItem(Object item) {
         this.item = item;
     }
 }
