@@ -1,6 +1,7 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -713,5 +714,17 @@ public class SettleOrder extends BaseDomain {
             return null;
         }
         return MoneyUtils.centToYuan(this.amount);
+    }
+
+    /**
+     * 是否可打印
+     * @return
+     */
+    @Transient
+    public boolean getPrintEnable() {
+        if (this.state == null) {
+            return false;
+        }
+        return this.state.equals(SettleStateEnum.DEAL.getCode());
     }
 }
