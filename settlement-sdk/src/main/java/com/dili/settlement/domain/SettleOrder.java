@@ -722,9 +722,6 @@ public class SettleOrder extends BaseDomain {
      */
     @Transient
     public boolean getPrintEnable() {
-        if (this.state == null) {
-            return false;
-        }
-        return this.state.equals(SettleStateEnum.DEAL.getCode());
+        return this.state != null && this.state.equals(SettleStateEnum.DEAL.getCode());
     }
 }
