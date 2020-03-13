@@ -42,12 +42,13 @@ public abstract class OrderValidateServiceImpl implements OrderValidateService {
         if (settleOrderDto.getAmount() == null || settleOrderDto.getAmount() < 0) {
             throw new BusinessException("", "金额不合法");
         }
-        if (settleOrderDto.getBusinessDepId() == null) {
+        //因为订金没有所属部门信息，所以暂时注释掉
+        /*if (settleOrderDto.getBusinessDepId() == null) {
             throw new BusinessException("", "业务部门ID为空");
         }
         if (StrUtil.isBlank(settleOrderDto.getBusinessDepName())) {
             throw new BusinessException("", "业务部门名称为空");
-        }
+        }*/
         if (settleOrderDto.getSubmitterId() == null) {
             throw new BusinessException("", "提交人ID为空");
         }

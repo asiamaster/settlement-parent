@@ -140,7 +140,7 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             List<ApplicationConfig> configList = configs.get(po.getAppId());
             if (configList == null) {
                 configList = applicationConfigService.list(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode());
-                configs.put(po.getMarketId(), configList);
+                configs.put(po.getAppId(), configList);
             }
             ApplicationConfig config = configList.stream().filter(temp -> po.getBusinessType().equals(temp.getCode())).findFirst().orElse(null);
             po.setBusinessName(config != null ? config.getVal() : "");
