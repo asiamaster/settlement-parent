@@ -6,7 +6,7 @@ package com.dili.settlement.enums;
 public enum SettleWayEnum {
     CASH(1, "现金"),
     POS(2, "POS"),
-    BANK(3, "银行卡"),
+    BANK(3, "银行卡转账"),
     ALI_PAY(4, "支付宝"),
     WECHAT_PAY(5, "微信");
 
