@@ -115,19 +115,20 @@ public class SettleOrderApi {
 
     /**
      * 根据appId businessCode取消
-     * @param settleOrderDto
+     * @param appId 应用ID
+     * @param businessCode 业务编号
      * @return
      */
     @RequestMapping(value = "/cancel")
-    public BaseOutput<String> cancel(@RequestBody SettleOrderDto settleOrderDto) {
+    public BaseOutput<String> cancel(Long appId, String businessCode) {
         try {
-            if (settleOrderDto.getAppId() == null) {
+            if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(settleOrderDto.getBusinessCode())) {
+            if (StrUtil.isBlank(businessCode)) {
                 return BaseOutput.failure("业务单号为空");
             }
-            settleOrderService.cancel(settleOrderDto.getAppId(), settleOrderDto.getBusinessCode());
+            settleOrderService.cancel(appId, businessCode);
             return BaseOutput.success();
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getErrorMsg());
@@ -214,19 +215,20 @@ public class SettleOrderApi {
 
     /**
      * 根据appId businessCode 查询结算单
-     * @param settleOrderDto
+     * @param appId 应用ID
+     * @param businessCode 业务编号
      * @return
      */
     @RequestMapping(value = "/get")
-    public BaseOutput<SettleOrder> get(@RequestBody SettleOrderDto settleOrderDto) {
+    public BaseOutput<SettleOrder> get(Long appId, String businessCode) {
         try {
-            if (settleOrderDto.getAppId() == null) {
+            if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(settleOrderDto.getBusinessCode())) {
+            if (StrUtil.isBlank(businessCode)) {
                 return BaseOutput.failure("业务单号为空");
             }
-            SettleOrder po = settleOrderService.get(settleOrderDto.getAppId(), settleOrderDto.getBusinessCode());
+            SettleOrder po = settleOrderService.get(appId, businessCode);
             if (po == null) {
                 return BaseOutput.failure("未查询到结算单记录");
             }
@@ -239,19 +241,20 @@ public class SettleOrderApi {
 
     /**
      * 根据appId businessCode 验证是否已结算
-     * @param settleOrderDto
+     * @param appId 应用ID
+     * @param businessCode 业务编号
      * @return
      */
     @RequestMapping(value = "/settleConfirm")
-    public BaseOutput<Map<String, Object>> settleConfirm(@RequestBody SettleOrderDto settleOrderDto) {
+    public BaseOutput<Map<String, Object>> settleConfirm(Long appId, String businessCode) {
         try {
-            if (settleOrderDto.getAppId() == null) {
+            if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(settleOrderDto.getBusinessCode())) {
+            if (StrUtil.isBlank(businessCode)) {
                 return BaseOutput.failure("业务单号为空");
             }
-            SettleOrder po = settleOrderService.get(settleOrderDto.getAppId(), settleOrderDto.getBusinessCode());
+            SettleOrder po = settleOrderService.get(appId, businessCode);
             if (po == null) {
                 return BaseOutput.failure("未查询到结算单记录");
             }
