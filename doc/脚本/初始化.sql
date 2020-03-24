@@ -128,6 +128,8 @@ INSERT INTO `application_config` (`app_id`, `group_code`, `code`, `val`, `state`
 	(101, 101, 2, '订金', 1, 'group_code(101)表示业务类型'),
 	(101, 102, 1, '', 1, 'group_code(102)表示业务详情URL'),
 	(101, 102, 2, '', 1, 'group_code(102)表示业务详情URL'),
-	(101, 103, 1, '', 1, 'group_code(103)表示业务打印数据URL'),
-	(101, 103, 2, '', 1, 'group_code(103)表示业务打印数据URL'),
+	(101, 103, 1, '', 1, 'group_code(103)表示缴费打印数据URL'),
+	(101, 103, 2, '', 1, 'group_code(103)表示缴费打印数据URL'),
+	(101, 104, 1, '', 1, 'group_code(103)表示退款打印数据URL'),
+	(101, 104, 2, '', 1, 'group_code(103)表示退款打印数据URL'),
 	(101, 201, 1, 'qaz@wsx', 1, 'group_code(201)表示回调签名KEY');
