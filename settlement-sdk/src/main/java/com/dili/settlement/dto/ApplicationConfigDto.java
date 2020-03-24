@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class ApplicationConfigDto extends ApplicationConfig {
 
+    //结算类型
+    private Integer settleType;
     //业务类型
     private Integer businessType;
     //业务编码
@@ -18,6 +20,14 @@ public class ApplicationConfigDto extends ApplicationConfig {
     //appId 列表
     private List<Long> appIdList;
     private String appIds;
+
+    public Integer getSettleType() {
+        return settleType;
+    }
+
+    public void setSettleType(Integer settleType) {
+        this.settleType = settleType;
+    }
 
     public Integer getBusinessType() {
         return businessType;
