@@ -5,9 +5,10 @@ package com.dili.settlement.enums;
  */
 public enum AppGroupCodeEnum {
     APP_BUSINESS_TYPE(101, "业务类型"),
-    APP_BUSINESS_URL_DETAIL(102, "业务详情"),
-    APP_BUSINESS_URL_PAY_PRINT(103, "缴费打印数据"),
-    APP_BUSINESS_URL_REFUND_PRINT(104, "退款打印数据"),
+    APP_BUSINESS_URL_PAY_DETAIL(102, "业务缴费详情"),
+    APP_BUSINESS_URL_REFUND_DETAIL(103, "业务退款详情"),
+    APP_BUSINESS_URL_PAY_PRINT(104, "缴费打印数据"),
+    APP_BUSINESS_URL_REFUND_PRINT(105, "退款打印数据"),
     APP_SIGN_KEY(201, "回调签名");
 
     private int code;
