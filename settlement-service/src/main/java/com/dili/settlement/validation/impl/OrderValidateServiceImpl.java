@@ -55,12 +55,12 @@ public abstract class OrderValidateServiceImpl implements OrderValidateService {
         if (StrUtil.isBlank(settleOrderDto.getSubmitterName())) {
             throw new BusinessException("", "提交人姓名为空");
         }
-        if (settleOrderDto.getSubmitterDepId() == null) {
+        /*if (settleOrderDto.getSubmitterDepId() == null) {
             throw new BusinessException("", "提交人部门ID为空");
         }
         if (StrUtil.isBlank(settleOrderDto.getSubmitterDepName())) {
             throw new BusinessException("", "提交人部门名称为空");
-        }
+        }*/
         if (StrUtil.isBlank(settleOrderDto.getReturnUrl())) {
             throw new BusinessException("", "回调路径为空");
         }
