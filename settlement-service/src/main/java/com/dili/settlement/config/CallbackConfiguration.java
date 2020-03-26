@@ -29,74 +29,146 @@ public class CallbackConfiguration {
     //守护线程睡眠时间
     private long damonThreadSleepMills;
 
+    /**
+     * get 方法
+     * @return
+     */
     public boolean getSign() {
         return sign;
     }
 
+    /**
+     * set 方法
+     * @param sign
+     */
     public void setSign(boolean sign) {
         this.sign = sign;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public String getSignKey() {
         return signKey;
     }
 
+    /**
+     * set 方法
+     * @param signKey
+     */
     public void setSignKey(String signKey) {
         this.signKey = signKey;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public int getTimes() {
         return times;
     }
 
+    /**
+     * set 方法
+     * @param times
+     */
     public void setTimes(int times) {
         this.times = times;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public int getPrepareThreads() {
         return prepareThreads;
     }
 
+    /**
+     * set 方法
+     * @param prepareThreads
+     */
     public void setPrepareThreads(int prepareThreads) {
         this.prepareThreads = prepareThreads;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public int getExecuteThreads() {
         return executeThreads;
     }
 
+    /**
+     * set 方法
+     * @param executeThreads
+     */
     public void setExecuteThreads(int executeThreads) {
         this.executeThreads = executeThreads;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public int getCacheThreads() {
         return cacheThreads;
     }
 
+    /**
+     * set 方法
+     * @param cacheThreads
+     */
     public void setCacheThreads(int cacheThreads) {
         this.cacheThreads = cacheThreads;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public long getIntervalMills() {
         return intervalMills;
     }
 
+    /**
+     * set 方法
+     * @param intervalMills
+     */
     public void setIntervalMills(long intervalMills) {
         this.intervalMills = intervalMills;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public long getTaskThreadSleepMills() {
         return taskThreadSleepMills;
     }
 
+    /**
+     * set 方法
+     * @param taskThreadSleepMills
+     */
     public void setTaskThreadSleepMills(long taskThreadSleepMills) {
         this.taskThreadSleepMills = taskThreadSleepMills;
     }
 
+    /**
+     * get 方法
+     * @return
+     */
     public long getDamonThreadSleepMills() {
         return damonThreadSleepMills;
     }
 
+    /**
+     * set 方法
+     * @param damonThreadSleepMills
+     */
     public void setDamonThreadSleepMills(long damonThreadSleepMills) {
         this.damonThreadSleepMills = damonThreadSleepMills;
     }
