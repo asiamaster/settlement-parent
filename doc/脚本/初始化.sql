@@ -1,5 +1,9 @@
 
 /** ------- v1.0.0 ------- */
+
+CREATE DATABASE `dili-settlement` DEFAULT CHARACTER SET UTF8;
+
+USE `dili-settlement`;
 /**
  * 2020-03-03
  * 已执行:
@@ -108,6 +112,36 @@ ENGINE=InnoDB
 
 CREATE unique index ix_app_business ON settle_order(`app_id`,`business_code`);
 CREATE INDEX ix_customer ON settle_order(`customer_id`);
+
+/** 回调记录表 */
+CREATE TABLE `retry_record` (
+	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`type` TINYINT(4) NULL DEFAULT NULL,
+	`business_id` BIGINT(20) NULL DEFAULT NULL,
+	`business_code` VARCHAR(40) NULL DEFAULT NULL,
+	`create_time` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`)
+)
+COMMENT='保存记录以供任务扫描'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
+
+/** 回调错误记录 */
+CREATE TABLE `retry_error` (
+	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`type` TINYINT(4) NULL DEFAULT NULL,
+	`business_id` BIGINT(20) NULL DEFAULT NULL,
+	`business_code` VARCHAR(40) NULL DEFAULT NULL,
+	`name` VARCHAR(100) NULL DEFAULT NULL,
+	`content` VARCHAR(200) NULL DEFAULT NULL,
+	`create_time` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`)
+)
+COMMENT='记录每次重试错误信息'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
 
 -- 初始化表数据,注意配置配置各字段值
 INSERT INTO market_application(`market_id`,`app_id`,`name`,`state`) VALUES(11,101,'智能档位',1);
