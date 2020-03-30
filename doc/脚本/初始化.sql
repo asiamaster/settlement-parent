@@ -169,3 +169,20 @@ INSERT INTO `application_config` (`app_id`, `group_code`, `code`, `val`, `state`
 	(101, 105, 1, 'http://ia.diligrp.com:8381/api/refundOrder/queryPrintData', 1, 'group_code(105)表示退款打印数据URL'),
 	(101, 105, 2, 'http://ia.diligrp.com:8381/api/refundOrder/queryPrintData', 1, 'group_code(105)表示退款打印数据URL'),
 	(101, 201, 1, 'qaz@wsx', 1, 'group_code(201)表示回调签名KEY');
+
+/** 全局事务表 */
+CREATE TABLE `undo_log` (
+	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`branch_id` BIGINT(20) NOT NULL,
+	`xid` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
+	`context` VARCHAR(128) NOT NULL COLLATE 'utf8_general_ci',
+	`rollback_info` LONGBLOB NOT NULL,
+	`log_status` INT(11) NOT NULL,
+	`log_created` DATETIME NULL DEFAULT NULL,
+	`log_modified` DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	UNIQUE INDEX `ux_undo_log` (`xid`, `branch_id`) USING BTREE
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
