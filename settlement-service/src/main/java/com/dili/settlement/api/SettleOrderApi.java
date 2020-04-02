@@ -180,11 +180,7 @@ public class SettleOrderApi {
             if (id == null) {
                 return BaseOutput.failure("ID为空");
             }
-            SettleOrder po = settleOrderService.get(id);
-            if (po == null) {
-                return BaseOutput.failure("未查询到结算单记录");
-            }
-            return BaseOutput.success().setData(po);
+            return BaseOutput.success().setData(settleOrderService.get(id));
         } catch (Exception e) {
             LOGGER.error("method getById", e);
             return BaseOutput.failure();
@@ -202,11 +198,7 @@ public class SettleOrderApi {
             if (StrUtil.isBlank(code)) {
                 return BaseOutput.failure("结算单号为空");
             }
-            SettleOrder po = settleOrderService.getByCode(code);
-            if (po == null) {
-                return BaseOutput.failure("未查询到结算单记录");
-            }
-            return BaseOutput.success().setData(po);
+            return BaseOutput.success().setData(settleOrderService.getByCode(code));
         } catch (Exception e) {
             LOGGER.error("method getByCode", e);
             return BaseOutput.failure();
@@ -228,11 +220,7 @@ public class SettleOrderApi {
             if (StrUtil.isBlank(orderCode)) {
                 return BaseOutput.failure("订单号为空");
             }
-            SettleOrder po = settleOrderService.get(appId, orderCode);
-            if (po == null) {
-                return BaseOutput.failure("未查询到结算单记录");
-            }
-            return BaseOutput.success().setData(po);
+            return BaseOutput.success().setData(settleOrderService.get(appId, orderCode));
         } catch (Exception e) {
             LOGGER.error("method get", e);
             return BaseOutput.failure();
