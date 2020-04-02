@@ -48,17 +48,17 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         if (!marketApplicationService.existsApp(settleOrder.getMarketId(), settleOrder.getAppId())) {
             throw new BusinessException("", "该应用未允许接入");
         }
-        if (existsBusinessCode(settleOrder.getAppId(), settleOrder.getBusinessCode())) {
+        if (existsBusinessCode(settleOrder.getAppId(), settleOrder.getOrderCode())) {
             throw new BusinessException("", "业务单号已存在");
         }
         insertSelective(settleOrder);
     }
 
     @Override
-    public boolean existsBusinessCode(Long appId, String businessCode) {
+    public boolean existsBusinessCode(Long appId, String orderCode) {
         SettleOrderDto query = new SettleOrderDto();
         query.setAppId(appId);
-        query.setBusinessCode(businessCode);
+        query.setOrderCode(orderCode);
         List<SettleOrder> itemList = getActualDao().list(query);
         return !CollUtil.isEmpty(itemList);
     }
@@ -67,52 +67,42 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Override
     public void cancelById(Long id) {
         SettleOrder po = get(id);
-        if (po == null) {
-            throw new BusinessException("", "未查询到结算单记录");
-        }
-        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
-            throw new BusinessException("", "非待处理的结算单无法取消");
-        }
-        po.setState(SettleStateEnum.CANCEL.getCode());
-        int i = getActualDao().updateState(po);
-        if (i != 1) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
+        doCancel(po);
     }
 
     @Transactional
     @Override
     public void cancelByCode(String code) {
         SettleOrder po = getActualDao().getByCode(code);
+        doCancel(po);
+    }
+
+    @Transactional
+    @Override
+    public void cancel(Long appId, String orderCode) {
+        SettleOrderDto query = new SettleOrderDto();
+        query.setAppId(appId);
+        query.setOrderCode(orderCode);
+        List<SettleOrder> itemList = getActualDao().list(query);
+        if (CollUtil.isEmpty(itemList)) {
+            throw new BusinessException("", "未查询到结算单记录");
+        }
+        SettleOrder po = itemList.get(0);
+        doCancel(po);
+    }
+
+    /**
+     * 执行取消
+     * @param po
+     */
+    private void doCancel(SettleOrder po) {
         if (po == null) {
             throw new BusinessException("", "未查询到结算单记录");
         }
         if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
             throw new BusinessException("", "非待处理的结算单无法取消");
         }
-        po.setState(SettleStateEnum.CANCEL.getCode());
-        int i = getActualDao().updateState(po);
-        if (i != 1) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
-    }
-
-    @Transactional
-    @Override
-    public void cancel(Long appId, String businessCode) {
-        SettleOrderDto query = new SettleOrderDto();
-        query.setAppId(appId);
-        query.setBusinessCode(businessCode);
-        List<SettleOrder> itemList = getActualDao().list(query);
-        if (CollUtil.isEmpty(itemList)) {
-            throw new BusinessException("", "未查询到结算单记录");
-        }
-        SettleOrder po = itemList.get(0);
-        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
-            throw new BusinessException("", "非待处理的结算单无法取消");
-        }
-        po.setState(SettleStateEnum.CANCEL.getCode());
-        int i = getActualDao().updateState(po);
+        int i = getActualDao().delWithVersion(po);
         if (i != 1) {
             throw new BusinessException("", "数据已变更,请稍后重试");
         }

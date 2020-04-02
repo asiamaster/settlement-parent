@@ -41,4 +41,11 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @return
      */
     Long queryTotalAmount(SettleOrderDto settleOrderDto);
+
+    /**
+     * 带版本条件删除
+     * @param po
+     * @return
+     */
+    int delWithVersion(SettleOrder po);
 }

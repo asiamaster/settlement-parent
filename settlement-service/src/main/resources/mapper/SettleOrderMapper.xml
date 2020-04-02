@@ -9,6 +9,7 @@
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="order_code" jdbcType="VARCHAR" property="orderCode" />
     <result column="business_code" jdbcType="VARCHAR" property="businessCode" />
     <result column="business_type" jdbcType="TINYINT" property="businessType" />
     <result column="business_dep_id" jdbcType="BIGINT" property="businessDepId" />
@@ -38,7 +39,7 @@
     <result column="version" jdbcType="INTEGER" property="version"/>
   </resultMap>
   <sql id="Base_Column_List">
-    `id`, `market_id`, `app_id`, `code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
+    `id`, `market_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
     `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
@@ -52,6 +53,9 @@
     </if>
     <if test="appId != null">
       and `app_id` = #{appId}
+    </if>
+    <if test="orderCode != null and orderCode != ''">
+      and `order_code` = #{orderCode}
     </if>
     <if test="businessCode != null and businessCode != ''">
       and `business_code` = #{businessCode}
@@ -150,4 +154,9 @@
           #{id}
         </foreach>
   </select>
+
+  <!-- 根据id、version删除记录 -->
+  <update id="delWithVersion" parameterType="com.dili.settlement.domain.SettleOrder">
+    delete from settle_order where id = #{id} and version = #{version}
+  </update>
 </mapper>

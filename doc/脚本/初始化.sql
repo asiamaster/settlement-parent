@@ -77,6 +77,7 @@ CREATE TABLE `settle_order` (
 	`market_id` BIGINT(20) NULL DEFAULT NULL COMMENT '市场ID',
 	`app_id` BIGINT(20) NULL DEFAULT NULL COMMENT '应用ID',
 	`code` VARCHAR(32) NULL DEFAULT NULL COMMENT '结算单号',
+	`order_code` VARCHAR(32) NULL DEFAULT NULL COMMENT '订单号 唯一',
 	`business_code` VARCHAR(32) NULL DEFAULT NULL COMMENT '业务单号',
 	`business_type` TINYINT(4) NULL DEFAULT NULL,
 	`business_dep_id` BIGINT(20) NULL DEFAULT NULL,

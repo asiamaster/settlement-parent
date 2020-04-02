@@ -116,19 +116,19 @@ public class SettleOrderApi {
     /**
      * 根据appId businessCode取消
      * @param appId 应用ID
-     * @param businessCode 业务编号
+     * @param orderCode 订单号
      * @return
      */
     @RequestMapping(value = "/cancel")
-    public BaseOutput<String> cancel(Long appId, String businessCode) {
+    public BaseOutput<String> cancel(Long appId, String orderCode) {
         try {
             if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(businessCode)) {
-                return BaseOutput.failure("业务单号为空");
+            if (StrUtil.isBlank(orderCode)) {
+                return BaseOutput.failure("订单号为空");
             }
-            settleOrderService.cancel(appId, businessCode);
+            settleOrderService.cancel(appId, orderCode);
             return BaseOutput.success();
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getErrorMsg());
@@ -216,19 +216,19 @@ public class SettleOrderApi {
     /**
      * 根据appId businessCode 查询结算单
      * @param appId 应用ID
-     * @param businessCode 业务编号
+     * @param orderCode 业务编号
      * @return
      */
     @RequestMapping(value = "/get")
-    public BaseOutput<SettleOrder> get(Long appId, String businessCode) {
+    public BaseOutput<SettleOrder> get(Long appId, String orderCode) {
         try {
             if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(businessCode)) {
-                return BaseOutput.failure("业务单号为空");
+            if (StrUtil.isBlank(orderCode)) {
+                return BaseOutput.failure("订单号为空");
             }
-            SettleOrder po = settleOrderService.get(appId, businessCode);
+            SettleOrder po = settleOrderService.get(appId, orderCode);
             if (po == null) {
                 return BaseOutput.failure("未查询到结算单记录");
             }
@@ -242,19 +242,19 @@ public class SettleOrderApi {
     /**
      * 根据appId businessCode 验证是否已结算
      * @param appId 应用ID
-     * @param businessCode 业务编号
+     * @param orderCode 订单号
      * @return
      */
     @RequestMapping(value = "/settleConfirm")
-    public BaseOutput<Map<String, Object>> settleConfirm(Long appId, String businessCode) {
+    public BaseOutput<Map<String, Object>> settleConfirm(Long appId, String orderCode) {
         try {
             if (appId == null) {
                 return BaseOutput.failure("应用ID为空");
             }
-            if (StrUtil.isBlank(businessCode)) {
-                return BaseOutput.failure("业务单号为空");
+            if (StrUtil.isBlank(orderCode)) {
+                return BaseOutput.failure("订单号为空");
             }
-            SettleOrder po = settleOrderService.get(appId, businessCode);
+            SettleOrder po = settleOrderService.get(appId, orderCode);
             if (po == null) {
                 return BaseOutput.failure("未查询到结算单记录");
             }

@@ -22,7 +22,7 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * 验证业务编号是否存在
      * @return
      */
-    boolean existsBusinessCode(Long appId, String businessCode);
+    boolean existsBusinessCode(Long appId, String orderCode);
 
     /**
      * 根据结算单id取消
@@ -39,9 +39,9 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
     /**
      * 根据应用id、业务单号取消
      * @param appId
-     * @param businessCode
+     * @param orderCode
      */
-    void cancel(Long appId, String businessCode);
+    void cancel(Long appId, String orderCode);
 
     /**
      * 查询结算单列表
@@ -67,10 +67,10 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
     /**
      * 根据结算单号查询结算单
      * @param appId 应用ID
-     * @param businessCode 业务单号
+     * @param orderCode 订单号
      * @return
      */
-    SettleOrder get(Long appId, String businessCode);
+    SettleOrder get(Long appId, String orderCode);
 
     /**
      * 实现缴费处理逻辑  更改状态、增加金额

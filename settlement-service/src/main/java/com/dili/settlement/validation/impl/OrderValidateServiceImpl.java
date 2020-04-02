@@ -24,8 +24,8 @@ public abstract class OrderValidateServiceImpl implements OrderValidateService {
         if (settleOrderDto.getBusinessType() == null) {
             throw new BusinessException("", "业务类型为空");
         }
-        if (StrUtil.isBlank(settleOrderDto.getBusinessCode())) {
-            throw new BusinessException("", "业务单号为空");
+        if (StrUtil.isBlank(settleOrderDto.getOrderCode())) {
+            throw new BusinessException("", "订单号为空");
         }
         if (settleOrderDto.getCustomerId() == null) {
             throw new BusinessException("", "客户ID为空");

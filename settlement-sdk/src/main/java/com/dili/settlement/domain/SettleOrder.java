@@ -37,7 +37,11 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`code`")
     private String code;
 
-    //业务编号
+    //订单号  唯一
+    @Column(name = "`order_code`")
+    private String orderCode;
+
+    //业务编号 具体业务单号
     @Column(name = "`business_code`")
     private String businessCode;
 
@@ -230,6 +234,22 @@ public class SettleOrder extends BaseDomain {
      */
     public void setCode(String code) {
         this.code = code;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    /**
+     *
+     * @param orderCode
+     */
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 
     /**
