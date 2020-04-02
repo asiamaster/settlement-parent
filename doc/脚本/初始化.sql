@@ -111,7 +111,7 @@ COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ;
 
-CREATE unique index ix_app_business ON settle_order(`app_id`,`business_code`);
+CREATE unique index ix_app_order ON settle_order(`app_id`,`order_code`);
 CREATE INDEX ix_customer ON settle_order(`customer_id`);
 
 /** 回调记录表 */
