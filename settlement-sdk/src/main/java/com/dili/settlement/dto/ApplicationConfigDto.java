@@ -13,6 +13,8 @@ public class ApplicationConfigDto extends ApplicationConfig {
     private Integer settleType;
     //业务类型
     private Integer businessType;
+    //订单号
+    private String orderCode;
     //业务编码
     private String businessCode;
     //是否补打  1 否  2  是
@@ -35,6 +37,14 @@ public class ApplicationConfigDto extends ApplicationConfig {
 
     public void setBusinessType(Integer businessType) {
         this.businessType = businessType;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 
     public String getBusinessCode() {
