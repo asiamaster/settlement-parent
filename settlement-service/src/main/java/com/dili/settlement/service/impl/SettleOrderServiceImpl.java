@@ -45,9 +45,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Transactional
     @Override
     public void save(SettleOrder settleOrder) {
-        if (!marketApplicationService.existsApp(settleOrder.getMarketId(), settleOrder.getAppId())) {
+        //2020-04-09 根据项目负责人要求取消提交单子市场、应用关联验证
+        /*if (!marketApplicationService.existsApp(settleOrder.getMarketId(), settleOrder.getAppId())) {
             throw new BusinessException("", "该应用未允许接入");
-        }
+        }*/
         if (existsBusinessCode(settleOrder.getAppId(), settleOrder.getOrderCode())) {
             throw new BusinessException("", "业务单号已存在");
         }
