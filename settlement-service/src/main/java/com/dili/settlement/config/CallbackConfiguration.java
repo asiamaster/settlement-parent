@@ -26,6 +26,8 @@ public class CallbackConfiguration {
     private long intervalMills;
     //任务线程睡眠时间 毫秒
     private long taskThreadSleepMills;
+    //是否开启守护线程
+    private boolean damonThreadEnable;
     //守护线程睡眠时间
     private long damonThreadSleepMills;
 
@@ -155,6 +157,22 @@ public class CallbackConfiguration {
      */
     public void setTaskThreadSleepMills(long taskThreadSleepMills) {
         this.taskThreadSleepMills = taskThreadSleepMills;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getDamonThreadEnable() {
+        return damonThreadEnable;
+    }
+
+    /**
+     *
+     * @param damonThreadEnable
+     */
+    public void setDamonThreadEnable(boolean damonThreadEnable) {
+        this.damonThreadEnable = damonThreadEnable;
     }
 
     /**

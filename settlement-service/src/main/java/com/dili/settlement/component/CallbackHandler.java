@@ -35,15 +35,12 @@ public class CallbackHandler {
      */
     @PostConstruct
     public void init() {
-        //添加守护线程 以便任务线程终止后重新提交相应任务线程
-        ExecutorService damonExecutorService = Executors.newFixedThreadPool(3);
         //添加数据准备任务
         LOGGER.info("----------- start prepare task -----------");
         ExecutorService prepareExecutorService = Executors.newFixedThreadPool(callbackConfiguration.getPrepareThreads());
         for (int i = 0; i < callbackConfiguration.getPrepareThreads(); i++) {
             prepareExecutorService.submit(new PrepareQueueTask(callbackConfiguration, applicationConfigService));
         }
-        damonExecutorService.submit(new PrepareDamonTask(callbackConfiguration, applicationConfigService, prepareExecutorService));
         LOGGER.info("----------- end prepare task -----------");
         //添加回调执行任务
         LOGGER.info("----------- start execute task -----------");
@@ -51,7 +48,6 @@ public class CallbackHandler {
         for (int i = 0; i < callbackConfiguration.getExecuteThreads(); i++) {
             executeExecutorService.submit(new ExecuteQueueTask(callbackConfiguration, retryRecordService, retryErrorService));
         }
-        damonExecutorService.submit(new ExecuteDamonTask(callbackConfiguration, retryRecordService, retryErrorService, executeExecutorService));
         LOGGER.info("----------- end execute task -----------");
         //添加缓存处理任务（暂时这样处理）
         LOGGER.info("----------- start cache task -----------");
@@ -59,7 +55,15 @@ public class CallbackHandler {
         for (int i = 0; i < callbackConfiguration.getCacheThreads(); i++) {
             cacheExecutorService.submit(new CacheQueueTask(callbackConfiguration));
         }
-        damonExecutorService.submit(new CacheDamonTask(callbackConfiguration, cacheExecutorService));
         LOGGER.info("----------- end cache task -----------");
+
+        //添加守护线程 以便任务线程终止后重新提交相应任务线程
+        if (callbackConfiguration.getDamonThreadEnable()) {
+            ExecutorService damonExecutorService = Executors.newFixedThreadPool(3);
+            damonExecutorService.submit(new PrepareDamonTask(callbackConfiguration, applicationConfigService, prepareExecutorService));
+            damonExecutorService.submit(new ExecuteDamonTask(callbackConfiguration, retryRecordService, retryErrorService, executeExecutorService));
+            damonExecutorService.submit(new CacheDamonTask(callbackConfiguration, cacheExecutorService));
+        }
+
     }
 }
