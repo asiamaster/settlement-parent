@@ -1,6 +1,7 @@
 package com.dili.settlement.dto;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.ss.util.MoneyUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,5 +106,27 @@ public class SettleResultDto {
 
     public void setFailureItemList(List<SettleOrder> failureItemList) {
         this.failureItemList = failureItemList;
+    }
+
+    /**
+     * 获取成功金额转换
+     * @return
+     */
+    public String getSuccessAmountView() {
+        if (this.successAmount == null) {
+            return "0.00";
+        }
+        return MoneyUtils.centToYuan(this.successAmount);
+    }
+
+    /**
+     * 获取失败金额转换
+     * @return
+     */
+    public String getFailureAmountView() {
+        if (this.failureAmount == null) {
+            return "0.00";
+        }
+        return MoneyUtils.centToYuan(this.failureAmount);
     }
 }
