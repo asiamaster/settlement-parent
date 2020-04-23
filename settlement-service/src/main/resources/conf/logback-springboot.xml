@@ -26,6 +26,8 @@
                 <pattern>[${LOG_NAME}-dev] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
             </encoder>
         </appender>
+        <!--        不打印心跳日志     -->
+        <logger name="io.seata.core.rpc.netty" level="info"/>
         <!--        <logger name="org.springframework.web" level="INFO"/>-->
         <!--        <logger name="com.dili.${LOG_NAME}" level="DEBUG"/>-->
         <jmxConfigurator/>
@@ -51,6 +53,8 @@
                 <pattern>[${LOG_NAME}-test] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
             </encoder>
         </appender>
+        <!--        不打印心跳日志     -->
+        <logger name="io.seata.core.rpc.netty" level="info"/>
         <jmxConfigurator/>
     </springProfile>
     <!-- 灰度环境 -->
@@ -75,6 +79,8 @@
                 <pattern>[${LOG_NAME}-pre] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
             </encoder>
         </appender>
+        <!--        不打印心跳日志     -->
+        <logger name="io.seata.core.rpc.netty" level="info"/>
     </springProfile>
     <!-- 生产环境 -->
     <springProfile name="prod">
@@ -98,6 +104,8 @@
                 <pattern>[${LOG_NAME}-prod] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
             </encoder>
         </appender>
+        <!--        不打印心跳日志     -->
+        <logger name="io.seata.core.rpc.netty" level="info"/>
     </springProfile>
     <root level="info">
         <appender-ref ref="appender" />
