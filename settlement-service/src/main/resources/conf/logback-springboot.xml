@@ -106,6 +106,8 @@
         </appender>
         <!--        不打印心跳日志     -->
         <logger name="io.seata.core.rpc.netty" level="info"/>
+        <!-- 不显示Flushing UNDO LOG  -->
+        <logger name="io.seata.rm.datasource.undo" level="info"/>
     </springProfile>
     <root level="info">
         <appender-ref ref="appender" />
