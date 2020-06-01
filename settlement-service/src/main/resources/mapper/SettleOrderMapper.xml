@@ -37,13 +37,14 @@
     <result column="notes" jdbcType="VARCHAR" property="notes" />
     <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />
     <result column="version" jdbcType="INTEGER" property="version"/>
+    <result column="charge_date" jdbcType="DATE" property="chargeDate" />
   </resultMap>
   <sql id="Base_Column_List">
     `id`, `market_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
     `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
-    `edit_enable`, `notes`, `return_url`,`version`
+    `edit_enable`, `notes`, `return_url`,`version`,`charge_date`
   </sql>
 
   <!-- 用于单表的条件判断 -->
@@ -142,6 +143,7 @@
         bank_card_holder = #{bankCardHolder},
         serial_number = #{serialNumber},
         notes = #{notes},
+        charge_date = #{chargeDate}
         version = version + 1
     where id = #{id} and version = #{version}
   </update>

@@ -37,6 +37,8 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     private MarketApplicationService marketApplicationService;
     @Resource
     private RetryRecordService retryRecordService;
+    @Resource
+    private SettleWayDetailService settleWayDetailService;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -187,10 +189,14 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         po.setOperatorName(settleOrderDto.getOperatorName());
         po.setOperateTime(DateUtil.nowDateTime());
         po.setSerialNumber(settleOrderDto.getSerialNumber());
+        po.setChargeDate(settleOrderDto.getChargeDate());
         po.setNotes(settleOrderDto.getNotes());
         int i = getActualDao().updateSettle(po);
         if (i != 1) {
             throw new BusinessException("", "数据已变更,请稍后重试");
+        }
+        if (!CollUtil.isEmpty(settleOrderDto.getSettleWayDetailList())) {
+            settleWayDetailService.batchInsert(settleOrderDto.getSettleWayDetailList());
         }
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
         //存入回调重试记录  方便定时任务扫描

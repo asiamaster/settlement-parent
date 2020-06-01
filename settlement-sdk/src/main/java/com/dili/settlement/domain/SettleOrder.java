@@ -11,7 +11,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -154,6 +156,12 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`version`")
     private Integer version;
 
+    @JSONField(format = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "`charge_date`")
+    private LocalDate chargeDate;
+
     //是否进行枚举、字典值转换
     @Transient
     private Boolean convert;
@@ -172,6 +180,9 @@ public class SettleOrder extends BaseDomain {
     //重试记录ID
     @Transient
     private Long retryRecordId;
+    //结算方式明细
+    @Transient
+    private List<SettleWayDetail> settleWayDetailList;
     /**
      * @return id
      */
@@ -676,6 +687,14 @@ public class SettleOrder extends BaseDomain {
         this.version = version;
     }
 
+    public LocalDate getChargeDate() {
+        return chargeDate;
+    }
+
+    public void setChargeDate(LocalDate chargeDate) {
+        this.chargeDate = chargeDate;
+    }
+
     public Boolean getConvert() {
         return convert;
     }
@@ -722,6 +741,14 @@ public class SettleOrder extends BaseDomain {
 
     public void setRetryRecordId(Long retryRecordId) {
         this.retryRecordId = retryRecordId;
+    }
+
+    public List<SettleWayDetail> getSettleWayDetailList() {
+        return settleWayDetailList;
+    }
+
+    public void setSettleWayDetailList(List<SettleWayDetail> settleWayDetailList) {
+        this.settleWayDetailList = settleWayDetailList;
     }
 
     /**

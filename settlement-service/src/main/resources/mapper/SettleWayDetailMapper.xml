@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.settlement.mapper.SettleWayDetailMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.SettleWayDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_code" jdbcType="VARCHAR" property="orderCode" />
+    <result column="way" jdbcType="TINYINT" property="way" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="charge_date" jdbcType="DATE" property="chargeDate" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `order_id`, `order_code`, `way`, `amount`, `charge_date`, `notes`
+  </sql>
+</mapper>
