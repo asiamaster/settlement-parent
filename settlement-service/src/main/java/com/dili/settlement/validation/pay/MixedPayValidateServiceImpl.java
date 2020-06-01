@@ -22,6 +22,9 @@ public class MixedPayValidateServiceImpl extends PayValidateServiceImpl implemen
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
+        if (settleOrderDto.getIdList().size() > 1) {
+            throw new BusinessException("", "组合结算方式仅支持单条记录");
+        }
         if (CollUtil.isEmpty(settleOrderDto.getSettleWayDetailList())) {
             throw new BusinessException("", "组合结算方式列表为空");
         }
