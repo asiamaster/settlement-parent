@@ -30,10 +30,13 @@ public class SettleWayDetail extends BaseDomain {
     private String orderCode;
 
     @Column(name = "`way`")
-    private Byte way;
+    private Integer way;
 
     @Column(name = "`amount`")
     private Long amount;
+
+    @Column(name = "`serial_number`")
+    private String serialNumber;
 
     @JSONField(format = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -97,14 +100,14 @@ public class SettleWayDetail extends BaseDomain {
      */
     @FieldDef(label="way")
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Byte getWay() {
+    public Integer getWay() {
         return way;
     }
 
     /**
      * @param way
      */
-    public void setWay(Byte way) {
+    public void setWay(Integer way) {
         this.way = way;
     }
 
@@ -122,6 +125,22 @@ public class SettleWayDetail extends BaseDomain {
      */
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    /**
+     *
+     * @return serialNumber
+     */
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    /**
+     *
+     * @param serialNumber
+     */
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     /**
