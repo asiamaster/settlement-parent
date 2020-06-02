@@ -106,6 +106,12 @@
     <if test="operatorNameMatch != null and operatorNameMatch !=''">
       and `operator_name` like concat('%',#{operatorNameMatch},'%')
     </if>
+    <if test="chargeDateStart != null and chargeDateStart !=''">
+      and (`charge_date` &gt;= #{charge_date} or id in (select order_id from settle_way_detail where `charge_date` &gt;= #{chargeDateStart}))
+    </if>
+    <if test="chargeDateEnd != null and chargeDateEnd != ''">
+      and (`charge_date` &lt;= #{chargeDateEnd} or id in (select order_id from settle_way_detail where `charge_date` &lt;= #{chargeDateEnd}))
+    </if>
   </sql>
   <!-- 根据条件查询 -->
   <select id="list" parameterType="com.dili.settlement.dto.SettleOrderDto" resultMap="BaseResultMap">

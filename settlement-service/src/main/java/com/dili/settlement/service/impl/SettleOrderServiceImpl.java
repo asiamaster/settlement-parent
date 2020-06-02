@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.dili.settlement.domain.ApplicationConfig;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.mapper.SettleOrderMapper;
@@ -196,6 +197,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             throw new BusinessException("", "数据已变更,请稍后重试");
         }
         if (!CollUtil.isEmpty(settleOrderDto.getSettleWayDetailList())) {
+            for (SettleWayDetail temp : settleOrderDto.getSettleWayDetailList()) {
+                temp.setOrderId(po.getId());
+                temp.setOrderCode(po.getCode());
+            }
             settleWayDetailService.batchInsert(settleOrderDto.getSettleWayDetailList());
         }
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());

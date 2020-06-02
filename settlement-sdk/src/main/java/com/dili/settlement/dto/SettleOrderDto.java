@@ -27,9 +27,14 @@ public class SettleOrderDto extends SettleOrder {
     private String operatorNameMatch;
     //辅助token
     private String token;
-
     //appId 列表
     private List<Long> appIdList;
+    //收款日期开始
+    private String chargeDateStart;
+    //收款日期结束
+    private String chargeDateEnd;
+    //收款总额
+    private Long totalAmount;
 
     public String getMarketCode() {
         return marketCode;
@@ -109,5 +114,29 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setAppIdList(List<Long> appIdList) {
         this.appIdList = appIdList;
+    }
+
+    public String getChargeDateStart() {
+        return chargeDateStart;
+    }
+
+    public void setChargeDateStart(String chargeDateStart) {
+        this.chargeDateStart = chargeDateStart;
+    }
+
+    public String getChargeDateEnd() {
+        return chargeDateEnd;
+    }
+
+    public void setChargeDateEnd(String chargeDateEnd) {
+        this.chargeDateEnd = chargeDateEnd;
+    }
+
+    public Long getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Long totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }
