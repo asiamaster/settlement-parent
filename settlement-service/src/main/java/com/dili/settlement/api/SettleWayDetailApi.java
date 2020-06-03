@@ -1,5 +1,6 @@
 package com.dili.settlement.api;
 
+import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.service.SettleWayDetailService;
 import com.dili.ss.domain.BaseOutput;
@@ -34,6 +35,26 @@ public class SettleWayDetailApi {
             return BaseOutput.success().setData(itemList);
         } catch (Exception e) {
             LOGGER.error("list", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * code 根据结算单号查询结算明细列表
+     * @return
+     */
+    @RequestMapping(value = "/listByCode")
+    public BaseOutput<List<SettleWayDetail>> listByCode(String code) {
+        try {
+            if (StrUtil.isBlank(code)) {
+                return BaseOutput.failure("结算单号为空");
+            }
+            SettleWayDetail query = new SettleWayDetail();
+            query.setOrderCode(code);
+            List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
+            return BaseOutput.success().setData(itemList);
+        } catch (Exception e) {
+            LOGGER.error("listByCode", e);
             return BaseOutput.failure();
         }
     }

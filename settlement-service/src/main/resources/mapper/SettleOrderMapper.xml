@@ -149,7 +149,7 @@
         bank_card_holder = #{bankCardHolder},
         serial_number = #{serialNumber},
         notes = #{notes},
-        charge_date = #{chargeDate}
+        charge_date = #{chargeDate},
         version = version + 1
     where id = #{id} and version = #{version}
   </update>

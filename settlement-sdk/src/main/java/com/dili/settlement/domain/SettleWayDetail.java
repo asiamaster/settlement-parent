@@ -1,10 +1,12 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.ss.util.MoneyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -173,5 +175,28 @@ public class SettleWayDetail extends BaseDomain {
      */
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    /**
+     * 获取金额展示
+     * @return
+     */
+    @Transient
+    public String getAmountView() {
+        if (this.amount == null) {
+            return null;
+        }
+        return MoneyUtils.centToYuan(this.amount);
+    }
+    /**
+     *
+     * @return
+     */
+    @Transient
+    public String getWayName() {
+        if (this.way == null) {
+            return null;
+        }
+        return SettleWayEnum.getNameByCode(this.way);
     }
 }
