@@ -8,6 +8,7 @@ create table settle_way_detail
    order_code    varchar(32),
    way                  tinyint,
    amount               bigint,
+   serial_number        varchar(40),
    charge_date          date,
    notes                varchar(40),
    primary key (id)
