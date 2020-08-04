@@ -242,4 +242,53 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     public Long queryTotalAmount(SettleOrderDto settleOrderDto) {
         return getActualDao().queryTotalAmount(settleOrderDto);
     }
+
+
+    @Transactional
+    @Override
+    public void batchSaveDealt(List<SettleOrder> itemList) {
+        for (SettleOrder temp : itemList) {
+            temp.setState(SettleStateEnum.DEAL.getCode());
+            temp.setVersion(1);
+            insertSelective(temp);
+            if (!CollUtil.isEmpty(temp.getSettleWayDetailList())) {
+                for (SettleWayDetail detail : temp.getSettleWayDetailList()) {
+                    detail.setOrderId(temp.getId());
+                    detail.setOrderCode(temp.getCode());
+                }
+                settleWayDetailService.batchInsert(temp.getSettleWayDetailList());
+            }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void batchSaveDealtAndDelete(List<SettleOrder> itemList) {
+        for (SettleOrder temp : itemList) {
+            deleteBy(temp);
+        }
+        batchSaveDealt(itemList);
+    }
+
+    @Transactional
+    @Override
+    public void batchUpdateAmount(List<Map<String, Object>> itemList) {
+        for (Map<String, Object> map : itemList) {
+            getActualDao().batchUpdateAmount(map);
+        }
+    }
+
+    /**
+     *
+     * @param settleOrder
+     */
+    private void deleteBy(SettleOrder settleOrder) {
+        SettleOrder condition = new SettleOrder();
+        condition.setMarketId(settleOrder.getMarketId());
+        condition.setAppId(settleOrder.getAppId());
+        condition.setType(settleOrder.getType());
+        condition.setBusinessType(settleOrder.getBusinessType());
+        condition.setBusinessCode(settleOrder.getBusinessCode());
+        getActualDao().deleteByExample(condition);
+    }
 }

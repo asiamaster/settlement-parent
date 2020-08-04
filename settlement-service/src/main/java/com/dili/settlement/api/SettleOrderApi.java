@@ -343,4 +343,61 @@ public class SettleOrderApi {
             return BaseOutput.failure();
         }
     }
+
+    /**
+     * 用于改数据接口-批量新增已处理单据
+     * @param itemList
+     * @return
+     */
+    @RequestMapping(value = "/batchSaveDealt")
+    public BaseOutput<?> batchSaveDealt(@RequestBody List<SettleOrder> itemList) {
+        try {
+            if (CollUtil.isEmpty(itemList)) {
+                return BaseOutput.failure("结算单列表为空");
+            }
+            settleOrderService.batchSaveDealt(itemList);
+            return BaseOutput.success();
+        } catch (Exception e) {
+            LOGGER.error("batchSaveDealt", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 用于改数据接口-批量新增已处理、删除单据
+     * @param itemList
+     * @return
+     */
+    @RequestMapping(value = "/batchSaveDealtAndDelete")
+    public BaseOutput<?> batchSaveDealtAndDelete(@RequestBody List<SettleOrder> itemList) {
+        try {
+            if (CollUtil.isEmpty(itemList)) {
+                return BaseOutput.failure("结算单列表为空");
+            }
+            settleOrderService.batchSaveDealtAndDelete(itemList);
+            return BaseOutput.success();
+        } catch (Exception e) {
+            LOGGER.error("batchSaveDealtAndDelete", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 用于改数据接口-批量修改金额
+     * @param itemList [{"code":"13124214","amount":1000}]
+     * @return
+     */
+    @RequestMapping(value = "/batchUpdateAmount")
+    public BaseOutput<?> batchUpdateAmount(@RequestBody List<Map<String, Object>> itemList) {
+        try {
+            if (CollUtil.isEmpty(itemList)) {
+                return BaseOutput.failure("参数列表为空");
+            }
+            settleOrderService.batchUpdateAmount(itemList);
+            return BaseOutput.success();
+        } catch (Exception e) {
+            LOGGER.error("batchUpdateAmount", e);
+            return BaseOutput.failure();
+        }
+    }
 }

@@ -6,6 +6,7 @@ import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.PageOutput;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -90,4 +91,21 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      */
     Long queryTotalAmount(SettleOrderDto settleOrderDto);
 
+    /**
+     * 用于改数据接口-批量新增已处理单据
+     * @param itemList
+     */
+    void batchSaveDealt(List<SettleOrder> itemList);
+
+    /**
+     * 用于改数据接口-批量新增已处理、删除单据
+     * @param itemList
+     */
+    void batchSaveDealtAndDelete(List<SettleOrder> itemList);
+
+    /**
+     * 用于改数据接口-批量修改金额
+     * @param itemList
+     */
+    void batchUpdateAmount(List<Map<String, Object>> itemList);
 }
