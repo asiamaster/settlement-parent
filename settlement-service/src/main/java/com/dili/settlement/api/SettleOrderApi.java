@@ -57,7 +57,7 @@ public class SettleOrderApi {
         try {
             orderValidateDispatchHandler.validParams(settleOrderDto);
             SettleOrder settleOrder = BeanUtil.toBean(settleOrderDto, SettleOrder.class);
-            settleOrder.setCode(codeService.generate(settleOrderDto.getMarketCode().toUpperCase(), "settleOrder"));
+            settleOrder.setCode(codeService.generate(settleOrderDto.getMarketCode().toUpperCase(), settleOrderDto.getMarketCode() + "_settleOrder"));
             settleOrder.setState(SettleStateEnum.WAIT_DEAL.getCode());
             settleOrder.setSubmitTime(DateUtil.nowDateTime());
             settleOrder.setEditEnable(settleOrder.getEditEnable() == null ? EditEnableEnum.YES.getCode() : settleOrder.getEditEnable());
