@@ -64,7 +64,7 @@ public class SettleOrderApi {
             settleOrderService.save(settleOrder);
             return BaseOutput.success().setData(settleOrder);
         } catch (BusinessException e) {
-            return BaseOutput.failure(e.getErrorMsg());
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("method save", e);
             return BaseOutput.failure();
@@ -85,7 +85,7 @@ public class SettleOrderApi {
             settleOrderService.cancelById(id);
             return BaseOutput.success();
         } catch (BusinessException e) {
-            return BaseOutput.failure(e.getErrorMsg());
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("method cancelById", e);
             return BaseOutput.failure();
@@ -106,7 +106,7 @@ public class SettleOrderApi {
             settleOrderService.cancelByCode(code);
             return BaseOutput.success();
         } catch (BusinessException e) {
-            return BaseOutput.failure(e.getErrorMsg());
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("method cancelByCode", e);
             return BaseOutput.failure();
@@ -131,7 +131,7 @@ public class SettleOrderApi {
             settleOrderService.cancel(appId, orderCode);
             return BaseOutput.success();
         } catch (BusinessException e) {
-            return BaseOutput.failure(e.getErrorMsg());
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("method cancel", e);
             return BaseOutput.failure();
