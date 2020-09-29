@@ -36,4 +36,9 @@ public class SettleConfigServiceImpl extends BaseServiceImpl<SettleConfig, Long>
         query.setGroupCode(groupCode);
         return listByExample(query);
     }
+
+    @Override
+    public List<SettleConfig> list(SettleConfig query) {
+        return getActualDao().list(query);
+    }
 }

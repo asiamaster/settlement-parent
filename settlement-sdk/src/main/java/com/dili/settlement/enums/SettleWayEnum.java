@@ -10,7 +10,8 @@ public enum SettleWayEnum {
     ALI_PAY(4, "支付宝"),
     WECHAT_PAY(5, "微信"),
     MIXED_PAY(6, "组合支付"),
-    VIRTUAL_PAY(7, "虚拟支付");
+    VIRTUAL_PAY(7, "虚拟支付"),
+    CARD(8, "园区卡");
 
     private int code;
     private String name;

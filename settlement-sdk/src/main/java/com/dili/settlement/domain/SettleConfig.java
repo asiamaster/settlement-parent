@@ -34,6 +34,12 @@ public class SettleConfig extends BaseDomain {
     @Column(name = "`notes`")
     private String notes;
 
+    @Column(name = "`market_id`")
+    private Long marketId;
+
+    @Column(name = "`sort_field`")
+    private Integer sortField;
+
     /**
      * @return id
      */
@@ -128,5 +134,37 @@ public class SettleConfig extends BaseDomain {
      */
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    /**
+     * setter
+     * @return
+     */
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Integer getSortField() {
+        return sortField;
+    }
+
+    /**
+     * setter
+     * @return
+     */
+    public void setSortField(Integer sortField) {
+        this.sortField = sortField;
     }
 }

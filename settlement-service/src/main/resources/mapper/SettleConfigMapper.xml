@@ -11,11 +11,28 @@
     <result column="val" jdbcType="VARCHAR" property="val" />
     <result column="state" jdbcType="TINYINT" property="state" />
     <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="market_id" jdbcType="BIGINT" property="marketId" />
+    <result column="sort_field" jdbcType="INTEGER" property="sortField" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `group_code`, `code`, `val`, `state`, `notes`
+    `id`, `group_code`, `code`, `val`, `state`, `notes`, `market_id`, `sort_field`
   </sql>
+
+  <!-- 列表查询 -->
+  <select id="list" parameterType="com.dili.settlement.domain.SettleConfig" resultMap="BaseResultMap">
+    select * from settle_config where 1=1
+    <if test="marketId != null">
+      and `market_id` = #{marketId}
+    </if>
+    <if test="groupCode != null">
+      and `group_code` = #{groupCode}
+    </if>
+    <if test="state != null">
+      and `state` = #{state}
+    </if>
+    order by sort_field
+  </select>
 </mapper>

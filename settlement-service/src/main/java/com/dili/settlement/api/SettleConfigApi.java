@@ -31,7 +31,10 @@ public class SettleConfigApi {
     @RequestMapping(value = "/list")
     public BaseOutput<List<SettleConfig>> list(@RequestBody SettleConfig query) {
         try {
-            List<SettleConfig> itemList = settleConfigService.listByExample(query);
+            if (query.getMarketId() == null) {
+                return BaseOutput.failure("市场ID为空");
+            }
+            List<SettleConfig> itemList = settleConfigService.list(query);
             return BaseOutput.success().setData(itemList);
         } catch (Exception e) {
             LOGGER.error("method list");
@@ -47,6 +50,9 @@ public class SettleConfigApi {
     @RequestMapping(value = "/getVal")
     public BaseOutput<String> getVal(@RequestBody SettleConfig query) {
         try {
+            if (query.getMarketId() == null) {
+                return BaseOutput.failure("市场ID为空");
+            }
             if (query.getGroupCode() == null) {
                 return BaseOutput.failure("分组编码为空");
             }
