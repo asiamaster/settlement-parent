@@ -162,6 +162,25 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`charge_date`")
     private LocalDate chargeDate;
 
+    /** 交易资金账户ID */
+    @Column(name = "`trade_fund_account_id`")
+    private Long tradeFundAccountId;
+
+    /** 交易卡账户ID */
+    @Column(name = "`trade_account_id`")
+    private Long tradeAccountId;
+
+    /** 交易卡客户ID */
+    @Column(name = "`trade_customer_id`")
+    private Long tradeCustomerId;
+
+    /** 交易卡客户姓名 */
+    @Column(name = "`trade_customer_name`")
+    private String tradeCustomerName;
+
+    /** 交易卡号 */
+    @Column(name = "`trade_card_no`")
+    private String tradeCardNo;
     //是否进行枚举、字典值转换
     @Transient
     private Boolean convert;
@@ -693,6 +712,46 @@ public class SettleOrder extends BaseDomain {
 
     public void setChargeDate(LocalDate chargeDate) {
         this.chargeDate = chargeDate;
+    }
+
+    public Long getTradeFundAccountId() {
+        return tradeFundAccountId;
+    }
+
+    public void setTradeFundAccountId(Long tradeFundAccountId) {
+        this.tradeFundAccountId = tradeFundAccountId;
+    }
+
+    public Long getTradeAccountId() {
+        return tradeAccountId;
+    }
+
+    public void setTradeAccountId(Long tradeAccountId) {
+        this.tradeAccountId = tradeAccountId;
+    }
+
+    public Long getTradeCustomerId() {
+        return tradeCustomerId;
+    }
+
+    public void setTradeCustomerId(Long tradeCustomerId) {
+        this.tradeCustomerId = tradeCustomerId;
+    }
+
+    public String getTradeCustomerName() {
+        return tradeCustomerName;
+    }
+
+    public void setTradeCustomerName(String tradeCustomerName) {
+        this.tradeCustomerName = tradeCustomerName;
+    }
+
+    public String getTradeCardNo() {
+        return tradeCardNo;
+    }
+
+    public void setTradeCardNo(String tradeCardNo) {
+        this.tradeCardNo = tradeCardNo;
     }
 
     public Boolean getConvert() {
