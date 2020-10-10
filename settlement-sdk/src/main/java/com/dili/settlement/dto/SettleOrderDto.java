@@ -35,6 +35,8 @@ public class SettleOrderDto extends SettleOrder {
     private String chargeDateEnd;
     //收款总额
     private Long totalAmount;
+    /** 交易密码 */
+    private String tradePassword;
 
     public String getMarketCode() {
         return marketCode;
@@ -138,5 +140,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setTotalAmount(Long totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getTradePassword() {
+        return tradePassword;
+    }
+
+    public void setTradePassword(String tradePassword) {
+        this.tradePassword = tradePassword;
     }
 }

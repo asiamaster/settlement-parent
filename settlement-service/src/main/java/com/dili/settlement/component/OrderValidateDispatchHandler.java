@@ -1,7 +1,7 @@
 package com.dili.settlement.component;
 
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.validation.OrderValidateService;
+import com.dili.settlement.settle.OrderValidateService;
 import com.dili.ss.exception.BusinessException;
 import org.springframework.stereotype.Component;
 

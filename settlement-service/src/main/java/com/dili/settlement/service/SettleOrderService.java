@@ -74,17 +74,6 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
     SettleOrder get(Long appId, String orderCode);
 
     /**
-     * 实现缴费处理逻辑  更改状态、增加金额
-     * @param po
-     */
-    void pay(SettleOrder po, SettleOrderDto settleOrderDto);
-    /**
-     * 实现退款处理逻辑  更改状态、扣减金额
-     * @param po
-     */
-    void refund(SettleOrder po, SettleOrderDto settleOrderDto);
-
-    /**
      * 根据id列表查询总金额
      * @param settleOrderDto
      * @return
@@ -108,4 +97,11 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @param itemList
      */
     void batchUpdateAmount(List<Map<String, Object>> itemList);
+
+    /**
+     * 结算修改
+     * @param po
+     * @return
+     */
+    int updateSettle(SettleOrder po);
 }

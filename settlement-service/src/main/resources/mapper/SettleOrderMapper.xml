@@ -44,13 +44,15 @@
     <result column="trade_customer_id" jdbcType="BIGINT" property="tradeCustomerId" />
     <result column="trade_customer_name" jdbcType="VARCHAR" property="tradeCustomerName" />
     <result column="trade_card_no" jdbcType="VARCHAR" property="tradeCardNo" />
+    <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
   </resultMap>
   <sql id="Base_Column_List">
     `id`, `market_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
     `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
-    `edit_enable`, `notes`, `return_url`,`version`,`charge_date`,`trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,`trade_customer_name`,`trade_card_no`
+    `edit_enable`, `notes`, `return_url`,`version`,`charge_date`,
+    `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,`trade_customer_name`,`trade_card_no`,`trade_no`
   </sql>
 
   <!-- 用于单表的条件判断 -->
@@ -161,6 +163,7 @@
         trade_customer_id = #{tradeCustomerId},
         trade_customer_name = #{tradeCustomerName},
         trade_card_no = #{tradeCardNo},
+        trade_no = #{tradeNo},
         version = version + 1
     where id = #{id} and version = #{version}
   </update>

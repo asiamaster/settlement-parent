@@ -181,6 +181,10 @@ public class SettleOrder extends BaseDomain {
     /** 交易卡号 */
     @Column(name = "`trade_card_no`")
     private String tradeCardNo;
+
+    /** 交易流水号 */
+    @Column(name = "`trade_no`")
+    private String tradeNo;
     //是否进行枚举、字典值转换
     @Transient
     private Boolean convert;
@@ -752,6 +756,14 @@ public class SettleOrder extends BaseDomain {
 
     public void setTradeCardNo(String tradeCardNo) {
         this.tradeCardNo = tradeCardNo;
+    }
+
+    public String getTradeNo() {
+        return tradeNo;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
     }
 
     public Boolean getConvert() {

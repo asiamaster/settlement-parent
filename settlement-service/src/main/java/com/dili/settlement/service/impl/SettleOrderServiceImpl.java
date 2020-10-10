@@ -2,14 +2,15 @@ package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.dili.settlement.domain.ApplicationConfig;
-import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.*;
+import com.dili.settlement.enums.AppGroupCodeEnum;
+import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.enums.SettleTypeEnum;
+import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.mapper.SettleOrderMapper;
 import com.dili.settlement.service.*;
-import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
@@ -177,67 +178,6 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         return listByExample(query).stream().findFirst().orElse(null);
     }
 
-    @Transactional
-    @Override
-    public void pay(SettleOrder po, SettleOrderDto settleOrderDto) {
-        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
-        //way;operatorId;operatorName;operateTime;serialNumber,notes;
-        po.setState(SettleStateEnum.DEAL.getCode());
-        po.setWay(settleOrderDto.getWay());
-        po.setOperatorId(settleOrderDto.getOperatorId());
-        po.setOperatorName(settleOrderDto.getOperatorName());
-        po.setOperateTime(DateUtil.nowDateTime());
-        po.setSerialNumber(settleOrderDto.getSerialNumber());
-        po.setChargeDate(settleOrderDto.getChargeDate());
-        po.setNotes(settleOrderDto.getNotes());
-        int i = getActualDao().updateSettle(po);
-        if (i != 1) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
-        if (!CollUtil.isEmpty(settleOrderDto.getSettleWayDetailList())) {
-            for (SettleWayDetail temp : settleOrderDto.getSettleWayDetailList()) {
-                temp.setOrderId(po.getId());
-                temp.setOrderCode(po.getCode());
-            }
-            settleWayDetailService.batchInsert(settleOrderDto.getSettleWayDetailList());
-        }
-        fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
-        //存入回调重试记录  方便定时任务扫描
-        RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
-        retryRecordService.insertSelective(retryRecord);
-        po.setRetryRecordId(retryRecord.getId());
-    }
-
-    @Transactional
-    @Override
-    public void refund(SettleOrder po, SettleOrderDto settleOrderDto) {
-        if (!po.getState().equals(SettleStateEnum.WAIT_DEAL.getCode())) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
-        //way,state,operatorId,operatorName,operateTime,accountNumber,bankName,bankCardHolder,serialNumber,notes
-        po.setState(SettleStateEnum.DEAL.getCode());
-        po.setWay(settleOrderDto.getWay());
-        po.setOperatorId(settleOrderDto.getOperatorId());
-        po.setOperatorName(settleOrderDto.getOperatorName());
-        po.setOperateTime(DateUtil.nowDateTime());
-        po.setAccountNumber(settleOrderDto.getAccountNumber());
-        po.setBankName(settleOrderDto.getBankName());
-        po.setBankCardHolder(settleOrderDto.getBankCardHolder());
-        po.setSerialNumber(settleOrderDto.getSerialNumber());
-        po.setNotes(settleOrderDto.getNotes());
-        int i = getActualDao().updateSettle(po);
-        if (i != 1) {
-            throw new BusinessException("", "数据已变更,请稍后重试");
-        }
-        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
-        //存入回调重试记录  方便定时任务扫描
-        RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
-        retryRecordService.insertSelective(retryRecord);
-        po.setRetryRecordId(retryRecord.getId());
-    }
-
     @Override
     public Long queryTotalAmount(SettleOrderDto settleOrderDto) {
         return getActualDao().queryTotalAmount(settleOrderDto);
@@ -276,6 +216,12 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         for (Map<String, Object> map : itemList) {
             getActualDao().batchUpdateAmount(map);
         }
+    }
+
+    @Transactional
+    @Override
+    public int updateSettle(SettleOrder po) {
+        return getActualDao().updateSettle(po);
     }
 
     /**

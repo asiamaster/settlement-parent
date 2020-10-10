@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.component.OrderValidateDispatchHandler;
-import com.dili.settlement.component.SettleValidateDispatchHandler;
+import com.dili.settlement.component.SettleDispatchHandler;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.SettleResultDto;
@@ -46,7 +46,7 @@ public class SettleOrderApi {
     private OrderValidateDispatchHandler orderValidateDispatchHandler;
 
     @Resource
-    private SettleValidateDispatchHandler settleValidateDispatchHandler;
+    private SettleDispatchHandler settleDispatchHandler;
     /**
      * 提交结算单接口
      * @param settleOrderDto
@@ -284,7 +284,7 @@ public class SettleOrderApi {
     @RequestMapping(value = "/pay")
     public BaseOutput<SettleResultDto> pay(@RequestBody SettleOrderDto settleOrderDto) {
         try {
-            settleValidateDispatchHandler.validPayParams(settleOrderDto);
+            settleDispatchHandler.validPayParams(settleOrderDto);
             SettleResultDto settleResultDto = new SettleResultDto();
             settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
             for (Long id : settleOrderDto.getIdList()) {
@@ -295,7 +295,7 @@ public class SettleOrderApi {
                         settleResultDto.failure(null);
                         continue;
                     }
-                    settleOrderService.pay(po, settleOrderDto);
+                    settleDispatchHandler.pay(po, settleOrderDto);
                     CallbackHolder.offerSource(po);//触发回调
                     settleResultDto.success(po);
                 } catch (Exception e) {
@@ -318,7 +318,7 @@ public class SettleOrderApi {
     @RequestMapping(value = "/refund")
     public BaseOutput<SettleResultDto> refund(@RequestBody SettleOrderDto settleOrderDto) {
         try {
-            settleValidateDispatchHandler.validRefundParams(settleOrderDto);
+            settleDispatchHandler.validRefundParams(settleOrderDto);
             SettleResultDto settleResultDto = new SettleResultDto();
             settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
             for (Long id : settleOrderDto.getIdList()) {
@@ -329,7 +329,7 @@ public class SettleOrderApi {
                         settleResultDto.failure(null);
                         continue;
                     }
-                    settleOrderService.refund(po, settleOrderDto);
+                    settleDispatchHandler.refund(po, settleOrderDto);
                     CallbackHolder.offerSource(po);//触发回调
                     settleResultDto.success(po);
                 } catch (Exception e) {

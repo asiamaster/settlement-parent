@@ -255,3 +255,4 @@ ALTER TABLE settle_order ADD COLUMN trade_account_id BIGINT COMMENT '交易卡�
 ALTER TABLE settle_order ADD COLUMN trade_customer_id BIGINT COMMENT '交易卡客户ID';
 ALTER TABLE settle_order ADD COLUMN trade_customer_name VARCHAR(40) COMMENT '交易卡客户姓名';
 ALTER TABLE settle_order ADD COLUMN trade_card_no VARCHAR(20) COMMENT '交易卡号';
+ALTER TABLE settle_order ADD COLUMN trade_no VARCHAR(40) COMMENT '交易流水号';
