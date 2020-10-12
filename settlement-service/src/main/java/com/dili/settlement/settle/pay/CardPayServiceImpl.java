@@ -5,6 +5,8 @@ import com.dili.settlement.component.FirmIdHolder;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.UserAccountCardResponseDto;
+import com.dili.settlement.dto.UserAccountSingleQueryDto;
 import com.dili.settlement.dto.pay.CreateTradeRequestDto;
 import com.dili.settlement.dto.pay.CreateTradeResponseDto;
 import com.dili.settlement.dto.pay.FeeItemDto;
@@ -12,6 +14,8 @@ import com.dili.settlement.dto.pay.TradeRequestDto;
 import com.dili.settlement.enums.AppGroupCodeEnum;
 import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.rpc.AccountQueryRpc;
+import com.dili.settlement.rpc.resolver.GenericRpcResolver;
 import com.dili.settlement.rpc.resolver.PayRpcResolver;
 import com.dili.settlement.service.ApplicationConfigService;
 import com.dili.settlement.settle.PayService;
@@ -36,6 +40,8 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
     private PayRpcResolver payRpcResolver;
     @Autowired
     private ApplicationConfigService applicationConfigService;
+    @Autowired
+    private AccountQueryRpc accountQueryRpc;
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
@@ -57,6 +63,8 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         if (StrUtil.isBlank(settleOrderDto.getTradePassword())) {
             throw new BusinessException("", "交易密码为空");
         }
+        //调用接口验证园区卡是否可用
+        checkCardInfo(settleOrderDto.getTradeCardNo());
     }
 
     @Override
@@ -126,6 +134,12 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         feeItem.setTypeName(applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
         fees.add(feeItem);
         return fees;
+    }
+
+    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo) {
+        UserAccountSingleQueryDto cardQuery = new UserAccountSingleQueryDto();
+        cardQuery.setCardNo(tradeCardNo);
+        return GenericRpcResolver.resolver(accountQueryRpc.findSingle(cardQuery), "account-service");
     }
 
     @Override

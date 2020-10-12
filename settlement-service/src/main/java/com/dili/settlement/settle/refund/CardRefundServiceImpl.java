@@ -5,11 +5,16 @@ import com.dili.settlement.component.FirmIdHolder;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.UserAccountCardResponseDto;
+import com.dili.settlement.dto.UserAccountSingleQueryDto;
 import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.rpc.AccountQueryRpc;
+import com.dili.settlement.rpc.resolver.GenericRpcResolver;
 import com.dili.settlement.settle.RefundService;
 import com.dili.ss.exception.BusinessException;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CardRefundServiceImpl extends RefundServiceImpl implements RefundService {
+
+    @Autowired
+    private AccountQueryRpc accountQueryRpc;
+
+    @Override
+    public void validSubmitParams(SettleOrderDto settleOrderDto) {
+        if (StrUtil.isBlank(settleOrderDto.getTradeCardNo())) {
+            throw new BusinessException("", "交易卡号为空");
+        }
+        //调用接口验证园区卡是否可用
+        UserAccountCardResponseDto responseDto = checkCardInfo(settleOrderDto.getTradeCardNo());
+        settleOrderDto.setTradeFundAccountId(responseDto.getFundAccountId());
+        settleOrderDto.setTradeAccountId(responseDto.getAccountId());
+        settleOrderDto.setTradeCustomerId(responseDto.getCustomerId());
+        settleOrderDto.setTradeCustomerName(responseDto.getCustomerName());
+    }
+
+    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo) {
+        UserAccountSingleQueryDto cardQuery = new UserAccountSingleQueryDto();
+        cardQuery.setCardNo(tradeCardNo);
+        return GenericRpcResolver.resolver(accountQueryRpc.findSingle(cardQuery), "account-service");
+    }
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
@@ -36,6 +63,8 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         if (StrUtil.isBlank(settleOrderDto.getTradeCustomerName())) {
             throw new BusinessException("", "交易客户姓名为空");
         }
+        //调用接口验证园区卡是否可用
+        checkCardInfo(settleOrderDto.getTradeCardNo());
     }
 
     @Override
