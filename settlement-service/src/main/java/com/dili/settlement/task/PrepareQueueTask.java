@@ -88,6 +88,9 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
         map.put("serialNumber", settleOrder.getSerialNumber());
         map.put("randomStr", GeneralUtil.uuid());
         map.put("notes", settleOrder.getNotes());
+        map.put("tradeCardNo", settleOrder.getTradeCardNo());
+        map.put("tradeCustomerId", String.valueOf(settleOrder.getTradeCustomerId()));
+        map.put("tradeCustomerName", settleOrder.getTradeCustomerName());
         return map;
     }
 
