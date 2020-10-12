@@ -1,6 +1,8 @@
 package com.dili.settlement.api;
 
 import com.dili.settlement.domain.SettleConfig;
+import com.dili.settlement.enums.ConfigStateEnum;
+import com.dili.settlement.enums.SettleGroupCodeEnum;
 import com.dili.settlement.service.SettleConfigService;
 import com.dili.ss.domain.BaseOutput;
 import org.slf4j.Logger;
@@ -63,6 +65,30 @@ public class SettleConfigApi {
             return BaseOutput.success().setData(val);
         } catch (Exception e) {
             LOGGER.error("method getVal", e);
+            return BaseOutput.failure();
+        }
+    }
+
+
+    /**
+     * 查询可用退款方式
+     * @param marketId
+     * @return
+     */
+    @RequestMapping(value = "/listEnableRefundWay")
+    public BaseOutput<List<SettleConfig>> listEnableRefundWay(Long marketId) {
+        try {
+            if (marketId == null) {
+                return BaseOutput.failure("市场ID为空");
+            }
+            SettleConfig query = new SettleConfig();
+            query.setMarketId(marketId);
+            query.setGroupCode(SettleGroupCodeEnum.SETTLE_WAY_REFUND.getCode());
+            query.setState(ConfigStateEnum.ENABLE.getCode());
+            List<SettleConfig> itemList = settleConfigService.list(query);
+            return BaseOutput.success().setData(itemList);
+        } catch (Exception e) {
+            LOGGER.error("method listEnableRefundWay");
             return BaseOutput.failure();
         }
     }
