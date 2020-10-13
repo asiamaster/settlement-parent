@@ -33,17 +33,11 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
             throw new BusinessException("", "交易卡号为空");
         }
         //调用接口验证园区卡是否可用
-        UserAccountCardResponseDto responseDto = checkCardInfo(settleOrderDto.getTradeCardNo());
+        UserAccountCardResponseDto responseDto = checkCardInfo(settleOrderDto.getTradeCardNo(), settleOrderDto.getMarketId());
         settleOrderDto.setTradeFundAccountId(responseDto.getFundAccountId());
         settleOrderDto.setTradeAccountId(responseDto.getAccountId());
         settleOrderDto.setTradeCustomerId(responseDto.getCustomerId());
         settleOrderDto.setTradeCustomerName(responseDto.getCustomerName());
-    }
-
-    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo) {
-        UserAccountSingleQueryDto cardQuery = new UserAccountSingleQueryDto();
-        cardQuery.setCardNo(tradeCardNo);
-        return GenericRpcResolver.resolver(accountQueryRpc.findSingle(cardQuery), "account-service");
     }
 
     @Override
@@ -63,8 +57,6 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         if (StrUtil.isBlank(settleOrderDto.getTradeCustomerName())) {
             throw new BusinessException("", "交易客户姓名为空");
         }
-        //调用接口验证园区卡是否可用
-        checkCardInfo(settleOrderDto.getTradeCardNo());
     }
 
     @Override
@@ -82,6 +74,8 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
     @Override
     public void settle(SettleOrder po, SettleOrderDto settleOrderDto) {
         settleBefore(po, settleOrderDto);
+        //调用接口验证园区卡是否可用
+        checkCardInfo(settleOrderDto.getTradeCardNo(), po.getMarketId());
         FirmIdHolder.set(po.getMarketId());
         //TODO 创建交易
         int i = settleOrderService.updateSettle(po);
@@ -96,6 +90,19 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
 
         settleAfter(po, settleOrderDto);
         FirmIdHolder.clear();
+    }
+
+    /**
+     * 验证查询卡号
+     * @param tradeCardNo
+     * @param firmId
+     * @return
+     */
+    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo, Long firmId) {
+        UserAccountSingleQueryDto cardQuery = new UserAccountSingleQueryDto();
+        cardQuery.setCardNo(tradeCardNo);
+        cardQuery.setFirmId(firmId);
+        return GenericRpcResolver.resolver(accountQueryRpc.findSingle(cardQuery), "account-service");
     }
 
     @Override

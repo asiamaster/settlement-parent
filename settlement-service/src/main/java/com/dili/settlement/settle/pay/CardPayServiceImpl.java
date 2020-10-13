@@ -63,8 +63,6 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         if (StrUtil.isBlank(settleOrderDto.getTradePassword())) {
             throw new BusinessException("", "交易密码为空");
         }
-        //调用接口验证园区卡是否可用
-        checkCardInfo(settleOrderDto.getTradeCardNo());
     }
 
     @Override
@@ -82,6 +80,8 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
     @Override
     public void settle(SettleOrder po, SettleOrderDto settleOrderDto) {
         settleBefore(po, settleOrderDto);
+        //调用接口验证园区卡是否可用
+        checkCardInfo(settleOrderDto.getTradeCardNo(), po.getMarketId());
         //构建创建交易参数
         FirmIdHolder.set(po.getMarketId());//设置市场ID
         CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
@@ -136,9 +136,16 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         return fees;
     }
 
-    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo) {
+    /**
+     * 验证查询卡号
+     * @param tradeCardNo
+     * @param firmId
+     * @return
+     */
+    private UserAccountCardResponseDto checkCardInfo(String tradeCardNo, Long firmId) {
         UserAccountSingleQueryDto cardQuery = new UserAccountSingleQueryDto();
         cardQuery.setCardNo(tradeCardNo);
+        cardQuery.setFirmId(firmId);
         return GenericRpcResolver.resolver(accountQueryRpc.findSingle(cardQuery), "account-service");
     }
 
