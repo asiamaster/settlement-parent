@@ -46,4 +46,16 @@ public class FeeItemDto {
     public void setBalance(Long balance) {
         this.balance = balance;
     }
+
+    /**
+     * 创建费用参数
+     * @return
+     */
+    public static FeeItemDto build(Long amount, Integer type, String typeName) {
+        FeeItemDto feeItem = new FeeItemDto();
+        feeItem.setAmount(amount);
+        feeItem.setType(type);
+        feeItem.setTypeName(typeName);
+        return feeItem;
+    }
 }

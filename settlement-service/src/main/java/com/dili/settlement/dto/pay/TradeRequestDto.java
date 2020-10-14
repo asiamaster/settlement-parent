@@ -68,4 +68,32 @@ public class TradeRequestDto {
     public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
+
+    /**
+     * 创建提交交易参数
+     * @return
+     */
+    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, String password, Long businessId, List<FeeItemDto> fees) {
+        TradeRequestDto tradeRequest = new TradeRequestDto();
+        tradeRequest.setTradeId(tradeId);
+        tradeRequest.setAccountId(fundAccountId);
+        tradeRequest.setChannelId(channelId);
+        tradeRequest.setPassword(password);
+        tradeRequest.setBusinessId(businessId);
+        tradeRequest.setFees(fees);
+        return tradeRequest;
+    }
+
+    /**
+     * 创建提交交易参数
+     * @return
+     */
+    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, List<FeeItemDto> fees) {
+        TradeRequestDto tradeRequest = new TradeRequestDto();
+        tradeRequest.setTradeId(tradeId);
+        tradeRequest.setAccountId(fundAccountId);
+        tradeRequest.setChannelId(channelId);
+        tradeRequest.setFees(fees);
+        return tradeRequest;
+    }
 }

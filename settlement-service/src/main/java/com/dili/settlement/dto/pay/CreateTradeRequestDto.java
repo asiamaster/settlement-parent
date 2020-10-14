@@ -26,35 +26,15 @@ public class CreateTradeRequestDto {
 	/** 业务账号ID */
 	private String password;
 
-	public static CreateTradeRequestDto createCommon(Long fundAccountId, Long businessId) {
-		CreateTradeRequestDto requestDto = new CreateTradeRequestDto();
-		requestDto.setAccountId(fundAccountId);
-		requestDto.setBusinessId(businessId);
-		return requestDto;
-	}
-
-	public static CreateTradeRequestDto createPwd(Long fundAccountId, String pwd) {
-		CreateTradeRequestDto requestDto = new CreateTradeRequestDto();
-		requestDto.setAccountId(fundAccountId);
-		requestDto.setPassword(pwd);
-		return requestDto;
-	}
-
-	public static CreateTradeRequestDto createFrozenAmount(Long fundAccountId, Long accountId, Long amount) {
-		CreateTradeRequestDto requestDto = createCommon(fundAccountId, accountId);
-		requestDto.setAmount(amount);
-		return requestDto;
-	}
-
-	public static CreateTradeRequestDto createTrade(Integer type, Long accountId, Long fundAccountId, Long amount,
-			String serialNo, String cycleNo) {
-		CreateTradeRequestDto requestDto = createCommon(fundAccountId, accountId);
-		requestDto.setType(type);
-		requestDto.setAmount(amount);
-		requestDto.setSerialNo(serialNo);
-		requestDto.setCycleNo(cycleNo);
-		requestDto.setDescription("");
-		return requestDto;
+	public static CreateTradeRequestDto build(Integer type, Long fundAccountId, Long amount, String code, Long businessId, String description) {
+		CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
+		createTradeRequest.setType(type);
+		createTradeRequest.setAccountId(fundAccountId);
+		createTradeRequest.setAmount(amount);
+		createTradeRequest.setSerialNo(code);
+		createTradeRequest.setDescription(description);
+		createTradeRequest.setBusinessId(businessId);
+		return createTradeRequest;
 	}
 
 	public String getExtension() {

@@ -93,16 +93,12 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         checkCardInfo(settleOrderDto.getTradeCardNo(), po.getMarketId());
         //构建创建交易参数
         FirmIdHolder.set(po.getMarketId());
-        CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
-        createTradeRequest.setType(TradeType.TRANSFER_REFUND.getCode());
-        createTradeRequest.setAccountId(settleOrderDto.getTradeFundAccountId());
-        createTradeRequest.setAmount(po.getAmount());
-        createTradeRequest.setSerialNo(po.getCode());
-        createTradeRequest.setDescription("");
-        createTradeRequest.setBusinessId(settleOrderDto.getTradeAccountId());
-        //创建交易
-        CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
-        po.setTradeNo(createTradeResponseDto.getTradeId());
+        if (po.getAmount() != 0) {
+            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.TRANSFER_REFUND.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), po.getCode(), po.getId(), "");
+            //创建交易
+            CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
+            po.setTradeNo(createTradeResponseDto.getTradeId());
+        }
 
         int i = settleOrderService.updateSettle(po);
         if (i != 1) {
@@ -114,16 +110,16 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         retryRecordService.insertSelective(retryRecord);
         po.setRetryRecordId(retryRecord.getId());
 
-        //提交交易
-        TradeRequestDto withdrawRequest = new TradeRequestDto();
-        withdrawRequest.setTradeId(po.getTradeNo());
-        withdrawRequest.setAccountId(settleOrderDto.getTradeFundAccountId());
-        withdrawRequest.setChannelId(TradeChannel.BALANCE.getCode());
-        withdrawRequest.setFees(createFees(po));
-        payRpcResolver.trade(withdrawRequest);
+        //修改市场虚拟资金
+        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
 
-        settleAfter(po, settleOrderDto);
-        FirmIdHolder.clear();
+        if (po.getAmount() != 0L) {
+            //提交交易
+            TradeRequestDto withdrawRequest = TradeRequestDto.build(po.getTradeNo(), settleOrderDto.getTradeFundAccountId(), TradeChannel.BALANCE.getCode(), createFees(po));
+            payRpcResolver.trade(withdrawRequest);
+        }
+
+        FirmIdHolder.clear();//清除市场ID
     }
 
     /**
@@ -133,10 +129,7 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
      */
     private List<FeeItemDto> createFees(SettleOrder po) {
         List<FeeItemDto> fees = new ArrayList<>();
-        FeeItemDto feeItem = new FeeItemDto();
-        feeItem.setAmount(po.getAmount());
-        feeItem.setType(po.getBusinessType());
-        feeItem.setTypeName(applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
+        FeeItemDto feeItem = FeeItemDto.build(po.getAmount(), po.getBusinessType(), applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
         fees.add(feeItem);
         return fees;
     }

@@ -84,16 +84,12 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         checkCardInfo(settleOrderDto.getTradeCardNo(), po.getMarketId());
         //构建创建交易参数
         FirmIdHolder.set(po.getMarketId());//设置市场ID
-        CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
-        createTradeRequest.setType(TradeType.FEE.getCode());
-        createTradeRequest.setAccountId(settleOrderDto.getTradeFundAccountId());
-        createTradeRequest.setAmount(po.getAmount());
-        createTradeRequest.setSerialNo(po.getCode());
-        createTradeRequest.setDescription("");
-        createTradeRequest.setBusinessId(settleOrderDto.getTradeAccountId());
-        //创建交易
-        CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
-        po.setTradeNo(createTradeResponseDto.getTradeId());
+        if (po.getAmount() != 0L) {
+            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.FEE.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), po.getCode(), po.getId(), "");
+            //创建交易
+            CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
+            po.setTradeNo(createTradeResponseDto.getTradeId());
+        }
 
         int i = settleOrderService.updateSettle(po);
         if (i != 1) {
@@ -105,31 +101,28 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         retryRecordService.insertSelective(retryRecord);
         po.setRetryRecordId(retryRecord.getId());
 
-        //提交交易
-        TradeRequestDto withdrawRequest = new TradeRequestDto();
-        withdrawRequest.setTradeId(po.getTradeNo());
-        withdrawRequest.setAccountId(settleOrderDto.getTradeFundAccountId());
-        withdrawRequest.setChannelId(TradeChannel.BALANCE.getCode());
-        withdrawRequest.setPassword(settleOrderDto.getTradePassword());
-        withdrawRequest.setBusinessId(settleOrderDto.getTradeAccountId());
-        withdrawRequest.setFees(createFees(po));
-        payRpcResolver.trade(withdrawRequest);
+        //修改市场虚拟资金
+        fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
 
-        settleAfter(po, settleOrderDto);//结算后置
+        if (po.getAmount() != 0L) {
+            //提交交易
+            TradeRequestDto tradeRequest = TradeRequestDto.build(po.getTradeNo(), settleOrderDto.getTradeFundAccountId(), TradeChannel.BALANCE.getCode(), settleOrderDto.getTradePassword(), settleOrderDto.getTradeAccountId(), createFees(po));
+            payRpcResolver.trade(tradeRequest);
+        }
+
         FirmIdHolder.clear();//清除市场ID
     }
 
 
     /**
      * 构建费用
+     *
      * @param po
      * @return
      */
     private List<FeeItemDto> createFees(SettleOrder po) {
         List<FeeItemDto> fees = new ArrayList<>();
-        FeeItemDto feeItem = new FeeItemDto();
-        feeItem.setAmount(po.getAmount());
-        feeItem.setType(po.getBusinessType());
+        FeeItemDto feeItem = FeeItemDto.build(po.getAmount(), po.getBusinessType(), applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
         feeItem.setTypeName(applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
         fees.add(feeItem);
         return fees;
@@ -137,6 +130,7 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
 
     /**
      * 验证查询卡号
+     *
      * @param tradeCardNo
      * @param firmId
      * @return
