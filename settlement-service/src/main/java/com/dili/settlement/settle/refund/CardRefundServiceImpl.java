@@ -94,7 +94,7 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         //构建创建交易参数
         FirmIdHolder.set(po.getMarketId());
         if (po.getAmount() != 0) {
-            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.TRANSFER_REFUND.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), po.getCode(), po.getId(), "");
+            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.TRANSFER_REFUND.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), po.getCode(), "");
             //创建交易
             CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
             po.setTradeNo(createTradeResponseDto.getTradeId());

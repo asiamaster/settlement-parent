@@ -18,8 +18,6 @@ public class TradeRequestDto {
     private String password;
     /** 费用项*/
     private List<FeeItemDto> fees;
-    /** 业务账号ID*/
-    private Long businessId;
 
     public String getTradeId() {
         return tradeId;
@@ -61,25 +59,16 @@ public class TradeRequestDto {
         this.fees = fees;
     }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
     /**
      * 创建提交交易参数
      * @return
      */
-    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, String password, Long businessId, List<FeeItemDto> fees) {
+    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, String password, List<FeeItemDto> fees) {
         TradeRequestDto tradeRequest = new TradeRequestDto();
         tradeRequest.setTradeId(tradeId);
         tradeRequest.setAccountId(fundAccountId);
         tradeRequest.setChannelId(channelId);
         tradeRequest.setPassword(password);
-        tradeRequest.setBusinessId(businessId);
         tradeRequest.setFees(fees);
         return tradeRequest;
     }

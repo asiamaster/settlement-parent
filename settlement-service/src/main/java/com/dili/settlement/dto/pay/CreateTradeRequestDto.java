@@ -19,30 +19,17 @@ public class CreateTradeRequestDto {
 	private String cycleNo;
 	/** 交易备注 */
 	private String description;
-	/** 扩展信息字段 */
-	private String extension;
-	/** 业务账号ID */
-	private Long businessId;
 	/** 业务账号ID */
 	private String password;
 
-	public static CreateTradeRequestDto build(Integer type, Long fundAccountId, Long amount, String code, Long businessId, String description) {
+	public static CreateTradeRequestDto build(Integer type, Long fundAccountId, Long amount, String code, String description) {
 		CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
 		createTradeRequest.setType(type);
 		createTradeRequest.setAccountId(fundAccountId);
 		createTradeRequest.setAmount(amount);
 		createTradeRequest.setSerialNo(code);
 		createTradeRequest.setDescription(description);
-		createTradeRequest.setBusinessId(businessId);
 		return createTradeRequest;
-	}
-
-	public String getExtension() {
-		return extension;
-	}
-
-	public void setExtension(String extension) {
-		this.extension = extension;
 	}
 
 	public Integer getType() {
@@ -91,14 +78,6 @@ public class CreateTradeRequestDto {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public Long getBusinessId() {
-		return businessId;
-	}
-
-	public void setBusinessId(Long businessId) {
-		this.businessId = businessId;
 	}
 
 	public String getPassword() {
