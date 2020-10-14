@@ -116,7 +116,6 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         payRpcResolver.trade(withdrawRequest);
 
         settleAfter(po, settleOrderDto);//结算后置
-
         FirmIdHolder.clear();//清除市场ID
     }
 
