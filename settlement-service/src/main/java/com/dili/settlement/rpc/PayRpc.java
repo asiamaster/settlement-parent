@@ -39,4 +39,12 @@ public interface PayRpc {
      */
     @RequestMapping(value = "/payment/api/gateway.do?service=payment.fund.service:query", method = RequestMethod.POST)
     BaseOutput<BalanceResponseDto> getAccountBalance(CreateTradeRequestDto requestDto);
+
+    /**
+     * 撤销交易
+     * @param requestDto
+     * @return
+     */
+    @RequestMapping(value = "/payment/api/gateway.do?service=payment.trade.service:cancel", method = RequestMethod.POST)
+    BaseOutput<TradeResponseDto> invalidTrade(InvalidTradeRequestDto requestDto);
 }

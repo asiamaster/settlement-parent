@@ -7,10 +7,7 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.UserAccountCardResponseDto;
 import com.dili.settlement.dto.UserAccountSingleQueryDto;
-import com.dili.settlement.dto.pay.CreateTradeRequestDto;
-import com.dili.settlement.dto.pay.CreateTradeResponseDto;
-import com.dili.settlement.dto.pay.FeeItemDto;
-import com.dili.settlement.dto.pay.TradeRequestDto;
+import com.dili.settlement.dto.pay.*;
 import com.dili.settlement.enums.AppGroupCodeEnum;
 import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.enums.SettleWayEnum;
@@ -113,6 +110,15 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         FirmIdHolder.clear();//清除市场ID
     }
 
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
+        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
+        FirmIdHolder.set(po.getMarketId());//设置市场ID
+        InvalidTradeRequestDto requestDto = InvalidTradeRequestDto.build(po.getTradeNo());
+        TradeResponseDto responseDto = payRpcResolver.invalid(requestDto);
+        FirmIdHolder.clear();//清除市场ID
+    }
 
     /**
      * 构建费用

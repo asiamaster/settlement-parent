@@ -1,12 +1,16 @@
 package com.dili.settlement.settle.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.RetryTypeEnum;
+import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.service.CodeService;
 import com.dili.settlement.service.FundAccountService;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleOrderService;
@@ -29,6 +33,9 @@ public abstract class SettleServiceImpl implements SettleService {
 
     @Autowired
     protected FundAccountService fundAccountService;
+
+    @Autowired
+    private CodeService codeService;
 
     @Override
     public void validSubmitParams(SettleOrderDto settleOrderDto) {
@@ -90,4 +97,24 @@ public abstract class SettleServiceImpl implements SettleService {
         return;
     }
 
+    @Override
+    public void invalid(SettleOrder po, InvalidRequestDto param) {
+        SettleOrder reverseOrder = new SettleOrder();
+        BeanUtil.copyProperties(po, reverseOrder);
+        reverseOrder.setId(null);
+        reverseOrder.setCode(codeService.generate(param.getMarketCode() + "_settleOrder"));
+        reverseOrder.setOrderCode(po.getCode());
+        reverseOrder.setOperatorId(param.getOperatorId());
+        reverseOrder.setOperatorName(param.getOperatorName());
+        reverseOrder.setOperateTime(DateUtil.nowDateTime());
+        reverseOrder.setReverse(ReverseEnum.YES.getCode());
+        settleOrderService.insertSelective(reverseOrder);
+
+        invalidSpecial(po, reverseOrder);
+    }
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
+        return;
+    }
 }

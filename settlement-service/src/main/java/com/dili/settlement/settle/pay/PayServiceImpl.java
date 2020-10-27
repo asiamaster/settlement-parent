@@ -25,4 +25,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
     public void settleAfter(SettleOrder po, SettleOrderDto settleOrderDto) {
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
     }
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
+        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
+    }
 }

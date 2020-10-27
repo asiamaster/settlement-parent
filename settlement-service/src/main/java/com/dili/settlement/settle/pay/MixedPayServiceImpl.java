@@ -11,6 +11,8 @@ import com.dili.ss.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 混合支付
  */
@@ -49,6 +51,20 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
             temp.setOrderCode(po.getCode());
         }
         settleWayDetailService.batchInsert(settleOrderDto.getSettleWayDetailList());
+    }
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
+        fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
+        SettleWayDetail query = new SettleWayDetail();
+        query.setOrderId(po.getId());
+        List<SettleWayDetail> wayDetailList = settleWayDetailService.listByExample(query);
+        for (SettleWayDetail wayDetail : wayDetailList) {
+            wayDetail.setId(null);
+            wayDetail.setOrderId(reverseOrder.getId());
+            wayDetail.setOrderCode(reverseOrder.getOrderCode());
+        }
+        settleWayDetailService.batchInsert(wayDetailList);
     }
 
     @Override

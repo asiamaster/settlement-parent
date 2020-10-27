@@ -1,14 +1,13 @@
 package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.dili.settlement.component.SettleDispatchHandler;
 import com.dili.settlement.domain.ApplicationConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.AppGroupCodeEnum;
-import com.dili.settlement.enums.SettleStateEnum;
-import com.dili.settlement.enums.SettleTypeEnum;
-import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.enums.*;
 import com.dili.settlement.mapper.SettleOrderMapper;
 import com.dili.settlement.service.*;
 import com.dili.ss.base.BaseServiceImpl;
@@ -16,6 +15,8 @@ import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,8 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     private RetryRecordService retryRecordService;
     @Resource
     private SettleWayDetailService settleWayDetailService;
+    @Autowired
+    private SettleDispatchHandler settleDispatchHandler;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -142,6 +145,7 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
             po.setTypeName(SettleTypeEnum.getNameByCode(po.getType()));
             po.setStateName(SettleStateEnum.getNameByCode(po.getState()));
             po.setWayName(po.getWay() != null ? SettleWayEnum.getNameByCode(po.getWay()) : "");
+            po.setReverseName(po.getReverse() != null ? ReverseEnum.getNameByCode(po.getReverse()) : "");
         }
     }
 
@@ -171,10 +175,10 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     }
 
     @Override
-    public SettleOrder get(Long appId, String businessCode) {
+    public SettleOrder get(Long appId, String orderCode) {
         SettleOrderDto query = new SettleOrderDto();
         query.setAppId(appId);
-        query.setBusinessCode(businessCode);
+        query.setOrderCode(orderCode);
         return listByExample(query).stream().findFirst().orElse(null);
     }
 
@@ -222,6 +226,36 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Override
     public int updateSettle(SettleOrder po) {
         return getActualDao().updateSettle(po);
+    }
+
+    /**
+     * 目前根据需求，只针对交款单作废
+     * @param param
+     */
+    @GlobalTransactional
+    @Transactional
+    @Override
+    public void invalid(InvalidRequestDto param) {
+        for (String orderCode : param.getOrderCodeList()) {
+            SettleOrder po = get(param.getAppId(), orderCode);
+            if (po == null) {//未查询到
+                continue;
+            }
+            if (!Integer.valueOf(ReverseEnum.NO.getCode()).equals(po.getReverse())) {//冲正单不允许作废
+                continue;
+            }
+            if (!Integer.valueOf(SettleTypeEnum.PAY.getCode()).equals(po.getType())) {//非支付单不允许作废
+                continue;
+            }
+            if (Integer.valueOf(SettleStateEnum.WAIT_DEAL.getCode()).equals(po.getState())) {//待处理直接删除
+                int i = getActualDao().delWithVersion(po);
+                if (i != 1) {
+                    throw new BusinessException("", "数据已变更,请稍后重试");
+                }
+            } else if (Integer.valueOf(SettleStateEnum.DEAL.getCode()).equals(po.getState())) {//已处理
+                settleDispatchHandler.payInvalid(po, param);
+            }
+        }
     }
 
     /**

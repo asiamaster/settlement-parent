@@ -1,6 +1,7 @@
 package com.dili.settlement.service;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.PageOutput;
@@ -104,4 +105,10 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @return
      */
     int updateSettle(SettleOrder po);
+
+    /**
+     * 根据orderCode列表批量作废
+     * @param param
+     */
+    void invalid(InvalidRequestDto param);
 }

@@ -1,6 +1,7 @@
 package com.dili.settlement.settle;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 
 /**
@@ -67,4 +68,18 @@ public interface SettleService {
      * @return
      */
     Integer supportWay();
+
+    /**
+     * 作废
+     * @param po
+     * @param param
+     */
+    void invalid(SettleOrder po, InvalidRequestDto param);
+
+    /**
+     * 作废
+     * @param po
+     * @param reverseOrder
+     */
+    void invalidSpecial(SettleOrder po, SettleOrder reverseOrder);
 }

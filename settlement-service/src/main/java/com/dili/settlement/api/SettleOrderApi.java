@@ -7,9 +7,11 @@ import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.component.OrderValidateDispatchHandler;
 import com.dili.settlement.component.SettleDispatchHandler;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.SettleResultDto;
 import com.dili.settlement.enums.EditEnableEnum;
+import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.service.CodeService;
 import com.dili.settlement.service.SettleOrderService;
@@ -61,6 +63,7 @@ public class SettleOrderApi {
             settleOrder.setState(SettleStateEnum.WAIT_DEAL.getCode());
             settleOrder.setSubmitTime(DateUtil.nowDateTime());
             settleOrder.setEditEnable(settleOrder.getEditEnable() == null ? EditEnableEnum.YES.getCode() : settleOrder.getEditEnable());
+            settleOrder.setReverse(ReverseEnum.NO.getCode());
             settleOrderService.save(settleOrder);
             return BaseOutput.success().setData(settleOrder);
         } catch (BusinessException e) {
@@ -398,6 +401,50 @@ public class SettleOrderApi {
         } catch (Exception e) {
             LOGGER.error("batchUpdateAmount", e);
             return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 用于作废业务接口
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/invalid")
+    public BaseOutput<?> invalid(@RequestBody InvalidRequestDto param) {
+        try {
+            checkInvalidParam(param);
+            settleOrderService.invalid(param);
+            return BaseOutput.success();
+        } catch (BusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("invalid", e);
+            return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 验证作废请求参数
+     * @param param
+     */
+    private void checkInvalidParam(InvalidRequestDto param) {
+        if (param.getMarketId() == null) {
+            throw new BusinessException("", "市场ID为空");
+        }
+        if (StrUtil.isBlank(param.getMarketCode())) {
+            throw new BusinessException("", "市场编码为空");
+        }
+        if (param.getAppId() == null) {
+            throw new BusinessException("", "应用ID为空");
+        }
+        if (param.getOperatorId() == null) {
+            throw new BusinessException("", "操作员ID为空");
+        }
+        if (StrUtil.isBlank(param.getOperatorName())) {
+            throw new BusinessException("", "操作员姓名为空");
+        }
+        if (CollUtil.isEmpty(param.getOrderCodeList())) {
+            throw new BusinessException("", "订单号列表为空");
         }
     }
 }

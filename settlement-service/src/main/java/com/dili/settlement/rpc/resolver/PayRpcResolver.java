@@ -47,5 +47,15 @@ public class PayRpcResolver {
         requestDto.setAccountId(fundAccountId);
         return GenericRpcResolver.resolver(payRpc.getAccountBalance(requestDto), PAY_SERVICE_NAME);
     }
+
+    /**
+     *  撤销交易
+     * @author miaoguoxin
+     * @date 2020/7/1
+     */
+    public TradeResponseDto invalid(InvalidTradeRequestDto requestDto) {
+        BaseOutput<TradeResponseDto> baseOutput = payRpc.invalidTrade(requestDto);
+        return GenericRpcResolver.resolver(baseOutput, PAY_SERVICE_NAME);
+    }
 }
 

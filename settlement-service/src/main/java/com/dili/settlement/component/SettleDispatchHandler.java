@@ -1,6 +1,7 @@
 package com.dili.settlement.component;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.settle.PayService;
 import com.dili.settlement.settle.RefundService;
@@ -133,5 +134,20 @@ public class SettleDispatchHandler {
             throw new BusinessException("", "不支持该结算方式");
         }
         refundService.settle(settleOrder, settleOrderDto);
+    }
+
+    /**
+     * 作废支付单
+     * @param po
+     */
+    public void payInvalid(SettleOrder po, InvalidRequestDto param) {
+        if (po.getWay() == null) {
+            throw new BusinessException("", "结算方式为空");
+        }
+        PayService payService = payServiceMap.get(po.getWay());
+        if (payService == null) {
+            throw new BusinessException("", "不支持该结算方式");
+        }
+        payService.invalid(po, param);
     }
 }

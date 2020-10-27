@@ -1,6 +1,7 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
@@ -185,6 +186,10 @@ public class SettleOrder extends BaseDomain {
     /** 交易流水号 */
     @Column(name = "`trade_no`")
     private String tradeNo;
+
+    /** 是否冲正 0-否 1-是*/
+    @Column(name = "`reverse`")
+    private Integer reverse;
     //是否进行枚举、字典值转换
     @Transient
     private Boolean convert;
@@ -203,6 +208,9 @@ public class SettleOrder extends BaseDomain {
     //重试记录ID
     @Transient
     private Long retryRecordId;
+    //是否冲正标记 用reverse值进行转换
+    @Transient
+    private String reverseName;
     //结算方式明细
     @Transient
     private List<SettleWayDetail> settleWayDetailList;
@@ -766,6 +774,14 @@ public class SettleOrder extends BaseDomain {
         this.tradeNo = tradeNo;
     }
 
+    public Integer getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(Integer reverse) {
+        this.reverse = reverse;
+    }
+
     public Boolean getConvert() {
         return convert;
     }
@@ -814,6 +830,14 @@ public class SettleOrder extends BaseDomain {
         this.retryRecordId = retryRecordId;
     }
 
+    public String getReverseName() {
+        return reverseName;
+    }
+
+    public void setReverseName(String reverseName) {
+        this.reverseName = reverseName;
+    }
+
     public List<SettleWayDetail> getSettleWayDetailList() {
         return settleWayDetailList;
     }
@@ -840,6 +864,6 @@ public class SettleOrder extends BaseDomain {
      */
     @Transient
     public boolean getPrintEnable() {
-        return this.state != null && this.state.equals(SettleStateEnum.DEAL.getCode());
+        return Integer.valueOf(SettleStateEnum.DEAL.getCode()).equals(this.state) && Integer.valueOf(ReverseEnum.NO.getCode()).equals(this.reverse);
     }
 }
