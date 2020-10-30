@@ -8,6 +8,9 @@ import com.dili.settlement.dto.SettleOrderDto;
  */
 public interface SettleService {
 
+    //调用支付传递业务编号前缀
+    String PAY_BUSINESS_PREFIX = "ZL_";
+
     /**
      * 验证提交参数
      * @param settleOrderDto
