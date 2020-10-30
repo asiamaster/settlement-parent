@@ -85,7 +85,7 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         //构建创建交易参数
         FirmIdHolder.set(po.getMarketId());//设置市场ID
         if (po.getAmount() != 0L) {
-            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.FEE.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), PAY_BUSINESS_PREFIX + po.getOrderCode(), "");
+            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.FEE.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), PAY_BUSINESS_PREFIX + po.getOrderCode(), "摊位租赁");
             //创建交易
             CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
             po.setTradeNo(createTradeResponseDto.getTradeId());
