@@ -88,6 +88,12 @@
         #{businessType}
       </foreach>
     </if>
+    <if test="orderCodeList != null and orderCodeList.size() > 0">
+      and `order_code` in
+      <foreach collection="orderCodeList" item="orderCode" separator="," open="(" close=")">
+        #{orderCode}
+      </foreach>
+    </if>
     <if test="customerId != null">
       and `customer_id` = #{customerId}
     </if>

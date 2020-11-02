@@ -37,6 +37,8 @@ public class SettleOrderDto extends SettleOrder {
     private Long totalAmount;
     /** 交易密码 */
     private String tradePassword;
+    /** 支付单号或退款单号列表 */
+    private List<String> orderCodeList;
 
     public String getMarketCode() {
         return marketCode;
@@ -148,5 +150,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setTradePassword(String tradePassword) {
         this.tradePassword = tradePassword;
+    }
+
+    public List<String> getOrderCodeList() {
+        return orderCodeList;
+    }
+
+    public void setOrderCodeList(List<String> orderCodeList) {
+        this.orderCodeList = orderCodeList;
     }
 }
