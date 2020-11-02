@@ -1,0 +1,1 @@
+1、nacos上增加sentinel相关配置；
