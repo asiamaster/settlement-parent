@@ -8,7 +8,7 @@
     <springProfile name="dev">
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>[${LOG_NAME}-dev] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!-- 按照每天生成日志文件 -->
@@ -23,7 +23,7 @@
                 <maxFileSize>10MB</maxFileSize>
             </rollingPolicy>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <pattern>[${LOG_NAME}-dev] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!--        不打印心跳日志     -->
@@ -36,7 +36,7 @@
     <springProfile name="test">
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>[${LOG_NAME}-test] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -50,7 +50,7 @@
                 <maxFileSize>10MB</maxFileSize>
             </rollingPolicy>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <pattern>[${LOG_NAME}-test] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!--        不打印心跳日志     -->
@@ -61,7 +61,7 @@
     <springProfile name="pre">
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>[${LOG_NAME}-pre] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!-- 按照每天生成日志文件 -->
@@ -76,7 +76,7 @@
                 <maxFileSize>10MB</maxFileSize>
             </rollingPolicy>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <pattern>[${LOG_NAME}-pre] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!--        不打印心跳日志     -->
@@ -86,7 +86,7 @@
     <springProfile name="prod">
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>[${LOG_NAME}-prod] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!-- 按照每天生成日志文件 -->
@@ -101,7 +101,7 @@
                 <maxFileSize>10MB</maxFileSize>
             </rollingPolicy>
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <pattern>[${LOG_NAME}-prod] %d |-%highlight(%-5level) [%t] %highlight(%c) [%L] -| %msg%n</pattern>
+                <pattern>%d %-5level [${LOG_NAME}-${build.profile.id}] [%t] [%c:%L] -| %msg%n</pattern>
             </encoder>
         </appender>
         <!--        不打印心跳日志     -->
