@@ -22,6 +22,8 @@ public class ApplicationConfigDto extends ApplicationConfig {
     //appId 列表
     private List<Long> appIdList;
     private String appIds;
+    //红冲标记
+    private Integer reverse;
 
     public Integer getSettleType() {
         return settleType;
@@ -77,5 +79,13 @@ public class ApplicationConfigDto extends ApplicationConfig {
 
     public void setAppIds(String appIds) {
         this.appIds = appIds;
+    }
+
+    public Integer getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(Integer reverse) {
+        this.reverse = reverse;
     }
 }
