@@ -62,7 +62,7 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
         for (SettleWayDetail wayDetail : wayDetailList) {
             wayDetail.setId(null);
             wayDetail.setOrderId(reverseOrder.getId());
-            wayDetail.setOrderCode(reverseOrder.getOrderCode());
+            wayDetail.setOrderCode(reverseOrder.getCode());
         }
         settleWayDetailService.batchInsert(wayDetailList);
     }
