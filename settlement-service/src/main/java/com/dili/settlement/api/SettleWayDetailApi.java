@@ -50,7 +50,7 @@ public class SettleWayDetailApi {
                 return BaseOutput.failure("结算单号为空");
             }
             SettleWayDetail query = new SettleWayDetail();
-            query.setOrderCode(code);
+            query.setSettleOrderCode(code);
             List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
             return BaseOutput.success().setData(itemList);
         } catch (Exception e) {

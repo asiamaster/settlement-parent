@@ -1,7 +1,14 @@
 package com.dili.settlement.dto;
 
+import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.domain.SettleOrderLink;
+import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.enums.ReverseEnum;
+import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.ss.util.MoneyUtils;
 
+import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -11,6 +18,10 @@ public class SettleOrderDto extends SettleOrder {
 
     //市场编码
     private String marketCode;
+    //结算费用项列表
+    private List<SettleFeeItem> settleFeeItemList;
+    //结算单链接列表
+    private List<SettleOrderLink> settleOrderLinkList;
     //id列表
     private List<Long> idList;
     //业务类型查询列表
@@ -39,6 +50,39 @@ public class SettleOrderDto extends SettleOrder {
     private String tradePassword;
     /** 支付单号或退款单号列表 */
     private List<String> orderCodeList;
+
+    //是否进行枚举、字典值转换
+    private Boolean convert;
+    //业务名称 用businessType值进行转换
+    private String businessName;
+    //结算类型名称 用type值进行转换
+    private String typeName;
+    //结算方式名称 用way值进行转换
+    private String wayName;
+    //状态名称 用state值进行转换
+    private String stateName;
+    //重试记录ID
+    private Long retryRecordId;
+    //是否冲正标记 用reverse值进行转换
+    private String reverseName;
+    //结算方式明细
+    private List<SettleWayDetail> settleWayDetailList;
+
+    public List<SettleFeeItem> getSettleFeeItemList() {
+        return settleFeeItemList;
+    }
+
+    public void setSettleFeeItemList(List<SettleFeeItem> settleFeeItemList) {
+        this.settleFeeItemList = settleFeeItemList;
+    }
+
+    public List<SettleOrderLink> getSettleOrderLinkList() {
+        return settleOrderLinkList;
+    }
+
+    public void setSettleOrderLinkList(List<SettleOrderLink> settleOrderLinkList) {
+        this.settleOrderLinkList = settleOrderLinkList;
+    }
 
     public String getMarketCode() {
         return marketCode;
@@ -158,5 +202,90 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setOrderCodeList(List<String> orderCodeList) {
         this.orderCodeList = orderCodeList;
+    }
+
+    public Boolean getConvert() {
+        return convert;
+    }
+
+    public void setConvert(Boolean convert) {
+        this.convert = convert;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getWayName() {
+        return wayName;
+    }
+
+    public void setWayName(String wayName) {
+        this.wayName = wayName;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public Long getRetryRecordId() {
+        return retryRecordId;
+    }
+
+    public void setRetryRecordId(Long retryRecordId) {
+        this.retryRecordId = retryRecordId;
+    }
+
+    public String getReverseName() {
+        return reverseName;
+    }
+
+    public void setReverseName(String reverseName) {
+        this.reverseName = reverseName;
+    }
+
+    public List<SettleWayDetail> getSettleWayDetailList() {
+        return settleWayDetailList;
+    }
+
+    public void setSettleWayDetailList(List<SettleWayDetail> settleWayDetailList) {
+        this.settleWayDetailList = settleWayDetailList;
+    }
+
+    /**
+     * 获取金额展示
+     * @return
+     */
+    @Transient
+    public String getAmountView() {
+        if (this.getAmount() == null) {
+            return null;
+        }
+        return MoneyUtils.centToYuan(this.getAmount());
+    }
+
+    /**
+     * 是否可打印
+     * @return
+     */
+    @Transient
+    public boolean getPrintEnable() {
+        return Integer.valueOf(SettleStateEnum.DEAL.getCode()).equals(this.getState()) && Integer.valueOf(ReverseEnum.NO.getCode()).equals(this.getReverse());
     }
 }

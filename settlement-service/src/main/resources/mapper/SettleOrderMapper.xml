@@ -7,11 +7,12 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
+    <result column="mch_id" jdbcType="BIGINT" property="mchId" />
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="order_code" jdbcType="VARCHAR" property="orderCode" />
     <result column="business_code" jdbcType="VARCHAR" property="businessCode" />
-    <result column="business_type" jdbcType="TINYINT" property="businessType" />
+    <result column="business_type" jdbcType="VARCHAR" property="businessType" />
     <result column="business_dep_id" jdbcType="BIGINT" property="businessDepId" />
     <result column="business_dep_name" jdbcType="VARCHAR" property="businessDepName" />
     <result column="customer_id" jdbcType="BIGINT" property="customerId" />
@@ -33,9 +34,7 @@
     <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
     <result column="bank_card_holder" jdbcType="VARCHAR" property="bankCardHolder" />
     <result column="serial_number" jdbcType="VARCHAR" property="serialNumber" />
-    <result column="edit_enable" jdbcType="TINYINT" property="editEnable" />
     <result column="notes" jdbcType="VARCHAR" property="notes" />
-    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />
     <result column="version" jdbcType="INTEGER" property="version"/>
     <result column="charge_date" jdbcType="DATE" property="chargeDate" />
 
@@ -46,20 +45,24 @@
     <result column="trade_card_no" jdbcType="VARCHAR" property="tradeCardNo" />
     <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
     <result column="reverse" jdbcType="TINYINT" property="reverse"/>
+    <result column="deduct_enable" jdbcType="TINYINT" property="deductEnable"/>
   </resultMap>
   <sql id="Base_Column_List">
-    `id`, `market_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
+    `id`, `market_id`, `mch_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
     `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
-    `edit_enable`, `notes`, `return_url`,`version`,`charge_date`,
-    `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,`trade_customer_name`,`trade_card_no`,`trade_no`,`reverse`
+    `notes` ,`version`,`charge_date`, `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,
+    `trade_customer_name`,`trade_card_no`,`trade_no`,`reverse`, `deduct_enable`
   </sql>
 
   <!-- 用于单表的条件判断 -->
   <sql id="LIST_CONDITION">
     <if test="marketId != null">
       and `market_id` = #{marketId}
+    </if>
+    <if test="mchId != null">
+      and `mch_id` = #{mchId}
     </if>
     <if test="appId != null">
       and `app_id` = #{appId}
@@ -82,9 +85,9 @@
         #{appId}
       </foreach>
     </if>
-    <if test="businessTypeList != null and businessTypeList.size() > 0">
+    <if test="businessTypeArray != null and businessTypeArray.length > 0">
       and `business_type` in
-      <foreach collection="businessTypeList" item="businessType" separator="," open="(" close=")">
+      <foreach collection="businessTypeArray" item="businessType" separator="," open="(" close=")">
         #{businessType}
       </foreach>
     </if>
@@ -131,12 +134,13 @@
       and (`charge_date` &lt;= #{chargeDateEnd} or id in (select order_id from settle_way_detail where `charge_date` &lt;= #{chargeDateEnd}))
     </if>
   </sql>
+
   <!-- 根据条件查询 -->
   <select id="list" parameterType="com.dili.settlement.dto.SettleOrderDto" resultMap="BaseResultMap">
     select
-        <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List"/>
     from settle_order where 1=1
-        <include refid="LIST_CONDITION"/>
+    <include refid="LIST_CONDITION"/>
     <if test="sort != null and sort != '' and order != null and order != ''">
       ORDER BY ${sort} ${order}
     </if>

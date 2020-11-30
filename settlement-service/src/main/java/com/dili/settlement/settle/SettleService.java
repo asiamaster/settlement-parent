@@ -3,6 +3,7 @@ package com.dili.settlement.settle;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
+import org.springframework.ui.ModelMap;
 
 /**
  * 结算参数验证
@@ -85,4 +86,12 @@ public interface SettleService {
      * @param reverseOrder
      */
     void invalidSpecial(SettleOrder po, SettleOrder reverseOrder);
+
+    /**
+     * 跳转到结算方式个性化页面
+     * @param settleOrderDto
+     * @param modelMap
+     * @return
+     */
+    String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap);
 }

@@ -5,9 +5,8 @@ import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.CallbackDto;
-import com.dili.settlement.enums.AppGroupCodeEnum;
-import com.dili.settlement.enums.SignTypeEnum;
-import com.dili.settlement.service.ApplicationConfigService;
+import com.dili.settlement.enums.LinkTypeEnum;
+import com.dili.settlement.service.SettleOrderLinkService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.settlement.util.GeneralUtil;
 import org.slf4j.Logger;
@@ -23,12 +22,12 @@ import java.util.concurrent.Callable;
 public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
     private static Logger LOGGER = LoggerFactory.getLogger(PrepareQueueTask.class);
 
-    //加载配置
-    private ApplicationConfigService applicationConfigService;
+    //加载链接
+    private SettleOrderLinkService settleOrderLinkService;
 
-    public PrepareQueueTask(CallbackConfiguration callbackConfiguration, ApplicationConfigService applicationConfigService) {
+    public PrepareQueueTask(CallbackConfiguration callbackConfiguration, SettleOrderLinkService settleOrderLinkService) {
         super(callbackConfiguration);
-        this.applicationConfigService = applicationConfigService;
+        this.settleOrderLinkService = settleOrderLinkService;
     }
 
     @Override
@@ -46,15 +45,14 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
             try {
                 SortedMap<String, String> map = getMapData(settleOrder);
                 if (callbackConfiguration.getSign()) {
-                    String signKey = applicationConfigService.getVal(settleOrder.getAppId(), AppGroupCodeEnum.APP_SIGN_KEY.getCode(), SignTypeEnum.CALLBACK.getCode());
-                    sign(map, signKey);
+                    sign(map, callbackConfiguration.getSignKey());
                 }
                 CallbackDto callbackDto = new CallbackDto();
                 callbackDto.setTimes(callbackConfiguration.getTimes());
                 callbackDto.setInterval(callbackConfiguration.getIntervalMills());
-                callbackDto.setUrl(settleOrder.getReturnUrl());
+                callbackDto.setUrl(settleOrderLinkService.getUrl(settleOrder.getId(), LinkTypeEnum.CALLBACK.getCode()));
                 callbackDto.setData(map);
-                callbackDto.setRetryRecordId(settleOrder.getRetryRecordId());
+                //callbackDto.setRetryRecordId(settleOrder.getRetryRecordId());
                 callbackDto.setBusinessId(settleOrder.getId());
                 callbackDto.setBusinessCode(settleOrder.getCode());
                 CallbackHolder.offerExecute(callbackDto);
@@ -104,9 +102,7 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
             }
             builder.append(key).append("=").append(map.get(key)).append("&");
         }
-        if (StrUtil.isBlank(signKey)) {
-            builder.append("signKey=").append(callbackConfiguration.getSignKey());
-        } else {
+        if (!StrUtil.isBlank(signKey)) {
             builder.append("signKey=").append(signKey);
         }
         String signResult = GeneralUtil.md5(builder.toString());

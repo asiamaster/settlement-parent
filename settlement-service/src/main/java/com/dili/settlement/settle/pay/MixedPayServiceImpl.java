@@ -1,15 +1,18 @@
 package com.dili.settlement.settle.pay;
 
 import cn.hutool.core.collection.CollUtil;
+import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.service.SettleWayDetailService;
+import com.dili.settlement.service.SettleWayService;
 import com.dili.settlement.settle.PayService;
 import com.dili.ss.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import java.util.List;
 
@@ -21,6 +24,16 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
 
     @Autowired
     private SettleWayDetailService settleWayDetailService;
+
+    @Autowired
+    private SettleWayService settleWayService;
+
+    @Override
+    public String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
+        List<SettleConfig> wayList = settleWayService.payFormList(settleOrderDto.getMarketId());
+        modelMap.addAttribute("wayList", wayList);
+        return "pay/special_mixed";
+    }
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
@@ -47,8 +60,8 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
     public void settleAfter(SettleOrder po, SettleOrderDto settleOrderDto) {
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
         for (SettleWayDetail temp : settleOrderDto.getSettleWayDetailList()) {
-            temp.setOrderId(po.getId());
-            temp.setOrderCode(po.getCode());
+            temp.setSettleOrderId(po.getId());
+            temp.setSettleOrderCode(po.getCode());
         }
         settleWayDetailService.batchInsert(settleOrderDto.getSettleWayDetailList());
     }
@@ -57,12 +70,12 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
     public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
         fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
         SettleWayDetail query = new SettleWayDetail();
-        query.setOrderId(po.getId());
+        query.setSettleOrderId(po.getId());
         List<SettleWayDetail> wayDetailList = settleWayDetailService.listByExample(query);
         for (SettleWayDetail wayDetail : wayDetailList) {
             wayDetail.setId(null);
-            wayDetail.setOrderId(reverseOrder.getId());
-            wayDetail.setOrderCode(reverseOrder.getCode());
+            wayDetail.setSettleOrderId(reverseOrder.getId());
+            wayDetail.setSettleOrderCode(reverseOrder.getCode());
         }
         settleWayDetailService.batchInsert(wayDetailList);
     }

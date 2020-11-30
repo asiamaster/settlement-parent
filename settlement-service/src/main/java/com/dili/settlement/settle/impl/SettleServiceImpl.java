@@ -10,7 +10,8 @@ import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
-import com.dili.settlement.service.CodeService;
+import com.dili.settlement.resolver.RpcResultResolver;
+import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.FundAccountService;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleOrderService;
@@ -35,7 +36,7 @@ public abstract class SettleServiceImpl implements SettleService {
     protected FundAccountService fundAccountService;
 
     @Autowired
-    private CodeService codeService;
+    private UidRpc uidRpc;
 
     @Override
     public void validSubmitParams(SettleOrderDto settleOrderDto) {
@@ -87,7 +88,7 @@ public abstract class SettleServiceImpl implements SettleService {
         //存入回调重试记录  方便定时任务扫描
         RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
         retryRecordService.insertSelective(retryRecord);
-        po.setRetryRecordId(retryRecord.getId());
+       //po.setRetryRecordId(retryRecord.getId());
         //后置处理
         settleAfter(po, settleOrderDto);
     }
@@ -102,7 +103,7 @@ public abstract class SettleServiceImpl implements SettleService {
         SettleOrder reverseOrder = new SettleOrder();
         BeanUtil.copyProperties(po, reverseOrder);
         reverseOrder.setId(null);
-        reverseOrder.setCode(codeService.generate(param.getMarketCode() + "_settleOrder"));
+        reverseOrder.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(param.getMarketCode() + "_settleOrder"), "uid-service"));
         reverseOrder.setOrderCode(po.getCode());
         reverseOrder.setOperatorId(param.getOperatorId());
         reverseOrder.setOperatorName(param.getOperatorName());

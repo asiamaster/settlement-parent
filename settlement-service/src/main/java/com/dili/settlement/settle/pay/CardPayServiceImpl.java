@@ -1,28 +1,28 @@
 package com.dili.settlement.settle.pay;
 
 import cn.hutool.core.util.StrUtil;
-import com.dili.settlement.component.FirmIdHolder;
+import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.UserAccountCardResponseDto;
 import com.dili.settlement.dto.UserAccountSingleQueryDto;
 import com.dili.settlement.dto.pay.*;
-import com.dili.settlement.enums.AppGroupCodeEnum;
 import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.enums.TradeChannelEnum;
+import com.dili.settlement.enums.TradeTypeEnum;
 import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.settlement.rpc.resolver.GenericRpcResolver;
 import com.dili.settlement.rpc.resolver.PayRpcResolver;
 import com.dili.settlement.service.ApplicationConfigService;
 import com.dili.settlement.settle.PayService;
-import com.dili.settlement.type.TradeChannel;
-import com.dili.settlement.type.TradeType;
 import com.dili.ss.exception.BusinessException;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,11 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
     private ApplicationConfigService applicationConfigService;
     @Autowired
     private AccountQueryRpc accountQueryRpc;
+
+    @Override
+    public String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
+        return "pay/special_card";
+    }
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
@@ -80,9 +85,9 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         //调用接口验证园区卡是否可用
         checkCardInfo(settleOrderDto.getTradeCardNo(), po.getMarketId());
         //构建创建交易参数
-        FirmIdHolder.set(po.getMarketId());//设置市场ID
+        MchIdHolder.set(po.getMarketId());//设置市场ID
         if (po.getAmount() != 0L) {
-            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeType.FEE.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), PAY_BUSINESS_PREFIX + po.getOrderCode(), "摊位租赁");
+            CreateTradeRequestDto createTradeRequest = CreateTradeRequestDto.build(TradeTypeEnum.FEE.getCode(), settleOrderDto.getTradeFundAccountId(), po.getAmount(), PAY_BUSINESS_PREFIX + po.getOrderCode(), "摊位租赁");
             //创建交易
             CreateTradeResponseDto createTradeResponseDto = payRpcResolver.prePay(createTradeRequest);
             po.setTradeNo(createTradeResponseDto.getTradeId());
@@ -96,28 +101,28 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         //存入回调重试记录  方便定时任务扫描
         RetryRecord retryRecord = new RetryRecord(RetryTypeEnum.SETTLE_CALLBACK.getCode(), po.getId(), po.getCode());
         retryRecordService.insertSelective(retryRecord);
-        po.setRetryRecordId(retryRecord.getId());
+        //po.setRetryRecordId(retryRecord.getId());
 
         //修改市场虚拟资金
         fundAccountService.add(po.getMarketId(), po.getAppId(), po.getAmount());
 
         if (po.getAmount() != 0L) {
             //提交交易
-            TradeRequestDto tradeRequest = TradeRequestDto.build(po.getTradeNo(), settleOrderDto.getTradeFundAccountId(), TradeChannel.BALANCE.getCode(), settleOrderDto.getTradePassword(), createFees(po));
+            TradeRequestDto tradeRequest = TradeRequestDto.build(po.getTradeNo(), settleOrderDto.getTradeFundAccountId(), TradeChannelEnum.BALANCE.getCode(), settleOrderDto.getTradePassword(), createFees(po));
             payRpcResolver.trade(tradeRequest);
         }
 
-        FirmIdHolder.clear();//清除市场ID
+        MchIdHolder.clear();//清除市场ID
     }
 
 
     @Override
     public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder) {
         fundAccountService.sub(po.getMarketId(), po.getAppId(), po.getAmount());
-        FirmIdHolder.set(po.getMarketId());//设置市场ID
+        MchIdHolder.set(po.getMarketId());//设置市场ID
         InvalidTradeRequestDto requestDto = InvalidTradeRequestDto.build(po.getTradeNo());
         TradeResponseDto responseDto = payRpcResolver.invalid(requestDto);
-        FirmIdHolder.clear();//清除市场ID
+        MchIdHolder.clear();//清除市场ID
     }
 
     /**
@@ -128,9 +133,9 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
      */
     private List<FeeItemDto> createFees(SettleOrder po) {
         List<FeeItemDto> fees = new ArrayList<>();
-        FeeItemDto feeItem = FeeItemDto.build(po.getAmount(), po.getBusinessType(), applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
-        feeItem.setTypeName(applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
-        fees.add(feeItem);
+        //FeeItemDto feeItem = FeeItemDto.build(po.getAmount(), po.getBusinessType(), applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
+        //feeItem.setTypeName(applicationConfigService.getVal(po.getAppId(), AppGroupCodeEnum.APP_BUSINESS_TYPE.getCode(), po.getBusinessType()));
+        //fees.add(feeItem);
         return fees;
     }
 

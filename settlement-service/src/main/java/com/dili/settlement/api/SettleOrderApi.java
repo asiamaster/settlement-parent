@@ -1,34 +1,26 @@
 package com.dili.settlement.api;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.dili.settlement.component.CallbackHolder;
-import com.dili.settlement.component.OrderValidateDispatchHandler;
-import com.dili.settlement.component.SettleDispatchHandler;
+import com.dili.settlement.dispatcher.PayDispatcher;
+import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.dto.SettleResultDto;
-import com.dili.settlement.enums.EditEnableEnum;
+import com.dili.settlement.enums.EnableEnum;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
-import com.dili.settlement.service.CodeService;
+import com.dili.settlement.resolver.RpcResultResolver;
+import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 结算单相关api
@@ -38,17 +30,14 @@ import java.util.Map;
 public class SettleOrderApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(SettleOrderApi.class);
 
-    @Resource
-    private CodeService codeService;
+    @Autowired
+    private UidRpc uidRpc;
 
-    @Resource
+    @Autowired
     private SettleOrderService settleOrderService;
 
-    @Resource
-    private OrderValidateDispatchHandler orderValidateDispatchHandler;
-
-    @Resource
-    private SettleDispatchHandler settleDispatchHandler;
+    @Autowired
+    private PayDispatcher settleDispatchHandler;
     /**
      * 提交结算单接口
      * @param settleOrderDto
@@ -56,395 +45,75 @@ public class SettleOrderApi {
      */
     @RequestMapping(value = "/save")
     public BaseOutput<SettleOrder> save(@RequestBody SettleOrderDto settleOrderDto) {
-        try {
-            orderValidateDispatchHandler.validParams(settleOrderDto);
-            SettleOrder settleOrder = BeanUtil.toBean(settleOrderDto, SettleOrder.class);
-            settleOrder.setCode(codeService.generate(settleOrderDto.getMarketCode() + "_settleOrder"));
-            settleOrder.setState(SettleStateEnum.WAIT_DEAL.getCode());
-            settleOrder.setSubmitTime(DateUtil.nowDateTime());
-            settleOrder.setEditEnable(settleOrder.getEditEnable() == null ? EditEnableEnum.YES.getCode() : settleOrder.getEditEnable());
-            settleOrder.setReverse(ReverseEnum.NO.getCode());
-            settleOrderService.save(settleOrder);
-            return BaseOutput.success().setData(settleOrder);
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("method save", e);
-            return BaseOutput.failure();
-        }
+        validateSaveParams(settleOrderDto);
+        settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), "uid-service"));
+        settleOrderDto.setState(SettleStateEnum.WAIT_DEAL.getCode());
+        settleOrderDto.setSubmitTime(DateUtil.nowDateTime());
+        settleOrderDto.setDeductEnable(settleOrderDto.getDeductEnable() == null ? EnableEnum.NO.getCode() : settleOrderDto.getDeductEnable());
+        settleOrderDto.setReverse(ReverseEnum.NO.getCode());
+        SettleOrder settleOrder = settleOrderService.save(settleOrderDto);
+        return BaseOutput.success().setData(settleOrder);
     }
 
     /**
-     * 根据结算单id取消
-     * @param id
-     * @return
-     */
-    @RequestMapping(value = "/cancelById")
-    public BaseOutput<String> cancelById(Long id) {
-        try {
-            if (id == null) {
-                return BaseOutput.failure("结算单ID为空");
-            }
-            settleOrderService.cancelById(id);
-            return BaseOutput.success();
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("method cancelById", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据结算单编号取消
-     * @param code
-     * @return
-     */
-    @RequestMapping(value = "/cancelByCode")
-    public BaseOutput<String> cancelByCode(String code) {
-        try {
-            if (StrUtil.isBlank(code)) {
-                return BaseOutput.failure("结算单号为空");
-            }
-            settleOrderService.cancelByCode(code);
-            return BaseOutput.success();
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("method cancelByCode", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据appId businessCode取消
-     * @param appId 应用ID
-     * @param orderCode 订单号
-     * @return
-     */
-    @RequestMapping(value = "/cancel")
-    public BaseOutput<String> cancel(Long appId, String orderCode) {
-        try {
-            if (appId == null) {
-                return BaseOutput.failure("应用ID为空");
-            }
-            if (StrUtil.isBlank(orderCode)) {
-                return BaseOutput.failure("订单号为空");
-            }
-            settleOrderService.cancel(appId, orderCode);
-            return BaseOutput.success();
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("method cancel", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 查询结算单列表
-     * @param query
-     * @return
-     */
-    @RequestMapping(value = "/list")
-    public BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query) {
-        try {
-            List<SettleOrder> itemList = settleOrderService.list(query);
-            return BaseOutput.success().setData(itemList);
-        } catch (Exception e) {
-            LOGGER.error("method list", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 分页查询结算单列表
-     * @param query
-     * @return
-     */
-    @RequestMapping(value = "/listPage")
-    public PageOutput<List<SettleOrder>> listPage(@RequestBody SettleOrderDto query) {
-        try {
-            return settleOrderService.listPagination(query);
-        } catch (Exception e) {
-            LOGGER.error("method listPage", e);
-            return PageOutput.failure();
-        }
-    }
-
-    /**
-     * 根据id查询结算单
-     * @param id
-     * @return
-     */
-    @RequestMapping(value = "/getById")
-    public BaseOutput<SettleOrder> getById(Long id) {
-        try {
-            if (id == null) {
-                return BaseOutput.failure("ID为空");
-            }
-            return BaseOutput.success().setData(settleOrderService.get(id));
-        } catch (Exception e) {
-            LOGGER.error("method getById", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据结算单号查询结算单
-     * @param code
-     * @return
-     */
-    @RequestMapping(value = "/getByCode")
-    public BaseOutput<SettleOrder> getByCode(String code) {
-        try {
-            if (StrUtil.isBlank(code)) {
-                return BaseOutput.failure("结算单号为空");
-            }
-            return BaseOutput.success().setData(settleOrderService.getByCode(code));
-        } catch (Exception e) {
-            LOGGER.error("method getByCode", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据appId businessCode 查询结算单
-     * @param appId 应用ID
-     * @param orderCode 业务编号
-     * @return
-     */
-    @RequestMapping(value = "/get")
-    public BaseOutput<SettleOrder> get(Long appId, String orderCode) {
-        try {
-            if (appId == null) {
-                return BaseOutput.failure("应用ID为空");
-            }
-            if (StrUtil.isBlank(orderCode)) {
-                return BaseOutput.failure("订单号为空");
-            }
-            return BaseOutput.success().setData(settleOrderService.get(appId, orderCode));
-        } catch (Exception e) {
-            LOGGER.error("method get", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据appId businessCode 验证是否已结算
-     * @param appId 应用ID
-     * @param orderCode 订单号
-     * @return
-     */
-    @RequestMapping(value = "/settleConfirm")
-    public BaseOutput<Map<String, Object>> settleConfirm(Long appId, String orderCode) {
-        try {
-            if (appId == null) {
-                return BaseOutput.failure("应用ID为空");
-            }
-            if (StrUtil.isBlank(orderCode)) {
-                return BaseOutput.failure("订单号为空");
-            }
-            SettleOrder po = settleOrderService.get(appId, orderCode);
-            if (po == null) {
-                return BaseOutput.failure("未查询到结算单记录");
-            }
-            Map<String, Object> map = new HashMap<>(2);
-            //返回true表示已结算 false 表示未结算
-            map.put("flag", po.getState().equals(SettleStateEnum.DEAL.getCode()));
-            map.put("settleOrder", po);
-            return BaseOutput.success().setData(map);
-        } catch (Exception e) {
-            LOGGER.error("method settleConfirm", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 根据id列表查询总额
+     * 验证提交接口的参数
      * @param settleOrderDto
-     * @return
      */
-    @RequestMapping(value = "/queryTotalAmount")
-    public BaseOutput<Long> queryTotalAmount(@RequestBody SettleOrderDto settleOrderDto) {
-        try {
-            if (CollUtil.isEmpty(settleOrderDto.getIdList())) {
-                return BaseOutput.failure("ID列表为空");
-            }
-            Long totalAmount = settleOrderService.queryTotalAmount(settleOrderDto);
-            return BaseOutput.success().setData(totalAmount);
-        } catch (Exception e) {
-            LOGGER.error("method queryTotalAmount");
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 处理支付逻辑
-     * @param settleOrderDto
-     * @return
-     */
-    @RequestMapping(value = "/pay")
-    public BaseOutput<SettleResultDto> pay(@RequestBody SettleOrderDto settleOrderDto) {
-        try {
-            settleDispatchHandler.validPayParams(settleOrderDto);
-            SettleResultDto settleResultDto = new SettleResultDto();
-            settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
-            for (Long id : settleOrderDto.getIdList()) {
-                SettleOrder po = null;
-                try {
-                    po = settleOrderService.get(id);
-                    if (po == null) {
-                        settleResultDto.failure(null);
-                        continue;
-                    }
-                    settleDispatchHandler.pay(po, settleOrderDto);
-                    CallbackHolder.offerSource(po);//触发回调
-                    settleResultDto.success(po);
-                } catch (Exception e) {
-                    LOGGER.error(po != null ? po.getCode() : "", e);
-                    settleResultDto.failure(po);
-                }
-            }
-            return BaseOutput.success().setData(settleResultDto);
-        } catch (Exception e) {
-            LOGGER.error("method pay", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 处理退款逻辑
-     * @param settleOrderDto
-     * @return
-     */
-    @RequestMapping(value = "/refund")
-    public BaseOutput<SettleResultDto> refund(@RequestBody SettleOrderDto settleOrderDto) {
-        try {
-            settleDispatchHandler.validRefundParams(settleOrderDto);
-            SettleResultDto settleResultDto = new SettleResultDto();
-            settleResultDto.setTotalNum(settleOrderDto.getIdList().size());
-            for (Long id : settleOrderDto.getIdList()) {
-                SettleOrder po = null;
-                try {
-                    po = settleOrderService.get(id);
-                    if (po == null) {
-                        settleResultDto.failure(null);
-                        continue;
-                    }
-                    settleDispatchHandler.refund(po, settleOrderDto);
-                    CallbackHolder.offerSource(po);//触发回调
-                    settleResultDto.success(po);
-                } catch (Exception e) {
-                    LOGGER.error(po != null ? po.getCode() : "", e);
-                    settleResultDto.failure(po);
-                }
-            }
-            return BaseOutput.success().setData(settleResultDto);
-        } catch (Exception e) {
-            LOGGER.error("method refund", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 用于改数据接口-批量新增已处理单据
-     * @param itemList
-     * @return
-     */
-    @RequestMapping(value = "/batchSaveDealt")
-    public BaseOutput<?> batchSaveDealt(@RequestBody List<SettleOrder> itemList) {
-        try {
-            if (CollUtil.isEmpty(itemList)) {
-                return BaseOutput.failure("结算单列表为空");
-            }
-            settleOrderService.batchSaveDealt(itemList);
-            return BaseOutput.success();
-        } catch (Exception e) {
-            LOGGER.error("batchSaveDealt", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 用于改数据接口-批量新增已处理、删除单据
-     * @param itemList
-     * @return
-     */
-    @RequestMapping(value = "/batchSaveDealtAndDelete")
-    public BaseOutput<?> batchSaveDealtAndDelete(@RequestBody List<SettleOrder> itemList) {
-        try {
-            if (CollUtil.isEmpty(itemList)) {
-                return BaseOutput.failure("结算单列表为空");
-            }
-            settleOrderService.batchSaveDealtAndDelete(itemList);
-            return BaseOutput.success();
-        } catch (Exception e) {
-            LOGGER.error("batchSaveDealtAndDelete", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 用于改数据接口-批量修改金额
-     * @param itemList [{"code":"13124214","amount":1000}]
-     * @return
-     */
-    @RequestMapping(value = "/batchUpdateAmount")
-    public BaseOutput<?> batchUpdateAmount(@RequestBody List<Map<String, Object>> itemList) {
-        try {
-            if (CollUtil.isEmpty(itemList)) {
-                return BaseOutput.failure("参数列表为空");
-            }
-            settleOrderService.batchUpdateAmount(itemList);
-            return BaseOutput.success();
-        } catch (Exception e) {
-            LOGGER.error("batchUpdateAmount", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 用于作废业务接口
-     * @param param
-     * @return
-     */
-    @RequestMapping(value = "/invalid")
-    public BaseOutput<?> invalid(@RequestBody InvalidRequestDto param) {
-        try {
-            checkInvalidParam(param);
-            settleOrderService.invalid(param);
-            return BaseOutput.success();
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("invalid", e);
-            return BaseOutput.failure();
-        }
-    }
-
-    /**
-     * 验证作废请求参数
-     * @param param
-     */
-    private void checkInvalidParam(InvalidRequestDto param) {
-        if (param.getMarketId() == null) {
+    private void validateSaveParams(SettleOrderDto settleOrderDto) {
+        if (settleOrderDto.getMarketId() == null) {
             throw new BusinessException("", "市场ID为空");
         }
-        if (StrUtil.isBlank(param.getMarketCode())) {
+        if (settleOrderDto.getMchId() == null) {
+            throw new BusinessException("", "商户ID为空");
+        }
+        if (StrUtil.isBlank(settleOrderDto.getMarketCode())) {
             throw new BusinessException("", "市场编码为空");
         }
-        if (param.getAppId() == null) {
+        if (settleOrderDto.getAppId() == null) {
             throw new BusinessException("", "应用ID为空");
         }
-        if (param.getOperatorId() == null) {
-            throw new BusinessException("", "操作员ID为空");
+        if (settleOrderDto.getBusinessType() == null) {
+            throw new BusinessException("", "业务类型为空");
         }
-        if (StrUtil.isBlank(param.getOperatorName())) {
-            throw new BusinessException("", "操作员姓名为空");
+        if (StrUtil.isBlank(settleOrderDto.getOrderCode())) {
+            throw new BusinessException("", "订单号为空");
         }
-        if (CollUtil.isEmpty(param.getOrderCodeList())) {
-            throw new BusinessException("", "订单号列表为空");
+        if (settleOrderDto.getCustomerId() == null) {
+            throw new BusinessException("", "客户ID为空");
+        }
+        if (StrUtil.isBlank(settleOrderDto.getCustomerName())) {
+            throw new BusinessException("", "客户姓名为空");
+        }
+        if (StrUtil.isBlank(settleOrderDto.getCustomerPhone())) {
+            throw new BusinessException("", "客户手机号为空");
+        }
+        if (settleOrderDto.getType() == null) {
+            throw new BusinessException("", "结算类型为空");
+        }
+        if (settleOrderDto.getAmount() == null || settleOrderDto.getAmount() < 0L) {
+            throw new BusinessException("", "金额不合法");
+        }
+        if (settleOrderDto.getSubmitterId() == null) {
+            throw new BusinessException("", "提交人ID为空");
+        }
+        if (StrUtil.isBlank(settleOrderDto.getSubmitterName())) {
+            throw new BusinessException("", "提交人姓名为空");
+        }
+        if (CollUtil.isEmpty(settleOrderDto.getSettleFeeItemList())) {
+            throw new BusinessException("", "费用项列表为空");
+        }
+        if (CollUtil.isEmpty(settleOrderDto.getSettleOrderLinkList())) {
+            throw new BusinessException("", "链接列表为空");
+        }
+        long totalFeeAmount = 0L;
+        for (SettleFeeItem feeItem : settleOrderDto.getSettleFeeItemList()) {
+            if (feeItem.getAmount() == null || feeItem.getAmount() < 0L) {
+                throw new BusinessException("", "费用项金额不合法");
+            }
+            totalFeeAmount += feeItem.getAmount();
+        }
+        if (!settleOrderDto.getAmount().equals(totalFeeAmount)) {
+            throw new BusinessException("", "结算金额与费用项总额不相等");
         }
     }
 }

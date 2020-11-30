@@ -1,0 +1,204 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form id="queryForm" role="form">
+        <div class="row">
+            <div class="form-group col-auto">
+                业务类型
+            </div>
+            <div class="form-group col-auto">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input chk-type-all" type="checkbox" checked>
+                    <label class="form-check-label">全选</label>
+                </div>
+            </div>
+            <div class="row"></div>
+            <% if (isNotEmpty(businessTypeList) && businessTypeList.~size > 0) {
+                for (type in businessTypeList) {
+            %>
+            <div class="form-group col-auto">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input chk-type-item" type="checkbox" name="businessTypeArray[${typeLP.dataIndex}]" value="${type.code}" checked>
+                    <label class="form-check-label">${type.name!}</label>
+                </div>
+            </div>
+            <% } }%>
+        </div>
+        <div class="row  row-cols-6">
+            <div class="form-group col">
+                <label for="business-dep" class="">业务所属部门</label>
+                <select id="business-dep" name="businessDepId" class="form-control"></select>
+                <#bcomboProvider _id='business-dep' _provider='departmentProvider' _queryParams='{emptyText:"全部",marketId:"${marketId}"}'/>
+            </div>
+            <div class="form-group col">
+                <label for="customerNameMatch" class="">客户名称</label>
+                <input type="text" class="form-control" name="customerNameMatch" id="customerNameMatch" maxlength="50"/>
+            </div>
+            <div class="form-group col">
+                <label for="operatorNameMatch" class="">结算员</label>
+                <input type="text" class="form-control" name="operatorNameMatch" id="operatorNameMatch" maxlength="50"/>
+            </div>
+            <div class="form-group col">
+                <label for="code" class="">结算编号</label>
+                <input type="text" class="form-control" name="code" id="code" maxlength="50"/>
+            </div>
+            <div class="form-group col">
+                <label for="businessCode" class="">业务单号</label>
+                <input type="text" class="form-control" name="businessCode" id="businessCode" maxlength="50"/>
+            </div>
+            <div class="form-group col">
+                <label for="settle-state" class="">结算状态</label>
+                <select id="settle-state" name="state" class="form-control"></select>
+                <#bcomboProvider _id='settle-state' _provider='settleStateProvider' _queryParams='{emptyText:"全部"}'/>
+            </div>
+            <div class="form-group col">
+                <label for="settle-type" class="">结算类型</label>
+                <select id="settle-type" name="type" class="form-control"></select>
+                <#bcomboProvider _id='settle-type' _provider='settleTypeProvider' _queryParams='{emptyText:"全部"}'/>
+            </div>
+            <div class="form-group col">
+                <label for="settle-way" class="">结算方式</label>
+                <select id="settle-way" name="way" class="form-control"></select>
+                <#bcomboProvider _id='settle-way' _provider='settleWayProvider' _queryParams='{emptyText:"全部"}'/>
+            </div>
+            <div class="form-group col">
+                <label for="settle-reverse" class="">是否红冲</label>
+                <select id="settle-reverse" name="reverse" class="form-control"></select>
+                <#bcomboProvider _id='settle-reverse' _provider='reverseProvider' _queryParams='{emptyText:"全部"}'/>
+            </div>
+            <div class="form-group col-auto">
+                <label class="justify-content-end">结算时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="operateTimeStart" id="operateTimeStart" value="${operateTimeStart!}" class="form-control laydatetime"/>
+                        <div class="input-group-append">
+                            <label for="operateTimeStart"  class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="operateTimeEnd" id="operateTimeEnd" value="${operateTimeEnd!}" class="form-control laydatetime"/>
+                        <div class="input-group-append">
+                            <label for="operateTimeEnd"  class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <label class="justify-content-end">收款日期</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="chargeDateStart" id="chargeDateStart" value="${chargeDateStart!}" class="form-control laydate"/>
+                        <div class="input-group-append">
+                            <label for="chargeDateStart"  class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="chargeDateEnd" id="chargeDateEnd" value="${chargeDateEnd!}" class="form-control laydate"/>
+                        <div class="input-group-append">
+                            <label for="chargeDateEnd"  class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col align-self-center mt-3">
+                <button type="button" class="btn btn-outline-primary mr-2"  onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button type="button" class="btn btn-outline-primary" onclick="queryDataHandler()"><i class="fa fa-search"></i> 查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div class="row">
+        <div class="col-12">
+            <div id="toolbar" class="btn-group" role="group" aria-label="Toolbar with button groups">
+                <#resource code="settlement-reprint">
+                <button id="btn-reprint" type="button" class="btn btn-primary" onclick=""><i class="fa fa-print"></i>
+                    单据补打
+                </button>
+                </#resource>
+            </div>
+            <table id="grid" data-toggle="table" data-title="结算单" class="table" data-toolbar="#toolbar"
+                   data-pagination="true" data-page-number="1" data-page-size="10"
+                   data-query-params="queryParams" data-side-pagination="server" data-method="POST"
+                   data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+                   data-click-to-select="true" data-unique-id="id" data-sort-name="id"
+                   data-sort-order="desc" data-icons="bui.variable.icons" data-buttons-class="primary"
+                   data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-row-style="rowStyleHandler">
+                <thead>
+                <tr>
+                    <th data-align="center" data-checkbox="true"></th>
+                    <% if (hasResource("settlement-list-business-detail")) { %>
+                    <th data-field="businessCode" data-align="center" data-sortable="true" data-sort-name="business_code" data-formatter="businessCodeFormatter">
+                        业务单号
+                    </th>
+                    <% } else { %>
+                    <th data-field="businessCode" data-align="center" data-sortable="true" data-sort-name="business_code">
+                        业务单号
+                    </th>
+                    <% } %>
+                    <th data-field="businessTypeText" data-align="center" data-sortable="true" data-sort-name="business_type">
+                        业务类型
+                    </th>
+                    <th data-field="businessDepName" data-align="center" data-sortable="true" data-sort-name="business_dep_name">
+                        业务所属部门
+                    </th>
+                    <th data-field="customerName" data-align="center" data-sortable="true" data-sort-name="customer_name">
+                        客户名称
+                    </th>
+                    <th data-field="customerPhone" data-align="center" data-sortable="true" data-sort-name="customer_phone">
+                        联系电话
+                    </th>
+                    <th data-field="typeText" data-align="center" data-sortable="true" data-sort-name="type">
+                        结算类型
+                    </th>
+                    <th data-field="reverseText" data-align="center" data-sortable="false" data-sort-name="reverse">
+                        是否红冲
+                    </th>
+                    <th data-field="amountText" data-align="center" data-sortable="true" data-sort-name="amount">
+                        金额
+                    </th>
+                    <th data-field="operatorName" data-align="center" data-sortable="true" data-sort-name="operator_name">
+                        结算员
+                    </th>
+                    <th data-field="operateTime" data-align="center" data-sortable="true" data-sort-name="operate_time">
+                        结算时间
+                    </th>
+                    <th data-field="stateText" data-align="center" data-sortable="true" data-sort-name="state">
+                        结算状态
+                    </th>
+                    <th data-field="wayText" data-align="center" data-sortable="true" data-sort-name="way" data-formatter="settleWayFormatter">
+                        结算方式
+                    </th>
+                    <th data-field="serialNumber" data-align="center" data-sortable="false" data-sort-name="serial_number">
+                        流水号/卡号
+                    </th>
+                    <th data-field="code" data-align="center" data-sortable="true" data-sort-name="code">
+                        结算编号
+                    </th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" tabindex="-1" role="dialog" id="dialog-way-detail">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">结算方式明细</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow: auto;">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-5" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</#bs4Body>
+<#common_commonJs/>
+<#settleOrder_indexJs/>

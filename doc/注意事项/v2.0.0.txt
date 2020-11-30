@@ -1,0 +1,2 @@
+1、nacos上新增settlement.properties配置文件并合并原 settlement-service.properties 与 settlement-client.properties 内容，然后删除后两个文件。
+2、nacos上新增配置 log.maxHistory = 30。

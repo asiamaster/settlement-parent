@@ -42,7 +42,7 @@ public class RetryRecordServiceImpl extends BaseServiceImpl<RetryRecord, Long> i
                 delete(retryRecord.getId());
                 continue;
             }
-            settleOrder.setRetryRecordId(retryRecord.getId());
+            //settleOrder.setRetryRecordId(retryRecord.getId());
             CallbackHolder.offerSource(settleOrder);
         }
     }

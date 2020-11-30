@@ -1,0 +1,116 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form class="form" οnkeydοwn="if(event.keyCode==13){return false;}">
+        <input type="text" style="display: none"/>
+        <div class="row">
+            <div class="col-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="queryType" id="queryType1" value="1" checked>
+                    <label class="form-check-label" for="queryType1">
+                        姓名
+                    </label>
+                </div>
+            </div>
+            <div class="col-1">
+                <div class="form-check ">
+                    <input class="form-check-input" type="radio" name="queryType" id="queryType2" value="2">
+                    <label class="form-check-label" for="queryType2">
+                        证件号
+                    </label>
+                </div>
+            </div>
+            <% if (@com.dili.settlement.handler.SupportHandler.cardQuerySupport()) { %>
+            <div class="col-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="queryType" id="queryType3" value="3">
+                    <label class="form-check-label" for="queryType3">
+                        园区卡
+                    </label>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <div class="form-group">
+                    <label class="sr-only" for="keyword"></label>
+                    <input type="text" class="form-control" id="keyword" maxlength="40" placeholder="">
+                </div>
+            </div>
+            <div class="col-2 d-none">
+                <button type="button" class="btn btn-primary" id="btn-swipe-card">刷卡获取</button>
+            </div>
+        </div>
+        <div class="">
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn-clear"><i class="fa fa-refresh"></i> 清空</button>
+            <button type="button" class="btn btn-outline-primary" id="btn-query"><i class="fa fa-search"></i> 查询</button>
+        </div>
+    </form>
+
+<div class="d-none" id="customer-info">
+    </div>
+    <!-- 弹窗 -->
+    <div class="modal" tabindex="-1" role="dialog" id="dialog-customer-list">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择客户</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow: auto;">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-5" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary px-5" id="btn-choose-customer">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-none" id="settle-order-list">
+        <hr>
+        <table id="table-settle-order-list" data-toggle="table" data-title="缴费单列表" data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-icons="bui.variable.icons" data-buttons-class="primary">
+            <thead>
+                <tr>
+                    <th data-width-unit="%" data-width="2" data-align="center" data-checkbox="true"></th>
+                    <% if (hasResource("settlement-pay-business-detail")) { %>
+                    <th data-width-unit="%" data-width="10" data-field="businessCode" data-align="center" data-formatter="businessCodeFormatter">
+                        业务编号
+                    </th>
+                    <% } else { %>
+                    <th data-width-unit="%" data-width="10" data-field="businessCode" data-align="center">
+                        业务编号
+                    </th>
+                    <% } %>
+                    <th data-width-unit="%" data-width="10" data-field="businessTypeText" data-align="center">
+                        业务类型
+                    </th>
+                    <th data-width-unit="%" data-width="10" data-field="amountText" data-align="center">
+                        支付金额
+                    </th>
+                    <th data-width-unit="%" data-width="10" data-field="submitterName" data-align="center">
+                        提交人
+                    </th>
+                    <th data-width-unit="%" data-width="15" data-field="submitterDepName" data-align="center">
+                        提交人部门
+                    </th>
+                    <th data-width-unit="%" data-width="15" data-field="submitTime" data-align="center">
+                        提交时间
+                    </th>
+                </tr>
+            </thead>
+        </table>
+        <% if(hasResource("settlement-pay")) { %>
+        <div class="py-3 text-center">
+            <button type="button" class="btn btn-primary px-5" id="btn-certain-pay">确定</button>
+        </div>
+        <% } %>
+    </div>
+
+</div>
+</#bs4Body>
+<#common_commonJs/>
+<#common_settleJs/>
+<#pay_indexJs/>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.settlement.mapper.SettleFeeItemMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.SettleFeeItem">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="settle_order_id" jdbcType="BIGINT" property="settleOrderId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="fee_item_id" jdbcType="BIGINT" property="feeItemId" />
+    <result column="fee_item_name" jdbcType="VARCHAR" property="feeItemName" />
+    <result column="fee_type" jdbcType="INTEGER" property="feeType" />
+    <result column="fee_type_name" jdbcType="VARCHAR" property="feeTypeName" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `settle_order_id`, `type`, `fee_item_id`, `fee_item_name`, `fee_type`, `fee_type_name`, `amount`
+  </sql>
+</mapper>

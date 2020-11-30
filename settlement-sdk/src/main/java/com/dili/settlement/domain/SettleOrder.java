@@ -1,20 +1,16 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.dili.settlement.enums.ReverseEnum;
-import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.ss.util.MoneyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -31,6 +27,10 @@ public class SettleOrder extends BaseDomain {
     //市场ID
     @Column(name = "`market_id`")
     private Long marketId;
+
+    //商户ID
+    @Column(name = "`mch_id`")
+    private Long mchId;
 
     //应用ID
     @Column(name = "`app_id`")
@@ -50,7 +50,7 @@ public class SettleOrder extends BaseDomain {
 
     //业务类型
     @Column(name = "`business_type`")
-    private Integer businessType;
+    private String businessType;
 
     //业务部门id
     @Column(name = "`business_dep_id`")
@@ -142,17 +142,9 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`serial_number`")
     private String serialNumber;
 
-    //退款是否可编辑 枚举 EditEnableEnum
-    @Column(name = "`edit_enable`")
-    private Integer editEnable;
-
     //备注
     @Column(name = "`notes`")
     private String notes;
-
-    //结算回调url
-    @Column(name = "`return_url`")
-    private String returnUrl;
 
     @Column(name = "`version`")
     private Integer version;
@@ -190,30 +182,15 @@ public class SettleOrder extends BaseDomain {
     /** 是否冲正 0-否 1-是*/
     @Column(name = "`reverse`")
     private Integer reverse;
-    //是否进行枚举、字典值转换
-    @Transient
-    private Boolean convert;
-    //业务名称 用businessType值进行转换
-    @Transient
-    private String businessName;
-    //结算类型名称 用type值进行转换
-    @Transient
-    private String typeName;
-    //结算方式名称 用way值进行转换
-    @Transient
-    private String wayName;
-    //状态名称 用state值进行转换
-    @Transient
-    private String stateName;
-    //重试记录ID
-    @Transient
-    private Long retryRecordId;
-    //是否冲正标记 用reverse值进行转换
-    @Transient
-    private String reverseName;
-    //结算方式明细
-    @Transient
-    private List<SettleWayDetail> settleWayDetailList;
+
+    /** 是否可抵扣 0-否 1-是*/
+    @Column(name = "`deduct_enable`")
+    private Integer deductEnable;
+
+    /** 挂号(沈阳特有)*/
+    @Column(name = "`trailer_number`")
+    private String trailerNumber;
+
     /**
      * @return id
      */
@@ -244,6 +221,22 @@ public class SettleOrder extends BaseDomain {
      */
     public void setMarketId(Long marketId) {
         this.marketId = marketId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getMchId() {
+        return mchId;
+    }
+
+    /**
+     * setter
+     * @param mchId
+     */
+    public void setMchId(Long mchId) {
+        this.mchId = mchId;
     }
 
     /**
@@ -315,14 +308,14 @@ public class SettleOrder extends BaseDomain {
      */
     @FieldDef(label="businessType")
     @EditMode(editor = FieldEditor.Text, required = false)
-    public Integer getBusinessType() {
+    public String getBusinessType() {
         return businessType;
     }
 
     /**
      * @param businessType
      */
-    public void setBusinessType(Integer businessType) {
+    public void setBusinessType(String businessType) {
         this.businessType = businessType;
     }
 
@@ -663,22 +656,6 @@ public class SettleOrder extends BaseDomain {
     }
 
     /**
-     * @return edit_enable
-     */
-    @FieldDef(label="editEnable")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public Integer getEditEnable() {
-        return editEnable;
-    }
-
-    /**
-     * @param editEnable
-     */
-    public void setEditEnable(Integer editEnable) {
-        this.editEnable = editEnable;
-    }
-
-    /**
      * @return notes
      */
     @FieldDef(label="notes", maxLength = 40)
@@ -692,22 +669,6 @@ public class SettleOrder extends BaseDomain {
      */
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    /**
-     * @return return_url
-     */
-    @FieldDef(label="returnUrl", maxLength = 255)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getReturnUrl() {
-        return returnUrl;
-    }
-
-    /**
-     * @param returnUrl
-     */
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
     }
 
     public Integer getVersion() {
@@ -782,88 +743,19 @@ public class SettleOrder extends BaseDomain {
         this.reverse = reverse;
     }
 
-    public Boolean getConvert() {
-        return convert;
+    public Integer getDeductEnable() {
+        return deductEnable;
     }
 
-    public void setConvert(Boolean convert) {
-        this.convert = convert;
+    public void setDeductEnable(Integer deductEnable) {
+        this.deductEnable = deductEnable;
     }
 
-    public String getBusinessName() {
-        return businessName;
+    public String getTrailerNumber() {
+        return trailerNumber;
     }
 
-    public void setBusinessName(String businessName) {
-        this.businessName = businessName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    public String getWayName() {
-        return wayName;
-    }
-
-    public void setWayName(String wayName) {
-        this.wayName = wayName;
-    }
-
-    public String getStateName() {
-        return stateName;
-    }
-
-    public void setStateName(String stateName) {
-        this.stateName = stateName;
-    }
-
-    public Long getRetryRecordId() {
-        return retryRecordId;
-    }
-
-    public void setRetryRecordId(Long retryRecordId) {
-        this.retryRecordId = retryRecordId;
-    }
-
-    public String getReverseName() {
-        return reverseName;
-    }
-
-    public void setReverseName(String reverseName) {
-        this.reverseName = reverseName;
-    }
-
-    public List<SettleWayDetail> getSettleWayDetailList() {
-        return settleWayDetailList;
-    }
-
-    public void setSettleWayDetailList(List<SettleWayDetail> settleWayDetailList) {
-        this.settleWayDetailList = settleWayDetailList;
-    }
-
-    /**
-     * 获取金额展示
-     * @return
-     */
-    @Transient
-    public String getAmountView() {
-        if (this.amount == null) {
-            return null;
-        }
-        return MoneyUtils.centToYuan(this.amount);
-    }
-
-    /**
-     * 是否可打印
-     * @return
-     */
-    @Transient
-    public boolean getPrintEnable() {
-        return Integer.valueOf(SettleStateEnum.DEAL.getCode()).equals(this.state) && Integer.valueOf(ReverseEnum.NO.getCode()).equals(this.reverse);
+    public void setTrailerNumber(String trailerNumber) {
+        this.trailerNumber = trailerNumber;
     }
 }

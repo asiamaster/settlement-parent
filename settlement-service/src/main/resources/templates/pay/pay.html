@@ -1,0 +1,40 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form id="form-pay" action="">
+        <input type="text" style="display: none"/>
+        <input type="hidden" name="token" value="${token!}"/>
+        <input type="hidden" name="ids" value="${ids!}"/>
+        <input type="hidden" name="totalAmount" id="totalAmount" value="${totalAmount!}"/>
+        <div class="row">
+            <div class="col-2 text-right">
+                结算金额:
+            </div>
+            <div class="col-4">
+                <input type="text" class="form-control" value="${totalAmountView!}" readonly/>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2 text-right">
+                结算方式:
+            </div>
+            <% if(isNotEmpty(wayList) && wayList.~size > 0) {
+                for(way in wayList) {
+                    if (wayLP.first) {
+            %>
+            <div class="col-auto">
+                <input type="radio" name="way" value="${way.code}" checked/>${way.val}
+            </div>
+            <% } else {%>
+            <div class="col-auto">
+                <input type="radio" name="way" value="${way.code}"/>${way.val}
+            </div>
+            <% }}} %>
+        </div>
+        <div class="" id="div-special">
+
+        </div>
+    </form>
+</div>
+</#bs4Body>
+<#common_commonJs/>
+<#pay_payJs/>

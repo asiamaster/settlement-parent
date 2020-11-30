@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface SettleOrderMapper extends MyMapper<SettleOrder> {
     /**
-     * 根据条件查询结算单列表
+     * 根据条件查询结算单列表 返回po
      * @param query
      * @return
      */

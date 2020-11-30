@@ -1,7 +1,7 @@
 package com.dili.settlement.task;
 
 import com.dili.settlement.config.CallbackConfiguration;
-import com.dili.settlement.service.ApplicationConfigService;
+import com.dili.settlement.service.SettleOrderLinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +15,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class PrepareDamonTask extends DamonTask implements Callable<Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrepareDamonTask.class);
 
-    private ApplicationConfigService applicationConfigService;
+    private SettleOrderLinkService settleOrderLinkService;
 
-    public PrepareDamonTask(CallbackConfiguration callbackConfiguration, ApplicationConfigService applicationConfigService, ExecutorService executorService) {
+    public PrepareDamonTask(CallbackConfiguration callbackConfiguration, SettleOrderLinkService settleOrderLinkService, ExecutorService executorService) {
         super(callbackConfiguration, executorService);
-        this.applicationConfigService = applicationConfigService;
+        this.settleOrderLinkService = settleOrderLinkService;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class PrepareDamonTask extends DamonTask implements Callable<Boolean> {
                     continue;
                 }
                 for (int i = 0; i < reboot; i++) {
-                    executorService.submit(new PrepareQueueTask(callbackConfiguration, applicationConfigService));
+                    executorService.submit(new PrepareQueueTask(callbackConfiguration, settleOrderLinkService));
                 }
             } catch (Exception e) {
                 LOGGER.error("prepare damon task error", e);

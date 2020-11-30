@@ -1,6 +1,6 @@
 package com.dili.settlement.config;
 
-import com.dili.settlement.component.FirmIdHolder;
+import com.dili.settlement.component.MchIdHolder;
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;
 
@@ -19,7 +19,7 @@ public class PayRpcFeignConfig {
         return template -> {
             template.header("appid", APPID);
             template.header("token", TOKEN);
-            Long firmId = FirmIdHolder.get();
+            Long firmId = MchIdHolder.get();
             if (firmId == null) {
                 return;
             }

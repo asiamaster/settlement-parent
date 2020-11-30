@@ -7,10 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.config.CallbackConfiguration;
-import com.dili.settlement.domain.RetryError;
 import com.dili.settlement.dto.CallbackDto;
-import com.dili.settlement.enums.RetryTypeEnum;
-import com.dili.settlement.service.RetryErrorService;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
@@ -27,12 +24,10 @@ public class ExecuteQueueTask extends QueueTask implements Callable<Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteQueueTask.class);
 
     private RetryRecordService retryRecordService;
-    private RetryErrorService retryErrorService;
 
-    public ExecuteQueueTask(CallbackConfiguration callbackConfiguration, RetryRecordService retryRecordService, RetryErrorService retryErrorService) {
+    public ExecuteQueueTask(CallbackConfiguration callbackConfiguration, RetryRecordService retryRecordService) {
         super(callbackConfiguration);
         this.retryRecordService = retryRecordService;
-        this.retryErrorService = retryErrorService;
     }
 
     @Override
@@ -54,12 +49,6 @@ public class ExecuteQueueTask extends QueueTask implements Callable<Boolean> {
                 LOGGER.error("execute task error", e);
                 callbackDto.failure();
                 CallbackHolder.offerCache(callbackDto);
-                try {
-                    String content = e.getMessage() != null ? e.getMessage().length() > 200 ? e.getMessage().substring(0, 200) : e.getMessage() : "";
-                    retryErrorService.insertSelective(new RetryError(RetryTypeEnum.SETTLE_CALLBACK.getCode(), callbackDto.getBusinessId(), callbackDto.getBusinessCode(), e.getClass().getName(), content));
-                } catch (Exception ex) {
-                    LOGGER.error("execute task error", e);
-                }
             }
         }
     }

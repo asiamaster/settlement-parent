@@ -47,4 +47,12 @@ public interface PayRpc {
      */
     @RequestMapping(value = "/payment/api/gateway.do?service=payment.trade.service:cancel", method = RequestMethod.POST)
     BaseOutput<TradeResponseDto> invalidTrade(InvalidTradeRequestDto requestDto);
+
+    /**
+     * 校验密码
+     * @param passwordRequest
+     * @return
+     */
+    @RequestMapping(value = "/payment/api/gateway.do?service=payment.permission.service:password", method = RequestMethod.POST)
+    BaseOutput validatePayPassword(PasswordRequestDto passwordRequest);
 }
