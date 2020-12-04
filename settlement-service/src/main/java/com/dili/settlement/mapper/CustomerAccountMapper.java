@@ -36,4 +36,11 @@ public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
      * @return
      */
     int updateAmount(CustomerAccount customerAccount);
+
+    /**
+     * 查询并锁定
+     * @param id
+     * @return
+     */
+    CustomerAccount lockGetById(@Param("id") Long id);
 }

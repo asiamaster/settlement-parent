@@ -62,6 +62,13 @@
     limit 1 for update
   </select>
 
+    <!-- 查询并锁定 -->
+    <select id="lockGetById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from customer_account where id = #{id} for update
+    </select>
+
   <!-- 查询并锁定 -->
   <select id="getBy" resultMap="BaseResultMap">
     select

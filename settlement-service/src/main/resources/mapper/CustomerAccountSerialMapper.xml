@@ -54,4 +54,43 @@
       )
     </foreach>
   </insert>
+
+    <!-- 查询列表 -->
+    <select id="list" parameterType="com.dili.settlement.dto.CustomerAccountSerialDto" resultType="com.dili.settlement.dto.CustomerAccountSerialDto">
+        SELECT a.*,
+            b.customer_id,
+            b.customer_name,
+            b.customer_phone,
+            b.customer_certificate
+        FROM customer_account_serial a
+        LEFT JOIN customer_account b ON a.customer_account_id = b.id
+        WHERE 1 = 1
+        <if test="marketId != null">
+            and b.`market_id` = #{marketId}
+        </if>
+        <if test="mchId != null">
+            and b.`mch_id` = #{mchId}
+        </if>
+        <if test="customerId != null">
+            and b.`customer_id` = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            and b.`customer_name` = #{customerName}
+        </if>
+        <if test="customerCertificate != null and customerCertificate != ''">
+            and b.`customer_certificate` = #{customerCertificate}
+        </if>
+        <if test="operateTimeStart != null and operateTimeStart != ''">
+            and a.`operate_time` &gt;= #{operateTimeStart}
+        </if>
+        <if test="operateTimeEnd != null and operateTimeEnd != ''">
+            and a.`operate_time` &lt;= #{operateTimeEnd}
+        </if>
+        <if test="customerNameMatch != null and customerNameMatch !=''">
+            and b.`customer_name` like concat('%',#{customerNameMatch},'%')
+        </if>
+        <if test="sort != null and sort != '' and order != null and order != ''">
+            ORDER BY ${sort} ${order}
+        </if>
+    </select>
 </mapper>

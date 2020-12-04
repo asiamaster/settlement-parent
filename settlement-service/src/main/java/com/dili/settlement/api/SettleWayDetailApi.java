@@ -30,13 +30,8 @@ public class SettleWayDetailApi {
      */
     @RequestMapping(value = "/list")
     public BaseOutput<List<SettleWayDetail>> list(@RequestBody SettleWayDetail query) {
-        try {
-            List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
-            return BaseOutput.success().setData(itemList);
-        } catch (Exception e) {
-            LOGGER.error("list", e);
-            return BaseOutput.failure();
-        }
+        List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
+        return BaseOutput.success().setData(itemList);
     }
 
     /**
@@ -45,17 +40,12 @@ public class SettleWayDetailApi {
      */
     @RequestMapping(value = "/listByCode")
     public BaseOutput<List<SettleWayDetail>> listByCode(String code) {
-        try {
-            if (StrUtil.isBlank(code)) {
-                return BaseOutput.failure("结算单号为空");
-            }
-            SettleWayDetail query = new SettleWayDetail();
-            query.setSettleOrderCode(code);
-            List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
-            return BaseOutput.success().setData(itemList);
-        } catch (Exception e) {
-            LOGGER.error("listByCode", e);
-            return BaseOutput.failure();
+        if (StrUtil.isBlank(code)) {
+            return BaseOutput.failure("结算单号为空");
         }
+        SettleWayDetail query = new SettleWayDetail();
+        query.setSettleOrderCode(code);
+        List<SettleWayDetail> itemList = settleWayDetailService.listByExample(query);
+        return BaseOutput.success().setData(itemList);
     }
 }

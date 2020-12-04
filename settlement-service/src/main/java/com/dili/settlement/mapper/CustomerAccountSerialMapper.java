@@ -1,6 +1,7 @@
 package com.dili.settlement.mapper;
 
 import com.dili.settlement.domain.CustomerAccountSerial;
+import com.dili.settlement.dto.CustomerAccountSerialDto;
 import com.dili.ss.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,4 +16,11 @@ public interface CustomerAccountSerialMapper extends MyMapper<CustomerAccountSer
      * @return
      */
     int batchInsert(@Param("accountSerialList") List<CustomerAccountSerial> accountSerialList, @Param("customerAccountId") Long customerAccountId);
+
+    /**
+     * 查询
+     * @param query
+     * @return
+     */
+    List<CustomerAccountSerialDto> list(CustomerAccountSerialDto query);
 }

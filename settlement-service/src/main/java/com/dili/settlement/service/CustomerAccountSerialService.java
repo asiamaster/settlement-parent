@@ -1,7 +1,9 @@
 package com.dili.settlement.service;
 
 import com.dili.settlement.domain.CustomerAccountSerial;
+import com.dili.settlement.dto.CustomerAccountSerialDto;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.PageOutput;
 
 import java.util.List;
 
@@ -16,4 +18,11 @@ public interface CustomerAccountSerialService extends BaseService<CustomerAccoun
      * @param customerAccountId
      */
     int batchInsert(List<CustomerAccountSerial> accountSerialList, Long customerAccountId);
+
+    /**
+     * 分页查询流水列表
+     * @param query
+     * @return
+     */
+    PageOutput<List<CustomerAccountSerialDto>> listPagination(CustomerAccountSerialDto query);
 }

@@ -21,6 +21,13 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
     CustomerAccount lockGet(Long mchId, Long customerId);
 
     /**
+     * 查询并锁定
+     * @param id
+     * @return
+     */
+    CustomerAccount lockGetById(Long id);
+
+    /**
      * 查询
      * @param mchId
      * @param customerId
@@ -50,4 +57,18 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param accountSerialList
      */
     void handleRefund(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList);
+
+    /**
+     * 冻结
+     * @param id
+     * @param amount
+     */
+    void freeze(Long id, Long amount);
+
+    /**
+     * 解冻
+     * @param id
+     * @param amount
+     */
+    void unfreeze(Long id, Long amount);
 }

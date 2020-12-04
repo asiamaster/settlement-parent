@@ -179,7 +179,7 @@ ENGINE = InnoDB
 COLLATE = utf8_general_ci;
 
 alter table customer_account_serial comment '客户资金流水';
-CREATE UNIQUE INDEX ix_customer_account_id ON customer_account_serial(customer_account_id);
+CREATE INDEX ix_customer_account_id ON customer_account_serial(customer_account_id);
 /* 建表 end*/
 
 /* 数据初始化 start*/

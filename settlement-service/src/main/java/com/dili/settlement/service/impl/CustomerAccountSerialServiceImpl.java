@@ -2,9 +2,13 @@ package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.dili.settlement.domain.CustomerAccountSerial;
+import com.dili.settlement.dto.CustomerAccountSerialDto;
 import com.dili.settlement.mapper.CustomerAccountSerialMapper;
 import com.dili.settlement.service.CustomerAccountSerialService;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.PageOutput;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,5 +32,22 @@ public class CustomerAccountSerialServiceImpl extends BaseServiceImpl<CustomerAc
             return 0;
         }
         return getActualDao().batchInsert(accountSerialList, customerAccountId);
+    }
+
+    @Override
+    public PageOutput<List<CustomerAccountSerialDto>> listPagination(CustomerAccountSerialDto query) {
+        PageHelper.startPage(query.getPage(), query.getRows());
+        List<CustomerAccountSerialDto> itemList = getActualDao().list(query);
+
+        Page<CustomerAccountSerialDto> page = (Page)itemList;
+        PageOutput<List<CustomerAccountSerialDto>> output = PageOutput.success();
+        output.setData(itemList);
+        output.setPageNum(page.getPageNum());
+        output.setPageSize(page.getPageSize());
+        output.setTotal(page.getTotal());
+        output.setStartRow(page.getStartRow());
+        output.setEndRow(page.getEndRow());
+        output.setPages(page.getPages());
+        return output;
     }
 }
