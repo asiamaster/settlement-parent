@@ -14,7 +14,6 @@ import com.dili.settlement.dto.pay.TradeRequestDto;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
-import com.dili.settlement.service.FundAccountService;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.settle.RefundService;
@@ -37,8 +36,6 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
     protected SettleOrderService settleOrderService;
     @Autowired
     protected RetryRecordService retryRecordService;
-    @Autowired
-    protected FundAccountService fundAccountService;
 
     @Override
     public String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
