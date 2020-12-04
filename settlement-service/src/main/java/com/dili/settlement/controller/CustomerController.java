@@ -6,6 +6,8 @@ import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.settlement.dto.CustomerDto;
 import com.dili.settlement.dto.UserAccountCardResponseDto;
 import com.dili.settlement.dto.UserAccountSingleQueryDto;
+import com.dili.settlement.handler.ServiceNameHolder;
+import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
@@ -41,27 +43,22 @@ public class CustomerController extends AbstractController {
 
     /**
      * 查询客户列表
+     *
      * @param param
      * @return
      */
     @RequestMapping(value = "/list.action")
     @ResponseBody
     public BaseOutput<List<CustomerExtendDto>> list(CustomerDto param) {
-        try {
-            UserTicket userTicket = getUserTicket();
-            CustomerQueryInput query = createQuery(param, userTicket);
-            query.setMarketId(userTicket.getFirmId());
-            return customerRpc.list(query);
-        } catch (BusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("method", e);
-            return BaseOutput.failure();
-        }
+        UserTicket userTicket = getUserTicket();
+        CustomerQueryInput query = createQuery(param, userTicket);
+        query.setMarketId(userTicket.getFirmId());
+        return customerRpc.list(query);
     }
 
     /**
      * 构建客户查询条件
+     *
      * @param param
      * @return
      */
@@ -79,14 +76,10 @@ public class CustomerController extends AbstractController {
             UserAccountSingleQueryDto userAccountSingleQueryDto = new UserAccountSingleQueryDto();
             userAccountSingleQueryDto.setCardNo(param.getKeyword());
             userAccountSingleQueryDto.setFirmId(userTicket.getFirmId());
-            BaseOutput<UserAccountCardResponseDto> baseOutput = accountQueryRpc.findSingle(userAccountSingleQueryDto);
-            if (!baseOutput.isSuccess()) {
-                throw new BusinessException("", baseOutput.getMessage());
-            }
-            query.setId(baseOutput.getData().getCustomerId());
+            UserAccountCardResponseDto userAccountCardResponseDto = RpcResultResolver.resolver(accountQueryRpc.findSingle(userAccountSingleQueryDto), ServiceNameHolder.ACCOUNT_SERVICE_NAME);
+            query.setId(userAccountCardResponseDto.getCustomerId());
             return query;
         }
         throw new BusinessException("", "不支持该查询方式");
     }
-
 }

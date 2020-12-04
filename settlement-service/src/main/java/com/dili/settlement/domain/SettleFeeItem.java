@@ -29,22 +29,10 @@ public class SettleFeeItem extends BaseDomain {
     private Long settleOrderId;
 
     /**
-     * 类型 1- 缴费 2 - 抵扣
+     * 结算单编码
      */
-    @Column(name = "`type`")
-    private Integer type;
-
-    /**
-     * 费用项ID
-     */
-    @Column(name = "`fee_item_id`")
-    private Long feeItemId;
-
-    /**
-     * 费用项名称
-     */
-    @Column(name = "`fee_item_name`")
-    private String feeItemName;
+    @Column(name = "`settle_order_code`")
+    private String settleOrderCode;
 
     /**
      * 费用类型
@@ -53,10 +41,10 @@ public class SettleFeeItem extends BaseDomain {
     private Integer feeType;
 
     /**
-     * 费用类型名称
+     * 费用名称
      */
-    @Column(name = "`fee_type_name`")
-    private String feeTypeName;
+    @Column(name = "`fee_name`")
+    private String feeName;
 
     /**
      * 金额
@@ -105,63 +93,19 @@ public class SettleFeeItem extends BaseDomain {
     }
 
     /**
-     * 获取类型 1- 缴费 2 - 抵扣
-     *
-     * @return type - 类型 1- 缴费 2 - 抵扣
+     * getter
+     * @return
      */
-    @FieldDef(label="类型 1- 缴费 2 - 抵扣")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public Integer getType() {
-        return type;
+    public String getSettleOrderCode() {
+        return settleOrderCode;
     }
 
     /**
-     * 设置类型 1- 缴费 2 - 抵扣
-     *
-     * @param type 类型 1- 缴费 2 - 抵扣
+     * setter
+     * @param settleOrderCode
      */
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    /**
-     * 获取费用项ID
-     *
-     * @return fee_item_id - 费用项ID
-     */
-    @FieldDef(label="费用项ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getFeeItemId() {
-        return feeItemId;
-    }
-
-    /**
-     * 设置费用项ID
-     *
-     * @param feeItemId 费用项ID
-     */
-    public void setFeeItemId(Long feeItemId) {
-        this.feeItemId = feeItemId;
-    }
-
-    /**
-     * 获取费用项名称
-     *
-     * @return fee_item_name - 费用项名称
-     */
-    @FieldDef(label="费用项名称", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getFeeItemName() {
-        return feeItemName;
-    }
-
-    /**
-     * 设置费用项名称
-     *
-     * @param feeItemName 费用项名称
-     */
-    public void setFeeItemName(String feeItemName) {
-        this.feeItemName = feeItemName;
+    public void setSettleOrderCode(String settleOrderCode) {
+        this.settleOrderCode = settleOrderCode;
     }
 
     /**
@@ -187,21 +131,21 @@ public class SettleFeeItem extends BaseDomain {
     /**
      * 获取费用类型名称
      *
-     * @return fee_type_name - 费用类型名称
+     * @return fee_name - 费用类型名称
      */
-    @FieldDef(label="费用类型名称", maxLength = 50)
+    @FieldDef(label="费用名称", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
-    public String getFeeTypeName() {
-        return feeTypeName;
+    public String getFeeName() {
+        return feeName;
     }
 
     /**
      * 设置费用类型名称
      *
-     * @param feeTypeName 费用类型名称
+     * @param feeName 费用类型名称
      */
-    public void setFeeTypeName(String feeTypeName) {
-        this.feeTypeName = feeTypeName;
+    public void setFeeName(String feeName) {
+        this.feeName = feeName;
     }
 
     /**

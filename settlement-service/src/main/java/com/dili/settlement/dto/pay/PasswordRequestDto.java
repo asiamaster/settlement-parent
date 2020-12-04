@@ -25,4 +25,11 @@ public class PasswordRequestDto {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public static PasswordRequestDto build(Long accountId, String password) {
+        PasswordRequestDto passwordRequestDto = new PasswordRequestDto();
+        passwordRequestDto.setAccountId(accountId);
+        passwordRequestDto.setPassword(password);
+        return passwordRequestDto;
+    }
 }

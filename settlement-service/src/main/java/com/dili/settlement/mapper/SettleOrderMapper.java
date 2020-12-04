@@ -1,8 +1,10 @@
 package com.dili.settlement.mapper;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.MyMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -34,14 +36,14 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @param po
      * @return
      */
-    int updateSettle(SettleOrder po);
+    int settleUpdate(SettleOrder po);
 
     /**
      * 根据id列表查询总金额
      * @param settleOrderDto
      * @return
      */
-    Long queryTotalAmount(SettleOrderDto settleOrderDto);
+    SettleAmountDto queryAmount(SettleOrderDto settleOrderDto);
 
     /**
      * 带版本条件删除
@@ -54,5 +56,18 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * 批量修改金额
      * @param map
      */
-    void batchUpdateAmount(Map<String, Object> map);
+    int batchUpdateAmount(Map<String, Object> map);
+
+    /**
+     * 根据id列表查询并锁定记录
+     * @param ids
+     * @return
+     */
+    List<SettleOrder> lockList(@Param("ids") List<Long> ids);
+
+    /**
+     * 批量结算修改
+     * @param settleOrderList
+     */
+    int batchSettleUpdate(@Param("settleOrderList") List<SettleOrder> settleOrderList, @Param("tradeNo") String tradeNo);
 }

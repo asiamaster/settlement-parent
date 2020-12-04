@@ -52,9 +52,7 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
                 callbackDto.setInterval(callbackConfiguration.getIntervalMills());
                 callbackDto.setUrl(settleOrderLinkService.getUrl(settleOrder.getId(), LinkTypeEnum.CALLBACK.getCode()));
                 callbackDto.setData(map);
-                //callbackDto.setRetryRecordId(settleOrder.getRetryRecordId());
-                callbackDto.setBusinessId(settleOrder.getId());
-                callbackDto.setBusinessCode(settleOrder.getCode());
+                callbackDto.setSettleOrderId(settleOrder.getId());
                 CallbackHolder.offerExecute(callbackDto);
             } catch (Exception e) {
                 LOGGER.error("prepare task error", e);

@@ -18,12 +18,8 @@ public class CallbackDto {
     private String url;
     private Map<String, String> data;
 
-    //重试记录ID
-    private Long retryRecordId;
     //结算单ID
-    private Long businessId;
-    //结算单CODE
-    private String businessCode;
+    private Long settleOrderId;
     /**
      * 执行失败时调用
      */
@@ -96,27 +92,11 @@ public class CallbackDto {
         this.data = data;
     }
 
-    public Long getRetryRecordId() {
-        return retryRecordId;
+    public Long getSettleOrderId() {
+        return settleOrderId;
     }
 
-    public void setRetryRecordId(Long retryRecordId) {
-        this.retryRecordId = retryRecordId;
-    }
-
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
-    public String getBusinessCode() {
-        return businessCode;
-    }
-
-    public void setBusinessCode(String businessCode) {
-        this.businessCode = businessCode;
+    public void setSettleOrderId(Long settleOrderId) {
+        this.settleOrderId = settleOrderId;
     }
 }

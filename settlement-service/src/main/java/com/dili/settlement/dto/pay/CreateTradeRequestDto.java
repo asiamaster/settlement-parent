@@ -32,6 +32,12 @@ public class CreateTradeRequestDto {
 		return createTradeRequest;
 	}
 
+	public static CreateTradeRequestDto build(Long fundAccountId) {
+		CreateTradeRequestDto createTradeRequest = new CreateTradeRequestDto();
+		createTradeRequest.setAccountId(fundAccountId);
+		return createTradeRequest;
+	}
+
 	public Integer getType() {
 		return type;
 	}

@@ -3,7 +3,6 @@ package com.dili.settlement.dispatcher;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.settle.PayService;
 import com.dili.settlement.settle.RefundService;
 import com.dili.ss.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +41,13 @@ public class RefundDispatcher implements SettleDispatcher {
     }
 
     @Override
-    public void settle(SettleOrder po, SettleOrderDto settleOrderDto) {
-        determineService(settleOrderDto.getWay()).settle(po, settleOrderDto);
+    public List<SettleOrder> settle(SettleOrderDto settleOrderDto) {
+        return determineService(settleOrderDto.getWay()).settle(settleOrderDto);
     }
 
     @Override
     public void invalid(SettleOrder po, InvalidRequestDto invalidRequestDto) {
-        determineService(po.getWay()).invalid(po, invalidRequestDto);
+        //determineService(po.getWay()).invalid(po, invalidRequestDto);
     }
 
     /**

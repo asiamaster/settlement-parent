@@ -1,6 +1,5 @@
 <#bs4Body>
 <div class="container-fluid">
-    <#bs4nav>
     <form class="form"   οnkeydοwn="if(event.keyCode==13){return false;}">
         <input type="text" style="display: none;"/>
         <div class="row">
@@ -47,9 +46,8 @@
             <button type="button" class="btn btn-outline-primary" id="btn-query"><i class="fa fa-search"></i> 查询</button>
         </div>
     </form>
-</#bs4nav>
-    <div class="d-none" id="customer-info">
-    </div>
+    <!-- 中间信息块 -->
+    <div class="d-none" id="middle-block"></div>
     <!-- 弹窗 -->
     <div class="modal" tabindex="-1" role="dialog" id="dialog-customer-list">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -85,10 +83,10 @@
                         业务编号
                     </th>
                     <% } %>
-                    <th data-width-unit="%" data-width="10" data-field="businessName" data-align="center">
+                    <th data-width-unit="%" data-width="10" data-field="businessTypeText" data-align="center">
                         业务类型
                     </th>
-                    <th data-width-unit="%" data-width="10" data-field="amountView" data-align="center">
+                    <th data-width-unit="%" data-width="10" data-field="amountText" data-align="center">
                         退款金额
                     </th>
                     <th data-width-unit="%" data-width="10" data-field="submitterName" data-align="center">

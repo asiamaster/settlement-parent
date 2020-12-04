@@ -20,31 +20,13 @@ import java.time.LocalDateTime;
 public class RetryRecord extends BaseDomain {
     @Id
     @Column(name = "`id`")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "`type`")
-    private Integer type;
-
-    @Column(name = "`business_id`")
-    private Long businessId;
-
-    @Column(name = "`business_code`")
-    private String businessCode;
 
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`create_time`")
     private LocalDateTime createTime;
-
-    public RetryRecord() {}
-
-    public RetryRecord(Integer type, Long businessId, String businessCode) {
-        this.type = type;
-        this.businessId = businessId;
-        this.businessCode = businessCode;
-    }
 
     /**
      * @return id
@@ -61,55 +43,6 @@ public class RetryRecord extends BaseDomain {
     public void setId(Long id) {
         this.id = id;
     }
-
-    /**
-     * @return type
-     */
-    @FieldDef(label="type")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public Integer getType() {
-        return type;
-    }
-
-    /**
-     * @param type
-     */
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    /**
-     * @return business_id
-     */
-    @FieldDef(label="businessId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    /**
-     * @param businessId
-     */
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
-    /**
-     * @return business_code
-     */
-    @FieldDef(label="businessCode", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getBusinessCode() {
-        return businessCode;
-    }
-
-    /**
-     * @param businessCode
-     */
-    public void setBusinessCode(String businessCode) {
-        this.businessCode = businessCode;
-    }
-
     /**
      * @return create_time
      */
@@ -124,5 +57,16 @@ public class RetryRecord extends BaseDomain {
      */
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+    }
+
+    /**
+     * 构建
+     * @param settleOrderId
+     * @return
+     */
+    public static RetryRecord build(Long settleOrderId) {
+        RetryRecord retryRecord = new RetryRecord();
+        retryRecord.setId(settleOrderId);
+        return retryRecord;
     }
 }

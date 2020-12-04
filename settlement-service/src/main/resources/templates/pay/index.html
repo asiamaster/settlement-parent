@@ -29,6 +29,16 @@
                 </div>
             </div>
             <% } %>
+            <% if (@com.dili.settlement.handler.SupportHandler.trailerNumberQuerySupport()) { %>
+            <div class="col-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="queryType" id="queryType4" value="4">
+                    <label class="form-check-label" for="queryType4">
+                        挂号
+                    </label>
+                </div>
+            </div>
+            <% } %>
         </div>
         <div class="row">
             <div class="col-2">
@@ -46,9 +56,8 @@
             <button type="button" class="btn btn-outline-primary" id="btn-query"><i class="fa fa-search"></i> 查询</button>
         </div>
     </form>
-
-<div class="d-none" id="customer-info">
-    </div>
+    <!-- 中间信息块 -->
+    <div class="d-none" id="middle-block"></div>
     <!-- 弹窗 -->
     <div class="modal" tabindex="-1" role="dialog" id="dialog-customer-list">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">

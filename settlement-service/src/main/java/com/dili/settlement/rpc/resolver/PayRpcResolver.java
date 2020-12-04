@@ -34,7 +34,7 @@ public class PayRpcResolver {
      * @date 2020/7/1
      */
     public CreateTradeResponseDto prePay(CreateTradeRequestDto createTradeRequest) {
-        return GenericRpcResolver.resolver(payRpc.preparePay(createTradeRequest), PAY_SERVICE_NAME);
+        return GenericRpcResolver.resolver(payRpc.prepareTrade(createTradeRequest), PAY_SERVICE_NAME);
     }
 
     /**

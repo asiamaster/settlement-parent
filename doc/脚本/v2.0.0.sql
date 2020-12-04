@@ -1,21 +1,110 @@
 use dili_settlement;
+/* 数据处理 start*/
+
+-- 同步缴费单详情URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	1,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/leaseOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/earnestOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/depositOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步退款单详情URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	1,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步缴费单打印数据URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	2,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/api/leaseOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/api/earnestOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/api/depositOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步退款单打印数据URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	2,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步结算回调URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	3,
+	temp.return_url
+    FROM  settle_order temp WHERE temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+/* 数据处理 end*/
 /* 调整 start*/
 ALTER TABLE settle_order DROP COLUMN edit_enable;
 ALTER TABLE settle_order DROP COLUMN return_url;
+ALTER TABLE settle_order ADD COLUMN market_code VARCHAR(20) COMMENT '市场编码';
 ALTER TABLE settle_order ADD COLUMN deduct_enable TINYINT DEFAULT 0 COMMENT '是否可抵扣';
-ALTER TABLE settle_order ADD COLUMN mch_id BIGINT COMMENT '商户ID';
 ALTER TABLE settle_order ADD COLUMN trailer_number VARCHAR(20) COMMENT '挂号(沈阳特有)';
+ALTER TABLE settle_order ADD COLUMN mch_id bigint COMMENT '商户ID';
+ALTER TABLE settle_order ADD COLUMN mch_name VARCHAR(20) COMMENT '商户名称';
+ALTER TABLE settle_order ADD COLUMN customer_certificate VARCHAR(40) COMMENT '客户证件号';
+ALTER TABLE settle_order ADD COLUMN deduct_amount BIGINT DEFAULT 0 COMMENT '抵扣金额';
 ALTER TABLE settle_order MODIFY COLUMN business_type VARCHAR(120);
+
+CREATE INDEX ix_settle_code ON settle_order(`code`);
 
 ALTER TABLE settle_way_detail CHANGE COLUMN order_id settle_order_id bigint;
 ALTER TABLE settle_way_detail CHANGE COLUMN order_code settle_order_code VARCHAR(32);
 
 drop table retry_error;
+drop table application_config;
 /* 调整 end*/
 
 /* 建表 start*/
-drop table if exists settle_order_link;
+drop table if exists retry_record;
+create table retry_record
+(
+   id                   bigint not NULL COMMENT '直接存储结算单ID',
+   create_time          datetime default CURRENT_TIMESTAMP,
+   primary key (id)
+)
+ENGINE = InnoDB
+COLLATE = utf8_general_ci;
 
+alter table retry_record comment '保存记录以供任务扫描';
+
+drop table if exists settle_order_link;
 create table settle_order_link
 (
    `id`                   bigint not null auto_increment comment '主键ID',
@@ -36,11 +125,9 @@ create table settle_fee_item
 (
    `id`                   bigint not null auto_increment comment '主键ID',
    `settle_order_id`      bigint comment '结算单ID',
-   `type`                 tinyint comment '类型 1- 缴费 2 - 抵扣',
-   `fee_item_id`          bigint comment '费用项ID',
-   `fee_item_name`        varchar(50) comment '费用项名称',
+   `settle_order_code`    varchar(32) comment '结算单编码',
    `fee_type`             int comment '费用类型',
-   `fee_type_name`        varchar(50) comment '费用类型名称',
+   `fee_name`             varchar(50) comment '费用名称',
    `amount`               bigint comment '金额',
    primary key (id)
 )
@@ -49,4 +136,56 @@ COLLATE = utf8_general_ci;
 
 alter table settle_fee_item comment '结算费用项';
 CREATE INDEX ix_settle_order_id ON settle_fee_item(`settle_order_id`);
+
+drop table if exists customer_account;
+create table customer_account
+(
+   `id`                   bigint not null auto_increment comment '主键ID',
+   `market_id`            bigint comment '市场ID',
+   `market_code`          varchar(20) comment '市场编码',
+   `mch_id`               bigint comment '商户ID',
+   `mch_name`             varchar(20) comment '商户名称',
+   `customer_id`          bigint comment '客户ID',
+   `customer_name`        varchar(40) comment '客户姓名',
+   `customer_phone`       varchar(40) comment '客户手机号',
+   `customer_certificate` varchar(40) comment '客户证件号',
+   `amount`               bigint comment '金额',
+   `frozen_amount`        bigint comment '冻结金额',
+   `version`              int default 1,
+   primary key (id)
+)
+ENGINE = InnoDB
+COLLATE = utf8_general_ci;
+
+alter table customer_account comment '客户资金表';
+CREATE UNIQUE INDEX ix_mch_customer_id ON customer_account(mch_id, customer_id);
+
+drop table if exists customer_account_serial;
+create table customer_account_serial
+(
+   `id`                   bigint not null auto_increment comment '主键ID',
+   `customer_account_id`  bigint comment '客户资金ID',
+   `scene`                tinyint comment '场景 1-缴费...',
+   `amount`               bigint comment '金额',
+   `operate_time`         datetime comment '时间',
+   `operator_id`          bigint comment '操作员ID',
+   `operator_name`        varchar(40) comment '操作员姓名',
+   `relation_code`        varchar(32) comment '关联单号',
+   `relation_type`        varchar(32) comment '关联单号',
+   `notes`                varchar(120) comment '备注',
+   primary key (id)
+)
+ENGINE = InnoDB
+COLLATE = utf8_general_ci;
+
+alter table customer_account_serial comment '客户资金流水';
+CREATE UNIQUE INDEX ix_customer_account_id ON customer_account_serial(customer_account_id);
 /* 建表 end*/
+
+/* 数据初始化 start*/
+UPDATE settle_order SET mch_id = 8,mch_name = '寿光' WHERE market_id = 8;
+UPDATE settle_order SET mch_id = 11,mch_name = '杭州水产' WHERE market_id = 11;
+UPDATE settle_order SET market_code = 'sg' WHERE market_id = 8;
+UPDATE settle_order SET market_code = 'hzsc' WHERE market_id = 11;
+
+/* 数据初始化 end*/

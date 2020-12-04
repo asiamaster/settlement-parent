@@ -4,12 +4,12 @@ import cn.hutool.core.collection.CollUtil;
 import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.enums.RetryTypeEnum;
 import com.dili.settlement.mapper.RetryRecordMapper;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,19 +31,26 @@ public class RetryRecordServiceImpl extends BaseServiceImpl<RetryRecord, Long> i
     @Override
     public void executeCallback() {
         RetryRecord query = new RetryRecord();
-        query.setType(RetryTypeEnum.SETTLE_CALLBACK.getCode());
         List<RetryRecord> itemList = listByExample(query);
         if (CollUtil.isEmpty(itemList)) {
             return;
         }
         for (RetryRecord retryRecord : itemList) {
-            SettleOrder settleOrder = settleOrderService.get(retryRecord.getBusinessId());
+            SettleOrder settleOrder = settleOrderService.get(retryRecord.getId());
             if (settleOrder == null) {//当结算单记录不存在，删除对应的重试任务记录
                 delete(retryRecord.getId());
                 continue;
             }
-            //settleOrder.setRetryRecordId(retryRecord.getId());
             CallbackHolder.offerSource(settleOrder);
         }
+    }
+
+    @Transactional
+    @Override
+    public int batchInsert(List<RetryRecord> retryRecordList) {
+        if (CollUtil.isEmpty(retryRecordList)) {
+            return 0;
+        }
+        return getActualDao().batchInsert(retryRecordList);
     }
 }

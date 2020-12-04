@@ -9,10 +9,10 @@ public class MchIdHolder {
 
     /**
      * 添加
-     * @param firmId
+     * @param mchId
      */
-    public static void set(Long firmId) {
-        HOLDER.set(firmId);
+    public static void set(Long mchId) {
+        HOLDER.set(mchId);
     }
 
     /**

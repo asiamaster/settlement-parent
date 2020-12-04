@@ -5,6 +5,8 @@ import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import org.springframework.ui.ModelMap;
 
+import java.util.List;
+
 /**
  * 结算分发器
  */
@@ -20,10 +22,9 @@ public interface SettleDispatcher {
 
     /**
      * 发起结算
-     * @param po
      * @param settleOrderDto
      */
-    void settle(SettleOrder po, SettleOrderDto settleOrderDto);
+    List<SettleOrder> settle(SettleOrderDto settleOrderDto);
 
     /**
      * 作废

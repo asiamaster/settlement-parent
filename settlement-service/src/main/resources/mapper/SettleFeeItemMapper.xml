@@ -7,17 +7,32 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="settle_order_id" jdbcType="BIGINT" property="settleOrderId" />
-    <result column="type" jdbcType="TINYINT" property="type" />
-    <result column="fee_item_id" jdbcType="BIGINT" property="feeItemId" />
-    <result column="fee_item_name" jdbcType="VARCHAR" property="feeItemName" />
+    <result column="settle_order_code" jdbcType="VARCHAR" property="settleOrderCode" />
     <result column="fee_type" jdbcType="INTEGER" property="feeType" />
-    <result column="fee_type_name" jdbcType="VARCHAR" property="feeTypeName" />
+    <result column="fee_name" jdbcType="VARCHAR" property="feeName" />
     <result column="amount" jdbcType="BIGINT" property="amount" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `settle_order_id`, `type`, `fee_item_id`, `fee_item_name`, `fee_type`, `fee_type_name`, `amount`
+    `id`, `settle_order_id`, `settle_order_code`, `fee_type`, `fee_name`, `amount`
   </sql>
+
+  <!-- 根据结算单ID查询费用项列表 -->
+  <select id="listBySettleOrderId" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from settle_fee_item where settle_order_id = #{settleOrderId}
+  </select>
+
+  <!-- 根据结算单ID列表批量查询 -->
+  <select id="listBySettleOrderIdList" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from settle_fee_item where settle_order_id in
+    <foreach collection="settleOrderIdList" item="settleOrderId" open="(" close=")" separator=",">
+      #{settleOrderId}
+    </foreach>
+  </select>
 </mapper>

@@ -5,11 +5,11 @@
         queryTypeChangeHandler();
         $('input[name="queryType"]').change(queryTypeChangeHandler);
         $('#btn-swipe-card').click(swipeCardClickHandler);
-        $('#btn-query').click(queryCustomerHandler);
+        $('#btn-query').click(queryClickHandler);
         $('#btn-clear').click(clearClickHandler);
         $('#keyword').keydown(function(e) {
             if (e.keyCode === 13) {
-                queryCustomerHandler();
+                queryClickHandler();
             }
         });
         //选择客户列表 确定按钮事件
@@ -30,7 +30,7 @@
 
     /** 查询单选框change事件处理器 */
     function queryTypeChangeHandler() {
-        $('#customer-info').addClass("d-none");
+        $('#middle-block').addClass("d-none");
         $('#settle-order-list').addClass("d-none");
         let queryType = $('input[name="queryType"]:checked').val();
         switch (queryType) {
@@ -46,6 +46,10 @@
                 $('#keyword').val("").prop("placeholder", "请输入园区卡号或刷卡");
                 $('#btn-swipe-card').parent().removeClass("d-none");
                 break;
+            case "4":
+                $('#keyword').val("").prop("placeholder", "请输入挂号");
+                $('#btn-swipe-card').parent().addClass("d-none");
+                break;
             default:
                 $('#keyword').val("").prop("placeholder", "请输入客户姓名");
                 $('#btn-swipe-card').parent().addClass("d-none");
@@ -53,19 +57,27 @@
         }
     }
 
-    /** 客户查询处理器 */
-    function queryCustomerHandler() {
-        $('#customer-info').addClass("d-none");
+    /** 查询按钮点击事件处理器 */
+    function queryClickHandler() {
+        $('#middle-block').addClass("d-none");
         $('#settle-order-list').addClass("d-none");
-        let keyword = $('#keyword').val();
+        let keyword = $.trim($('#keyword').val());
         let queryType = $('input[name="queryType"]:checked').val();
-        if (keyword === undefined || $.trim(keyword) === '') {
+        if (keyword === undefined || keyword === '') {
             return;
         }
-        let params = {};
-        params.keyword = $.trim(keyword);
-        params.queryType = $.trim(queryType);
-        requestCustomerHandler(params);
+        switch (queryType) {
+            case "1":
+            case "2":
+            case "3":
+                requestCustomerHandler({keyword:keyword, queryType:queryType});
+                break;
+            case "4":
+                $('#middle-block').removeClass("d-none");
+                $('#middle-block').html(template('template-trailer-number-info', {trailerNumber: keyword}));
+                loadTrailerNumberOrdersHandler(keyword);
+                break;
+        }
     }
 
     /** 请求客户数据处理器 */
@@ -117,14 +129,14 @@
 
     /** 确定唯一客户处理器 */
     function certainCustomerHandler(cus) {
-        $('#customer-info').removeClass("d-none");
-        $('#customer-info').html(template('template-customer-info', cus));
+        $('#middle-block').removeClass("d-none");
+        $('#middle-block').html(template('template-customer-info', cus));
         loadCustomerOrdersHandler(cus.id);
     }
 
     /** 清除按钮点击事件处理器 */
     function clearClickHandler() {
-        $('#customer-info').addClass("d-none");
+        $('#middle-block').addClass("d-none");
         $('#settle-order-list').addClass("d-none");
         $('#keyword').val("");
     }
@@ -140,13 +152,13 @@
             case "2":
                 idCardReader(function(idCard) {
                     $("#keyword").val(idCard);
-                    queryCustomerHandler();
+                    queryClickHandler();
                 });
                 break;
             case "3":
                 cardReader(function(cardNo) {
                     $("#keyword").val(cardNo);
-                    queryCustomerHandler();
+                    queryClickHandler();
                 });
                 break;
         }
@@ -170,9 +182,16 @@
 <script id="template-customer-info" type="text/html">
     <hr>
     <div class="row">
+        <input type="hidden" id="settle-customer-id" value="{{id}}"/>
         <div class="col-2">{{name}}</div>
         <div class="col-2">{{certificateNumber}}</div>
         <div class="col-1">{{contactsPhone}}</div>
+    </div>
+</script>
+<script id="template-trailer-number-info" type="text/html">
+    <hr>
+    <div class="row">
+        <div class="col-2">{{trailerNumber}}</div>
     </div>
 </script>
 <script id="template-customer-list" type="text/html">

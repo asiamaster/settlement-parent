@@ -9,6 +9,7 @@ import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.EnableEnum;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.SettleOrderService;
@@ -46,7 +47,7 @@ public class SettleOrderApi {
     @RequestMapping(value = "/save")
     public BaseOutput<SettleOrder> save(@RequestBody SettleOrderDto settleOrderDto) {
         validateSaveParams(settleOrderDto);
-        settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), "uid-service"));
+        settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
         settleOrderDto.setState(SettleStateEnum.WAIT_DEAL.getCode());
         settleOrderDto.setSubmitTime(DateUtil.nowDateTime());
         settleOrderDto.setDeductEnable(settleOrderDto.getDeductEnable() == null ? EnableEnum.NO.getCode() : settleOrderDto.getDeductEnable());
@@ -63,11 +64,11 @@ public class SettleOrderApi {
         if (settleOrderDto.getMarketId() == null) {
             throw new BusinessException("", "市场ID为空");
         }
-        if (settleOrderDto.getMchId() == null) {
-            throw new BusinessException("", "商户ID为空");
-        }
         if (StrUtil.isBlank(settleOrderDto.getMarketCode())) {
             throw new BusinessException("", "市场编码为空");
+        }
+        if (settleOrderDto.getMchId() == null) {
+            throw new BusinessException("", "商户ID为空");
         }
         if (settleOrderDto.getAppId() == null) {
             throw new BusinessException("", "应用ID为空");
@@ -86,6 +87,9 @@ public class SettleOrderApi {
         }
         if (StrUtil.isBlank(settleOrderDto.getCustomerPhone())) {
             throw new BusinessException("", "客户手机号为空");
+        }
+        if (StrUtil.isBlank(settleOrderDto.getCustomerCertificate())) {
+            throw new BusinessException("", "客户证件号为空");
         }
         if (settleOrderDto.getType() == null) {
             throw new BusinessException("", "结算类型为空");
@@ -113,7 +117,7 @@ public class SettleOrderApi {
             totalFeeAmount += feeItem.getAmount();
         }
         if (!settleOrderDto.getAmount().equals(totalFeeAmount)) {
-            throw new BusinessException("", "结算金额与费用项总额不相等");
+            throw new BusinessException("", "结算金额与费用项总额不相符");
         }
     }
 }

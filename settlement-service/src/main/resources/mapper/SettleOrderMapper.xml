@@ -7,7 +7,9 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
-    <result column="mch_id" jdbcType="BIGINT" property="mchId" />
+    <result column="market_code" jdbcType="VARCHAR" property="marketCode" />
+    <result column="mch_id" jdbcType="BIGINT" property="mchId"/>
+    <result column="mch_name" jdbcType="VARCHAR" property="mchName"/>
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="order_code" jdbcType="VARCHAR" property="orderCode" />
@@ -18,7 +20,9 @@
     <result column="customer_id" jdbcType="BIGINT" property="customerId" />
     <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
     <result column="customer_phone" jdbcType="VARCHAR" property="customerPhone" />
+    <result column="customer_certificate" jdbcType="VARCHAR" property="customerCertificate"/>
     <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="deduct_amount" jdbcType="BIGINT" property="deductAmount" />
     <result column="submitter_id" jdbcType="BIGINT" property="submitterId" />
     <result column="submitter_name" jdbcType="VARCHAR" property="submitterName" />
     <result column="submitter_dep_id" jdbcType="BIGINT" property="submitterDepId" />
@@ -48,8 +52,8 @@
     <result column="deduct_enable" jdbcType="TINYINT" property="deductEnable"/>
   </resultMap>
   <sql id="Base_Column_List">
-    `id`, `market_id`, `mch_id`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
-    `customer_id`, `customer_name`, `customer_phone`, `amount`, `submitter_id`, `submitter_name`,
+    `id`, `market_id`, `market_code`,`mch_id`, `mch_name`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
+    `customer_id`, `customer_name`, `customer_phone`, `customer_certificate`, `amount`, `deduct_amount`,`submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
     `notes` ,`version`,`charge_date`, `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,
@@ -99,6 +103,9 @@
     </if>
     <if test="customerId != null">
       and `customer_id` = #{customerId}
+    </if>
+    <if test="trailerNumber != null and trailerNumber != ''">
+      and `trailer_number` = #{trailerNumber}
     </if>
     <if test="operatorId != null">
       and `operator_id` = #{operatorId}
@@ -159,8 +166,9 @@
   </select>
 
   <!-- 结算修改 -->
-  <update id="updateSettle" parameterType="com.dili.settlement.domain.SettleOrder">
+  <update id="settleUpdate" parameterType="com.dili.settlement.domain.SettleOrder">
     update settle_order set
+        deduct_amount = #{deductAmount},
         way = #{way},
         state = #{state},
         operator_id = #{operatorId},
@@ -182,13 +190,52 @@
     where id = #{id} and version = #{version}
   </update>
 
+  <!-- 批量结算修改 -->
+  <update id="batchSettleUpdate">
+    <foreach collection="settleOrderList" item="item" open="" close="" separator=";">
+      update settle_order set
+        deduct_amount = #{item.deductAmount},
+        way = #{item.way},
+        state = #{item.state},
+        operator_id = #{item.operatorId},
+        operator_name = #{item.operatorName},
+        operate_time = #{item.operateTime},
+        account_number = #{item.accountNumber},
+        bank_name = #{item.bankName},
+        bank_card_holder = #{item.bankCardHolder},
+        serial_number = #{item.serialNumber},
+        notes = #{item.notes},
+        charge_date = #{item.chargeDate},
+        trade_fund_account_id = #{item.tradeFundAccountId},
+        trade_account_id = #{item.tradeAccountId},
+        trade_customer_id = #{item.tradeCustomerId},
+        trade_customer_name = #{item.tradeCustomerName},
+        trade_card_no = #{item.tradeCardNo},
+        trade_no = #{tradeNo},
+        version = version + 1
+      where id = #{id}
+    </foreach>
+  </update>
+
   <!-- 根据id列表查询总金额 -->
-  <select id="queryTotalAmount" parameterType="com.dili.settlement.domain.SettleOrder" resultType="java.lang.Long">
-    select sum(amount) from settle_order where 1=1
-        and id in
+  <select id="queryAmount" parameterType="com.dili.settlement.domain.SettleOrder" resultType="com.dili.settlement.dto.SettleAmountDto">
+    SELECT IFNULL(SUM(amount), 0) AS totalAmount
+        ,IFNULL(SUM(case when deduct_enable = 1 then amount ELSE 0 END), 0) AS totalDeductAmount
+    FROM settle_order where id in
         <foreach collection="idList" item="id" open="(" close=")" separator=",">
           #{id}
         </foreach>
+  </select>
+
+  <!-- 根据id列表查询并锁定 -->
+  <select id="lockList" parameterType="list" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"></include>
+    from settle_order where `id` in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+          #{id}
+        </foreach>
+    for update
   </select>
 
   <!-- 根据id、version删除记录 -->

@@ -3,15 +3,19 @@ package com.dili.settlement.controller;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.commons.bstable.TableResult;
+import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
+import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.PrintDto;
+import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.TokenHandler;
 import com.dili.settlement.rpc.BusinessRpc;
+import com.dili.settlement.service.CustomerAccountService;
 import com.dili.settlement.service.SettleOrderLinkService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.service.SettleWayService;
@@ -68,6 +72,9 @@ public class SettleOrderController extends AbstractController {
     @Autowired
     private BusinessRpc businessRpc;
 
+    @Autowired
+    private CustomerAccountService customerAccountService;
+
     /**
      * 跳转到支付页面
      * @return
@@ -86,6 +93,17 @@ public class SettleOrderController extends AbstractController {
     @ResponseBody
     public TableResult<SettleOrder> listPayOrders(Long customerId) {
         return listSettleOrders(customerId, SettleTypeEnum.PAY.getCode());
+    }
+
+    /**
+     * 根据挂号查询缴费单
+     * @param trailerNumber
+     * @return
+     */
+    @RequestMapping(value = "/listPayOrdersByTrailerNumber.action")
+    @ResponseBody
+    public TableResult<SettleOrder> listPayOrders(String trailerNumber) {
+        return listSettleOrders(trailerNumber, SettleTypeEnum.PAY.getCode());
     }
 
     /**
@@ -110,6 +128,27 @@ public class SettleOrderController extends AbstractController {
     }
 
     /**
+     * 提取公共查询结算单方法
+     * @param trailerNumber
+     * @param type
+     * @return
+     */
+    private TableResult<SettleOrder> listSettleOrders(String trailerNumber, Integer type) {
+        if (StrUtil.isBlank(trailerNumber)) {
+            return new TableResult<>(1 ,0L, new ArrayList<>(0));
+        }
+        UserTicket userTicket = getUserTicket();
+        SettleOrderDto query = new SettleOrderDto();
+        query.setType(type);
+        query.setState(SettleStateEnum.WAIT_DEAL.getCode());
+        query.setTrailerNumber(trailerNumber);
+        query.setMarketId(userTicket.getFirmId());
+        query.setReverse(ReverseEnum.NO.getCode());
+        List<SettleOrder> settleOrderList = settleOrderService.list(query);
+        return new TableResult<>(1 ,(long)settleOrderList.size(), settleOrderList);
+    }
+
+    /**
      * 跳转到支付页面
      * @param settleOrderDto
      * @param modelMap
@@ -121,15 +160,45 @@ public class SettleOrderController extends AbstractController {
             return "pay/pay";
         }
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
-        Long totalAmount = settleOrderService.queryTotalAmount(settleOrderDto);
-        modelMap.addAttribute("totalAmount", totalAmount);
-        modelMap.addAttribute("totalAmountView", MoneyUtils.centToYuan(totalAmount));
+        SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
+        modelMap.addAttribute("deductEnable", EnableEnum.NO.getCode());
+        prepareDeductInfo(settleOrderDto, settleAmountDto, modelMap);
+        modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
+        modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.payChooseList(userTicket.getFirmId(), settleOrderDto.getIdList().size() > 1);
         modelMap.addAttribute("wayList", wayList);
         modelMap.addAttribute("token", tokenHandler.generate(createTokenStr(userTicket, settleOrderDto)));
         modelMap.addAttribute("ids", settleOrderDto.getIds());
         return "pay/pay";
+    }
+
+    /**
+     * 准备抵扣相关数据
+     * @param settleOrderDto
+     * @param settleAmountDto
+     * @param modelMap
+     */
+    private void prepareDeductInfo(SettleOrderDto settleOrderDto, SettleAmountDto settleAmountDto, ModelMap modelMap) {
+        //当可抵扣金额大于0且客户、商户ID不为空则标记为可抵扣，并计算最大可抵扣金额
+        if (settleOrderDto.getMchId() == null || settleOrderDto.getCustomerId() == null || settleAmountDto.getTotalDeductAmount() == 0L) {
+            return;
+        }
+        CustomerAccount customerAccount = customerAccountService.getBy(settleOrderDto.getMchId(), settleOrderDto.getCustomerId());
+        if (customerAccount == null) {
+            return;
+        }
+        long balance = customerAccount.getAmount() - customerAccount.getFrozenAmount();
+        if (balance == 0) {
+            return;
+        }
+        long totalDeductAmount = balance > settleAmountDto.getTotalDeductAmount() ? settleAmountDto.getTotalDeductAmount() : balance;
+        modelMap.addAttribute("deductEnable", EnableEnum.YES.getCode());
+        modelMap.addAttribute("totalDeductAmount", totalDeductAmount);
+        modelMap.addAttribute("totalDeductAmountText", MoneyUtils.centToYuan(totalDeductAmount));
+        long settleAmount = settleAmountDto.getTotalAmount() - totalDeductAmount;
+        modelMap.addAttribute("settleAmount", settleAmount);
+        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmount));
     }
 
     /**
@@ -144,6 +213,65 @@ public class SettleOrderController extends AbstractController {
     }
 
     /**
+     * 页面支付接口
+     * @param settleOrderDto
+     * @return
+     */
+    @RequestMapping(value = "/pay.action")
+    @ResponseBody
+    public BaseOutput<List<SettleOrder>> pay(SettleOrderDto settleOrderDto) {
+        prepareSettle(settleOrderDto);
+        List<SettleOrder> settleOrderList = payDispatcher.settle(settleOrderDto);
+        for (SettleOrder po : settleOrderList) {
+            CallbackHolder.offerSource(po);
+        }
+        return BaseOutput.success().setData(settleOrderList);
+    }
+
+    /**
+     * 结算前准备
+     * @param settleOrderDto
+     */
+    private void prepareSettle(SettleOrderDto settleOrderDto) {
+        if (settleOrderDto.getMchId() == null) {
+            throw new BusinessException("", "商户ID为空");
+        }
+        if (settleOrderDto.getSettleAmount() == null || settleOrderDto.getSettleAmount() < 0L) {
+            throw new BusinessException("", "实际结算金额不合法");
+        }
+        UserTicket userTicket = getUserTicket();
+        if (!tokenHandler.valid(createTokenStr(userTicket, settleOrderDto), settleOrderDto.getToken())) {
+            throw new BusinessException("", "非法请求");
+        }
+        settleOrderDto.setMarketId(userTicket.getFirmId());
+        settleOrderDto.setOperatorId(userTicket.getId());
+        settleOrderDto.setOperatorName(userTicket.getRealName());
+        settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
+        SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
+        settleOrderDto.setTotalAmount(settleAmountDto.getTotalAmount());
+    }
+
+    /**
+     * 跳转到退款页面
+     * @return
+     */
+    @RequestMapping(value = "/forwardRefundIndex.html")
+    public String forwardRefundIndex() {
+        return "refund/index";
+    }
+
+    /**
+     * 根据客户id查询退款单
+     * @param customerId
+     * @return
+     */
+    @RequestMapping(value = "/listRefundOrders.action")
+    @ResponseBody
+    public TableResult<SettleOrder> listRefundOrders(Long customerId) {
+        return listSettleOrders(customerId, SettleTypeEnum.REFUND.getCode());
+    }
+
+    /**
      * 跳转到退款页面
      * @param settleOrderDto
      * @param modelMap
@@ -155,9 +283,11 @@ public class SettleOrderController extends AbstractController {
             return "refund/refund";
         }
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
-        Long totalAmount = settleOrderService.queryTotalAmount(settleOrderDto);
-        modelMap.addAttribute("totalAmount", totalAmount);
-        modelMap.addAttribute("totalAmountView", MoneyUtils.centToYuan(totalAmount));
+        SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
+        modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
+        modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
+        modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
+        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.refundChooseList(userTicket.getFirmId());
         modelMap.addAttribute("wayList", wayList);
@@ -178,13 +308,33 @@ public class SettleOrderController extends AbstractController {
     }
 
     /**
+     * 页面退款接口
+     * @param settleOrderDto
+     * @return
+     */
+    @RequestMapping(value = "/refund.action")
+    @ResponseBody
+    public BaseOutput<List<SettleOrder>> refund(SettleOrderDto settleOrderDto) {
+        prepareSettle(settleOrderDto);
+        List<SettleOrder> settleOrderList = refundDispatcher.settle(settleOrderDto);
+        for (SettleOrder po : settleOrderList) {
+            CallbackHolder.offerSource(po);
+        }
+        return BaseOutput.success().setData(settleOrderList);
+    }
+
+    /**
      * 跳转到业务详情页面
      * @param response
      */
     @RequestMapping(value = "/showDetail.html")
-    public void showDetail(Long id, HttpServletResponse response) {
-        if (id == null) {
+    public void showDetail(Long id, Integer reverse, HttpServletResponse response) {
+        if (id == null || reverse == null) {
             throw new BusinessException("", "查询业务详情URL参数错误");
+        }
+        //按照作废业务逻辑，如果是冲正单，则转换为原单ID，从而查看详情
+        if (Integer.valueOf(ReverseEnum.YES.getCode()).equals(reverse)) {
+            id = settleOrderService.convertReverseOrderId(id);
         }
         String url = settleOrderLinkService.getUrl(id, LinkTypeEnum.DETAIL.getCode());
         response.setStatus(302);
@@ -206,7 +356,7 @@ public class SettleOrderController extends AbstractController {
         if (StrUtil.isBlank(url)) {
             throw new BusinessException("", "获取打印数据URL错误");
         }
-        return businessRpc.loadPrintData(url + "&reprint=" + reprint);
+        return businessRpc.loadPrintData(url, reprint);
     }
 
     /**

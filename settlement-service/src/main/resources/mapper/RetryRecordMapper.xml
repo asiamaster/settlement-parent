@@ -6,15 +6,24 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="type" jdbcType="TINYINT" property="type" />
-    <result column="business_id" jdbcType="BIGINT" property="businessId" />
-    <result column="business_code" jdbcType="VARCHAR" property="businessCode" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `type`, `business_id`, `business_code`, `create_time`
+    `id`, `create_time`
   </sql>
+
+  <!-- 批量insert -->
+  <insert id="batchInsert">
+    INSERT INTO retry_record (
+        id
+    ) values
+    <foreach collection="retryRecordList" item="item" separator=",">
+      (
+        #{item.id}
+      )
+    </foreach>
+  </insert>
 </mapper>

@@ -31,9 +31,17 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`market_id`")
     private Long marketId;
 
+    //市场编码
+    @Column(name = "`market_code`")
+    private String marketCode;
+
     //商户ID
     @Column(name = "`mch_id`")
     private Long mchId;
+
+    //商户名称
+    @Column(name = "`mch_name`")
+    private String mchName;
 
     //应用ID
     @Column(name = "`app_id`")
@@ -76,10 +84,18 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`customer_phone`")
     private String customerPhone;
 
+    //客户证件号
+    @Column(name = "`customer_certificate`")
+    private String customerCertificate;
+
     //金额
     @Column(name = "`amount`")
     @DisplayText(provider = "moneyProvider")
     private Long amount;
+
+    //抵扣金额
+    @Column(name = "`deduct_amount`")
+    private Long deductAmount;
 
     //提交人ID
     @Column(name = "`submitter_id`")
@@ -236,6 +252,22 @@ public class SettleOrder extends BaseDomain {
      * getter
      * @return
      */
+    public String getMarketCode() {
+        return marketCode;
+    }
+
+    /**
+     * setter
+     * @param marketCode
+     */
+    public void setMarketCode(String marketCode) {
+        this.marketCode = marketCode;
+    }
+
+    /**
+     * getter
+     * @return
+     */
     public Long getMchId() {
         return mchId;
     }
@@ -246,6 +278,22 @@ public class SettleOrder extends BaseDomain {
      */
     public void setMchId(Long mchId) {
         this.mchId = mchId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public String getMchName() {
+        return mchName;
+    }
+
+    /**
+     * setter
+     * @param mchName
+     */
+    public void setMchName(String mchName) {
+        this.mchName = mchName;
     }
 
     /**
@@ -409,6 +457,22 @@ public class SettleOrder extends BaseDomain {
     }
 
     /**
+     * getter
+     * @return
+     */
+    public String getCustomerCertificate() {
+        return customerCertificate;
+    }
+
+    /**
+     * setter
+     * @param customerCertificate
+     */
+    public void setCustomerCertificate(String customerCertificate) {
+        this.customerCertificate = customerCertificate;
+    }
+
+    /**
      * @return amount
      */
     @FieldDef(label="amount")
@@ -422,6 +486,22 @@ public class SettleOrder extends BaseDomain {
      */
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getDeductAmount() {
+        return deductAmount;
+    }
+
+    /**
+     * setter
+     * @param deductAmount
+     */
+    public void setDeductAmount(Long deductAmount) {
+        this.deductAmount = deductAmount;
     }
 
     /**

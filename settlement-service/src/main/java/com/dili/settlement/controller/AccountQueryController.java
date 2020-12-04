@@ -78,7 +78,7 @@ public class AccountQueryController extends AbstractController {
                 return BaseOutput.failure("校验支付密码接口参数错误");
             }
             MchIdHolder.set(getUserTicket().getFirmId());
-            BaseOutput baseOutput = payRpc.validatePayPassword(passwordRequest);
+            BaseOutput baseOutput = payRpc.validateTradePassword(passwordRequest);
             MchIdHolder.clear();
             return baseOutput;
         } catch (BusinessException e) {

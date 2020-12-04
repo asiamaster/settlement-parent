@@ -6,12 +6,12 @@
 
     /** 业务编号格式器 */
     function businessCodeFormatter(value, row, index) {
-        return '<a href="javascript:;" onclick="showBusinessDetailHandler('+row.id+');return false;">'+value+'</a>';
+        return '<a href="javascript:;" onclick="showBusinessDetailHandler('+row.id+','+row.reverse+');return false;">'+value+'</a>';
     }
 
     /** 查看业务详情处理器 */
     function showBusinessDetailHandler(id, reverse) {
-        let url = "/settleOrder/showDetail.html?id="+id;
+        let url = "/settleOrder/showDetail.html?id="+id+"&reverse="+reverse;
         bs4pop.dialog({content:url, title:'业务详情',isIframe:true,width:'80%',height:'95%',btns:[{label: '取消',className: 'btn-secondary'}]});
     }
 

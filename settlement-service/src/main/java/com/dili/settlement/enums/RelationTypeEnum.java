@@ -1,23 +1,24 @@
 package com.dili.settlement.enums;
 
 /**
- * 结算类型枚举
+ * 关联类型枚举
  */
-public enum SettleFeeItemTypeEnum {
+public enum RelationTypeEnum {
 
-    PAY_ITEM(1, "缴费项"),
-    DEDUCT_ITEM(2, "抵扣项");
+    SETTLE_ORDER(1, "结算单"),
+    TRANSFER_ORDER(2, "转移单")
+    ;
 
     private int code;
     private String name;
 
-    SettleFeeItemTypeEnum(int code, String name) {
+    RelationTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static SettleFeeItemTypeEnum getByCode(int code) {
-        for (SettleFeeItemTypeEnum temp : SettleFeeItemTypeEnum.values()) {
+    public static RelationTypeEnum getByCode(int code) {
+        for (RelationTypeEnum temp : RelationTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -26,7 +27,7 @@ public enum SettleFeeItemTypeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (SettleFeeItemTypeEnum temp : SettleFeeItemTypeEnum.values()) {
+        for (RelationTypeEnum temp : RelationTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

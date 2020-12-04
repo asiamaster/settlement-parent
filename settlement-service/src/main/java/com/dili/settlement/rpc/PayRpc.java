@@ -29,7 +29,7 @@ public interface PayRpc {
      * @date 2020/7/1
      */
     @RequestMapping(value = "/payment/api/gateway.do?service=payment.trade.service:prepare", method = RequestMethod.POST)
-    BaseOutput<CreateTradeResponseDto> preparePay(CreateTradeRequestDto createTradeRequest);
+    BaseOutput<CreateTradeResponseDto> prepareTrade(CreateTradeRequestDto createTradeRequest);
 
     /**
      * 查询余额
@@ -54,5 +54,5 @@ public interface PayRpc {
      * @return
      */
     @RequestMapping(value = "/payment/api/gateway.do?service=payment.permission.service:password", method = RequestMethod.POST)
-    BaseOutput validatePayPassword(PasswordRequestDto passwordRequest);
+    BaseOutput validateTradePassword(PasswordRequestDto passwordRequest);
 }

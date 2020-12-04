@@ -12,8 +12,6 @@ public class FeeItemDto {
     private Integer type;
     /** 费用类型名称*/
     private String typeName;
-    /** 期初余额*/
-    private Long balance;
 
     public Long getAmount() {
         return amount;
@@ -37,14 +35,6 @@ public class FeeItemDto {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
-    }
-
-    public Long getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Long balance) {
-        this.balance = balance;
     }
 
     /**

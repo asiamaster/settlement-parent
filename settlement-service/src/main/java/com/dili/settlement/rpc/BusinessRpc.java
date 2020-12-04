@@ -20,8 +20,9 @@ public class BusinessRpc {
      * @param url
      * @return
      */
-    public BaseOutput<PrintDto> loadPrintData(String url) {
+    public BaseOutput<PrintDto> loadPrintData(String url, Integer reprint) {
         HttpRequest request = HttpUtil.createGet(url);
+        request.form("reprint", reprint);
         String responseBody = request.execute().body();
         if (StrUtil.isBlank(responseBody)) {
             return BaseOutput.failure("获取远程打印数据为空");

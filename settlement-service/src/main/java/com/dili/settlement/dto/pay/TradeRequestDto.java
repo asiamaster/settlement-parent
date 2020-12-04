@@ -18,6 +18,8 @@ public class TradeRequestDto {
     private String password;
     /** 费用项*/
     private List<FeeItemDto> fees;
+    /** 抵扣费用项*/
+    private List<FeeItemDto> deductFees;
 
     public String getTradeId() {
         return tradeId;
@@ -59,6 +61,29 @@ public class TradeRequestDto {
         this.fees = fees;
     }
 
+    public List<FeeItemDto> getDeductFees() {
+        return deductFees;
+    }
+
+    public void setDeductFees(List<FeeItemDto> deductFees) {
+        this.deductFees = deductFees;
+    }
+
+    /**
+     * 创建提交交易参数
+     * @return
+     */
+    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, String password, List<FeeItemDto> fees, List<FeeItemDto> deductFees) {
+        TradeRequestDto tradeRequest = new TradeRequestDto();
+        tradeRequest.setTradeId(tradeId);
+        tradeRequest.setAccountId(fundAccountId);
+        tradeRequest.setChannelId(channelId);
+        tradeRequest.setPassword(password);
+        tradeRequest.setFees(fees);
+        tradeRequest.setDeductFees(deductFees);
+        return tradeRequest;
+    }
+
     /**
      * 创建提交交易参数
      * @return
@@ -70,6 +95,20 @@ public class TradeRequestDto {
         tradeRequest.setChannelId(channelId);
         tradeRequest.setPassword(password);
         tradeRequest.setFees(fees);
+        return tradeRequest;
+    }
+
+    /**
+     * 创建提交交易参数
+     * @return
+     */
+    public static TradeRequestDto build(String tradeId, Long fundAccountId, Integer channelId, List<FeeItemDto> fees, List<FeeItemDto> deductFees) {
+        TradeRequestDto tradeRequest = new TradeRequestDto();
+        tradeRequest.setTradeId(tradeId);
+        tradeRequest.setAccountId(fundAccountId);
+        tradeRequest.setChannelId(channelId);
+        tradeRequest.setFees(fees);
+        tradeRequest.setDeductFees(deductFees);
         return tradeRequest;
     }
 

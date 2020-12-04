@@ -44,7 +44,7 @@ public class ExecuteQueueTask extends QueueTask implements Callable<Boolean> {
             }
             try {
                 post(callbackDto.getUrl(), callbackDto.getData());
-                retryRecordService.delete(callbackDto.getRetryRecordId());
+                retryRecordService.delete(callbackDto.getSettleOrderId());
             } catch (Exception e) {
                 LOGGER.error("execute task error", e);
                 callbackDto.failure();

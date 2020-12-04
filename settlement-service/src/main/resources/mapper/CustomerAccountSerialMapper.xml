@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.settlement.mapper.CustomerAccountSerialMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.CustomerAccountSerial">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customer_account_id" jdbcType="BIGINT" property="customerAccountId" />
+    <result column="action" jdbcType="TINYINT" property="action" />
+    <result column="scene" jdbcType="TINYINT" property="scene" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+    <result column="relation_code" jdbcType="VARCHAR" property="relationCode" />
+    <result column="relation_type" jdbcType="INTEGER" property="relationType" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    `id`, `customer_account_id`, `action`, `scene`, `amount`, `operate_time`,
+    `operator_id`, `operator_name`, `relation_code`, `relation_type`, `notes`
+  </sql>
+
+  <!-- 批量保存流水 -->
+  <insert id="batchInsert">
+    insert into customer_account_serial(
+        `customer_account_id`,
+        `action`,
+        `scene`,
+        `amount`,
+        `operate_time`,
+        `operator_id`,
+        `operator_name`,
+        `relation_code`,
+        `relation_type`,
+        `notes`
+    ) values
+    <foreach collection="accountSerialList" item="item" separator=",">
+    (
+        #{customerAccountId},
+        #{item.action},
+        #{item.scene},
+        #{item.amount},
+        #{item.operateTime},
+        #{item.operatorId},
+        #{item.operatorName},
+        #{item.relationCode},
+        #{item.relationType},
+        #{item.notes}
+      )
+    </foreach>
+  </insert>
+</mapper>

@@ -1,12 +1,12 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.dili.settlement.enums.SettleWayEnum;
+import com.dili.settlement.annotation.DisplayConvert;
+import com.dili.settlement.annotation.DisplayText;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.ss.util.MoneyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,6 +19,7 @@ import java.time.LocalDate;
  * This file was generated on 2020-06-01 14:13:21.
  */
 @Table(name = "`settle_way_detail`")
+@DisplayConvert
 public class SettleWayDetail extends BaseDomain {
     @Id
     @Column(name = "`id`")
@@ -31,9 +32,11 @@ public class SettleWayDetail extends BaseDomain {
     @Column(name = "`settle_order_code`")
     private String settleOrderCode;
 
+    @DisplayText(provider = "settleWayProvider")
     @Column(name = "`way`")
     private Integer way;
 
+    @DisplayText(provider = "moneyProvider")
     @Column(name = "`amount`")
     private Long amount;
 
@@ -177,26 +180,16 @@ public class SettleWayDetail extends BaseDomain {
         this.notes = notes;
     }
 
-    /**
-     * 获取金额展示
-     * @return
-     */
-    @Transient
-    public String getAmountView() {
-        if (this.amount == null) {
-            return null;
-        }
-        return MoneyUtils.centToYuan(this.amount);
+    public static SettleWayDetail build(Long settleOrderId, String settleOrderCode, SettleWayDetail temp) {
+        SettleWayDetail settleWayDetail = new SettleWayDetail();
+        settleWayDetail.setSettleOrderId(settleOrderId);
+        settleWayDetail.setSettleOrderCode(settleOrderCode);
+        settleWayDetail.setWay(temp.getWay());
+        settleWayDetail.setAmount(temp.getAmount());
+        settleWayDetail.setSerialNumber(temp.getSerialNumber());
+        settleWayDetail.setChargeDate(temp.getChargeDate());
+        settleWayDetail.setNotes(temp.getNotes());
+        return settleWayDetail;
     }
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getWayName() {
-        if (this.way == null) {
-            return null;
-        }
-        return SettleWayEnum.getNameByCode(this.way);
-    }
+
 }

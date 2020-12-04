@@ -21,6 +21,17 @@ public class SupportHandler {
     }
 
     /**
+     * 是否支持挂号查询
+     * @return
+     */
+    public static boolean trailerNumberQuerySupport() {
+        if ("sy".equalsIgnoreCase(getUserTicket().getFirmCode())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 获取登录用户信息 如为null则new一个，以免空指针
      * @return
      */

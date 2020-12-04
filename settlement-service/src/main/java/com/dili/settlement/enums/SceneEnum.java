@@ -1,21 +1,33 @@
 package com.dili.settlement.enums;
 
 /**
- * 重试记录类型枚举
+ * <B>Description</B>
+ * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
+ * <B>农丰时代科技有限公司</B>
+ *
+ * @author jcy
+ * @createTime 2020-02-17 18:51
  */
-public enum RetryTypeEnum {
+public enum SceneEnum {
+    PAYMENT(1, "交费"),
+    DEDUCT(2, "抵扣消费"),
+    TRANSFER_IN(3, "定金转入"),
+    TRANSFER_OUT(4, "定金转出"),
+    REFUND(5, "退款"),
+    INVALID_IN(6, "业务交费作废转入"),
+    INVALID_OUT(7, "业务交费作废转出")
+    ;
 
-    SETTLE_CALLBACK(1, "结算回调");
     private int code;
     private String name;
 
-    RetryTypeEnum(int code, String name) {
+    SceneEnum(int code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static RetryTypeEnum getByCode(int code) {
-        for (RetryTypeEnum temp : RetryTypeEnum.values()) {
+    public static SceneEnum getByCode(int code) {
+        for (SceneEnum temp : SceneEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -24,7 +36,7 @@ public enum RetryTypeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (RetryTypeEnum temp : RetryTypeEnum.values()) {
+        for (SceneEnum temp : SceneEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

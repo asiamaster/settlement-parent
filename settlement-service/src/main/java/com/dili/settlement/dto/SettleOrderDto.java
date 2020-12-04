@@ -4,10 +4,7 @@ import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleOrderLink;
 import com.dili.settlement.domain.SettleWayDetail;
-import com.dili.settlement.enums.ReverseEnum;
-import com.dili.settlement.enums.SettleStateEnum;
 
-import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -16,8 +13,6 @@ import java.util.List;
 public class SettleOrderDto extends SettleOrder {
 
     /** 提交 start */
-    //市场编码
-    private String marketCode;
     //结算费用项列表
     private List<SettleFeeItem> settleFeeItemList;
     //结算单链接列表
@@ -54,17 +49,15 @@ public class SettleOrderDto extends SettleOrder {
     private List<Long> idList;
     //收款总额
     private Long totalAmount;
+    //总抵扣金额
+    private Long totalDeductAmount;
+    //实际结算金额
+    private Long settleAmount;
     //交易密码
     private String tradePassword;
+    //建议校验token
+    private String token;
     /** 结算 end */
-
-    public String getMarketCode() {
-        return marketCode;
-    }
-
-    public void setMarketCode(String marketCode) {
-        this.marketCode = marketCode;
-    }
 
     public List<SettleFeeItem> getSettleFeeItemList() {
         return settleFeeItemList;
@@ -186,6 +179,22 @@ public class SettleOrderDto extends SettleOrder {
         this.totalAmount = totalAmount;
     }
 
+    public Long getTotalDeductAmount() {
+        return totalDeductAmount;
+    }
+
+    public void setTotalDeductAmount(Long totalDeductAmount) {
+        this.totalDeductAmount = totalDeductAmount;
+    }
+
+    public Long getSettleAmount() {
+        return settleAmount;
+    }
+
+    public void setSettleAmount(Long settleAmount) {
+        this.settleAmount = settleAmount;
+    }
+
     public String getTradePassword() {
         return tradePassword;
     }
@@ -194,12 +203,11 @@ public class SettleOrderDto extends SettleOrder {
         this.tradePassword = tradePassword;
     }
 
-    /**
-     * 是否可打印
-     * @return
-     */
-    @Transient
-    public boolean getPrintEnable() {
-        return Integer.valueOf(SettleStateEnum.DEAL.getCode()).equals(this.getState()) && Integer.valueOf(ReverseEnum.NO.getCode()).equals(this.getReverse());
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

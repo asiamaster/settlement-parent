@@ -8,7 +8,12 @@ public enum TradeChannelEnum {
     BALANCE(1, "账户余额"),
     CASH(2, "现金"),
     POS(3, "POS"),
-    E_BANK(4, "网银");
+    E_BANK(4, "网银"),
+    ALI(5, "支付宝"),
+    WECHAT(6, "微信"),
+    MIXED(7, "组合支付"),
+    VIRTUAL(8, "虚拟支付")
+    ;
     private int code;
     private String name;
 

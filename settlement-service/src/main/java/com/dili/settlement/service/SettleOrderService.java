@@ -1,6 +1,7 @@
 package com.dili.settlement.service;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.PageOutput;
@@ -43,7 +44,7 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @param settleOrderDto
      * @return
      */
-    Long queryTotalAmount(SettleOrderDto settleOrderDto);
+    SettleAmountDto queryAmount(SettleOrderDto settleOrderDto);
 
     /**
      * 结算修改
@@ -51,4 +52,31 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @return
      */
     int updateSettle(SettleOrder po);
+
+    /**
+     * 将冲正单id转换为原单id
+     * @param id
+     * @return
+     */
+    Long convertReverseOrderId(Long id);
+
+    /**
+     * 根据结算单号查询结算单
+     * @param code
+     * @return
+     */
+    SettleOrder getByCode(String code);
+
+    /**
+     * 根据id列表批量查询并加锁
+     * @param ids
+     * @return
+     */
+    List<SettleOrder> lockList(List<Long> ids);
+
+    /**
+     * 批量结算修改
+     * @param settleOrderList
+     */
+    int batchSettleUpdate(List<SettleOrder> settleOrderList, String tradeNo);
 }
