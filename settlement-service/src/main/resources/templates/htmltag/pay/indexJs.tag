@@ -5,17 +5,18 @@
 
     /** 支付页面确定按钮点击事件处理器 */
     function payCertainClickHandler() {
+        let mchId = $('[name="mchRadio"]:checked').val();
         let customerId = $('#settle-customer-id').val();
-        let rows = $('#table-settle-order-list').bootstrapTable('getSelections');
+        let rows = $('#table_' + mchId).find('[name="chk"]:checked');
         if (null == rows || rows.length === 0) {
             showWarning('请至少选中一条数据');
             return;
         }
         let idList = [];
         for (let row of rows) {
-            idList.push(row.id);
+            idList.push($(row).val());
         }
-        let url = "/settleOrder/forwardPay.html?customerId="+customerId+"&ids="+idList.join(",");
+        let url = "/settleOrder/forwardPay.html?mchId="+mchId+"&customerId="+customerId+"&ids="+idList.join(",");
         bs4pop.dialog({
             id:'dialog-pay',
             content:url,
@@ -60,15 +61,26 @@
         });
     }
 
+    let url = '';
     /** 加载客户单据处理器 */
     function loadCustomerOrdersHandler(cusId) {
         $('#settle-order-list').removeClass("d-none");
-        $('#table-settle-order-list').bootstrapTable("refreshOptions", {url:"/settleOrder/listPayOrders.action?customerId="+cusId});
+        url = "/settleOrder/listPayOrders.action?customerId="+cusId;
+        $('#table-settle-order-list').load(url);
     }
 
     /** 根据挂号查询单据 */
     function loadTrailerNumberOrdersHandler(trailerNumber) {
         $('#settle-order-list').removeClass("d-none");
-        $('#table-settle-order-list').bootstrapTable("refreshOptions", {url:"/settleOrder/listPayOrdersByTrailerNumber.action?trailerNumber="+trailerNumber});
+        url = "/settleOrder/listPayOrdersByTrailerNumber.action?trailerNumber="+trailerNumber;
+        $('#table-settle-order-list').load(url);
+    }
+
+    /** 刷新表格处理器 */
+    function refreshTableHandler() {
+        if (url === '') {
+            return;
+        }
+        $('#table-settle-order-list').load(url);
     }
 </script>

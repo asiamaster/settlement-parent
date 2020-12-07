@@ -1,0 +1,175 @@
+<% if (isNotEmpty(groupOrderList) && groupOrderList.~size > 0) {
+    for (item in groupOrderList) {
+        if (itemLP.first) { %>
+        <div class="mt-2"><input type="radio" id="mchRadio_${item.mchId}" name="mchRadio" value="${item.mchId}" checked/>所属组织: ${item.mchName!}</div>
+        <% if (isNotEmpty(item.settleOrderList) && item.settleOrderList.~size > 0) { %>
+            <table bind-mchId="${item.mchId}" id="table_${item.mchId}" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center align-middle">
+                            <input type="checkbox" name="checkAll"/>
+                        </th>
+                        <th class="text-center align-middle">
+                            业务编号
+                        </th>
+                        <th class="text-center align-middle">
+                            业务类型
+                        </th>
+                        <th class="text-center align-middle">
+                            支付金额
+                        </th>
+                        <th class="text-center align-middle">
+                            提交人
+                        </th>
+                        <th class="text-center align-middle">
+                            提交人部门
+                        </th>
+                        <th class="text-center align-middle">
+                            提交时间
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% for (settleOrder in item.settleOrderList) { %>
+                    <tr>
+                        <td class="text-center align-middle">
+                            <input type="checkbox" name="chk" value="${settleOrder.id}"/>
+                        </td>
+                        <% if (hasResource("settlement-pay-business-detail")) { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showBusinessDetailHandler(${settleOrder.id}, ${settleOrder.reverse});return false;">${settleOrder.businessCode!}</a>
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            ${settleOrder.businessCode!}
+                        </td>
+                        <% } %>
+                        <td class="text-center align-middle">
+                            ${settleOrder.businessTypeText!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.amountText!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitterName!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitterDepName!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitTime!}
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        <% }} else { %>
+        <div class="mt-2"><input type="radio" id="mchRadio_${item.mchId}" name="mchRadio" value="${item.mchId}"/>所属组织: ${item.mchName!}</div>
+        <%  if (isNotEmpty(item.settleOrderList) && item.settleOrderList.~size > 0) { %>
+            <table bind-mchId="${item.mchId}" id="table_${item.mchId}" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center align-middle">
+                            <input type="checkbox" name="checkAll" disabled/>
+                        </th>
+                        <th class="text-center align-middle">
+                            业务编号
+                        </th>
+                        <th class="text-center align-middle">
+                            业务类型
+                        </th>
+                        <th class="text-center align-middle">
+                            支付金额
+                        </th>
+                        <th class="text-center align-middle">
+                            提交人
+                        </th>
+                        <th class="text-center align-middle">
+                            提交人部门
+                        </th>
+                        <th class="text-center align-middle">
+                            提交时间
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% for (settleOrder in item.settleOrderList) { %>
+                    <tr>
+                        <td class="text-center align-middle">
+                            <input type="checkbox" name="chk" value="${settleOrder.id}" disabled/>
+                        </td>
+                        <% if (hasResource("settlement-pay-business-detail")) { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showBusinessDetailHandler(${settleOrder.id}, ${settleOrder.reverse});return false;">${settleOrder.businessCode!}</a>
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            ${settleOrder.businessCode!}
+                        </td>
+                        <% } %>
+                        <td class="text-center align-middle">
+                            ${settleOrder.businessTypeText!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.amountText!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitterName!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitterDepName!}
+                        </td>
+                        <td class="text-center align-middle">
+                            ${settleOrder.submitTime!}
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+<% }}}} else {%>
+    <div style="text-align: center">暂无待结算单据</div>
+<% } %>
+
+<script type="text/javascript">
+    // 商户单选框事件处理
+    $('#table-settle-order-list').on('click', '[name="mchRadio"]', function() {
+       let mchId = $(this).val();
+       $('#table_' + mchId).find(':checkbox').prop("disabled", false);
+       $('#table-settle-order-list table').not('#table_' + mchId).find(':checkbox').prop("checked", false).prop("disabled", true);
+    });
+
+    // 表格列头复选框事件
+    $('#table-settle-order-list').on('click', '[name="checkAll"]', function() {
+        let checked = $(this).prop("checked");
+        $(this).closest('table').find(':checkbox').prop("checked", checked);
+    });
+
+    // 表格内复选框click事件
+    $('#table-settle-order-list').on('click', '[name="chk"]', function() {
+        $(this).trigger('change');
+    });
+
+    // 表格内复选框change事件
+    $('#table-settle-order-list').on('change', '[name="chk"]', function() {
+        let checked = true;
+        $(this).closest('table').find('[name="chk"]').each(function(){
+            if (!$(this).prop("checked")) {
+                checked = false;
+            }
+        });
+        $(this).closest('table').find('[name="checkAll"]').prop("checked", checked);
+    });
+
+    // tr单击事件处理
+    $('#table-settle-order-list').on('click', 'table tr', function(e) {
+        if (e.target.type === 'checkbox') {
+            return;
+        }
+        let mchId = $(this).closest('table').attr("bind-mchId");
+        if (!$('#mchRadio_' + mchId).prop("checked")) {
+            return;
+        }
+        let checked = $(this).find('[name="chk"]').prop('checked');
+        $(this).find('[name="chk"]').prop('checked', !checked).trigger('change');
+    });
+</script>

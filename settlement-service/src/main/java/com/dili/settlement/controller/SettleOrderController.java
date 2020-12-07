@@ -2,6 +2,7 @@ package com.dili.settlement.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.dili.commons.bstable.TableResult;
 import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.dispatcher.PayDispatcher;
@@ -11,10 +12,12 @@ import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.PrintDto;
 import com.dili.settlement.dto.SettleAmountDto;
+import com.dili.settlement.dto.SettleGroupDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.TokenHandler;
 import com.dili.settlement.rpc.BusinessRpc;
+import com.dili.settlement.serializer.DisplayTextAfterFilter;
 import com.dili.settlement.service.CustomerAccountService;
 import com.dili.settlement.service.SettleOrderLinkService;
 import com.dili.settlement.service.SettleOrderService;
@@ -36,8 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,9 +92,11 @@ public class SettleOrderController extends AbstractController {
      * @return
      */
     @RequestMapping(value = "/listPayOrders.action")
-    @ResponseBody
-    public TableResult<SettleOrder> listPayOrders(Long customerId) {
-        return listSettleOrders(customerId, SettleTypeEnum.PAY.getCode());
+    public String listPayOrders(Long customerId, ModelMap modelMap) {
+        List<SettleOrder> settleOrderList = listSettleOrders(customerId, SettleTypeEnum.PAY.getCode());
+        List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
+        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        return "pay/table";
     }
 
     /**
@@ -101,9 +105,11 @@ public class SettleOrderController extends AbstractController {
      * @return
      */
     @RequestMapping(value = "/listPayOrdersByTrailerNumber.action")
-    @ResponseBody
-    public TableResult<SettleOrder> listPayOrders(String trailerNumber) {
-        return listSettleOrders(trailerNumber, SettleTypeEnum.PAY.getCode());
+    public String listPayOrders(String trailerNumber, ModelMap modelMap) {
+        List<SettleOrder> settleOrderList = listSettleOrders(trailerNumber, SettleTypeEnum.PAY.getCode());
+        List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
+        modelMap.addAttribute("groupOrderList", items);
+        return "pay/table";
     }
 
     /**
@@ -112,9 +118,9 @@ public class SettleOrderController extends AbstractController {
      * @param type
      * @return
      */
-    private TableResult<SettleOrder> listSettleOrders(Long customerId, Integer type) {
+    private List<SettleOrder> listSettleOrders(Long customerId, Integer type) {
         if (customerId == null) {
-            return new TableResult<>(1 ,0L, new ArrayList<>(0));
+            return new ArrayList<>(0);
         }
         UserTicket userTicket = getUserTicket();
         SettleOrderDto query = new SettleOrderDto();
@@ -123,8 +129,7 @@ public class SettleOrderController extends AbstractController {
         query.setCustomerId(customerId);
         query.setMarketId(userTicket.getFirmId());
         query.setReverse(ReverseEnum.NO.getCode());
-        List<SettleOrder> settleOrderList = settleOrderService.list(query);
-        return new TableResult<>(1 ,(long)settleOrderList.size(), settleOrderList);
+        return settleOrderService.list(query);
     }
 
     /**
@@ -133,9 +138,9 @@ public class SettleOrderController extends AbstractController {
      * @param type
      * @return
      */
-    private TableResult<SettleOrder> listSettleOrders(String trailerNumber, Integer type) {
+    private List<SettleOrder> listSettleOrders(String trailerNumber, Integer type) {
         if (StrUtil.isBlank(trailerNumber)) {
-            return new TableResult<>(1 ,0L, new ArrayList<>(0));
+            return new ArrayList<>(0);
         }
         UserTicket userTicket = getUserTicket();
         SettleOrderDto query = new SettleOrderDto();
@@ -144,8 +149,7 @@ public class SettleOrderController extends AbstractController {
         query.setTrailerNumber(trailerNumber);
         query.setMarketId(userTicket.getFirmId());
         query.setReverse(ReverseEnum.NO.getCode());
-        List<SettleOrder> settleOrderList = settleOrderService.list(query);
-        return new TableResult<>(1 ,(long)settleOrderList.size(), settleOrderList);
+        return settleOrderService.list(query);
     }
 
     /**
@@ -161,10 +165,14 @@ public class SettleOrderController extends AbstractController {
         }
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
+        modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
+        modelMap.addAttribute("mchId", settleOrderDto.getMchId());
         modelMap.addAttribute("deductEnable", EnableEnum.NO.getCode());
         prepareDeductInfo(settleOrderDto, settleAmountDto, modelMap);
         modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
         modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
+        modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
+        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.payChooseList(userTicket.getFirmId(), settleOrderDto.getIdList().size() > 1);
         modelMap.addAttribute("wayList", wayList);
@@ -266,9 +274,11 @@ public class SettleOrderController extends AbstractController {
      * @return
      */
     @RequestMapping(value = "/listRefundOrders.action")
-    @ResponseBody
-    public TableResult<SettleOrder> listRefundOrders(Long customerId) {
-        return listSettleOrders(customerId, SettleTypeEnum.REFUND.getCode());
+    public String listRefundOrders(Long customerId, ModelMap modelMap) {
+        List<SettleOrder> settleOrderList = listSettleOrders(customerId, SettleTypeEnum.REFUND.getCode());
+        List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
+        modelMap.addAttribute("groupOrderList", items);
+        return "refund/table";
     }
 
     /**
@@ -284,6 +294,8 @@ public class SettleOrderController extends AbstractController {
         }
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
+        modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
+        modelMap.addAttribute("mchId", settleOrderDto.getMchId());
         modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
         modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
         modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
@@ -409,5 +421,24 @@ public class SettleOrderController extends AbstractController {
         builder.append(userTicket.getId());
         builder.append(userTicket.getFirmId());
         return builder.toString();
+    }
+
+    /**
+     * 构建分组数据
+     * @param settleOrderList
+     * @return
+     */
+    private List<SettleGroupDto> buildSettleGroupDto(List<SettleOrder> settleOrderList) {
+        List<SettleGroupDto> items = new ArrayList<>(settleOrderList.size());
+        Map<Long, SettleGroupDto> map = new TreeMap<>();
+        for (SettleOrder settleOrder : settleOrderList) {
+            if (map.containsKey(settleOrder.getMchId())) {
+                map.get(settleOrder.getMchId()).append(settleOrder);
+            } else {
+                map.put(settleOrder.getMchId(), SettleGroupDto.build(settleOrder.getMchId(), settleOrder.getMchName(), settleOrder));
+            }
+        }
+        items.addAll(map.values());
+        return items;
     }
 }

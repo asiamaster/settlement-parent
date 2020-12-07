@@ -2,17 +2,40 @@
 <div class="container-fluid">
     <form id="form-pay" action="">
         <input type="text" style="display: none"/>
+        <input type="hidden" name="customerId" value="${customerId}"/>
+        <input type="hidden" name="mchId" value="${mchId}"/>
         <input type="hidden" name="token" value="${token!}"/>
         <input type="hidden" name="ids" value="${ids!}"/>
+        <input type="hidden" name="deductEnable" id="deductEnable" value="${deductEnable!}"/>
         <input type="hidden" name="totalAmount" id="totalAmount" value="${totalAmount!}"/>
+        <input type="hidden" name="totalDeductAmount" id="totalDeductAmount" value="${totalDeductAmount!}"/>
+        <input type="hidden" name="settleAmount" id="settleAmount" value="${settleAmount!}"/>
         <div class="row">
             <div class="col-2 text-right">
                 结算金额:
             </div>
             <div class="col-4">
-                <input type="text" class="form-control" value="${totalAmountView!}" readonly/>
+                <input type="text" class="form-control" value="${totalAmountText!}" readonly/>
             </div>
         </div>
+        <% if (deductEnable == @com.dili.settlement.enums.EnableEnum.YES.getCode()) { %>
+        <div class="row">
+            <div class="col-2 text-right">
+                定金抵扣:
+            </div>
+            <div class="col-4">
+                <input type="text" class="form-control" value="${totalDeductAmountText!}" readonly/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2 text-right">
+                实际结算:
+            </div>
+            <div class="col-4">
+                <input type="text" class="form-control" value="${settleAmountText!}" readonly/>
+            </div>
+        </div>
+        <% } %>
         <div class="row mt-2">
             <div class="col-2 text-right">
                 结算方式:

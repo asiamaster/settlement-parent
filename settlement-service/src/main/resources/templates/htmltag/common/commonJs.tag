@@ -1,9 +1,4 @@
 <script>
-    /** 刷新表格处理器 */
-    function refreshTableHandler() {
-        $('#table-settle-order-list').bootstrapTable("refresh");
-    }
-
     /** 业务编号格式器 */
     function businessCodeFormatter(value, row, index) {
         return '<a href="javascript:;" onclick="showBusinessDetailHandler('+row.id+','+row.reverse+');return false;">'+value+'</a>';

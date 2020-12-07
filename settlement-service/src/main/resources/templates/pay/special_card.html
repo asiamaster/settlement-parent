@@ -120,9 +120,9 @@
             showError("未查询到资金账户");
             return false;
         }
-        let totalAmount = parseInt($('#totalAmount').val());
+        let settleAmount = parseInt($('#settleAmount').val());
         let tradeAvailableAmount = parseInt($('#tradeAvailableAmount').val());
-        if (totalAmount > tradeAvailableAmount) {
+        if (settleAmount > tradeAvailableAmount) {
             showInfo("账户余额不足");
             return false;
         }
