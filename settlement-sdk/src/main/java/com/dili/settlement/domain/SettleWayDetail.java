@@ -1,12 +1,10 @@
 package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.ss.util.MoneyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,11 +23,11 @@ public class SettleWayDetail extends BaseDomain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "`order_id`")
-    private Long orderId;
+    @Column(name = "`settle_order_id`")
+    private Long settleOrderId;
 
-    @Column(name = "`order_code`")
-    private String orderCode;
+    @Column(name = "`settle_order_code`")
+    private String settleOrderCode;
 
     @Column(name = "`way`")
     private Integer way;
@@ -66,35 +64,35 @@ public class SettleWayDetail extends BaseDomain {
     }
 
     /**
-     * @return order_id
+     * getter
+     * @return
      */
-    @FieldDef(label="orderId")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    public Long getOrderId() {
-        return orderId;
+    public Long getSettleOrderId() {
+        return settleOrderId;
     }
 
     /**
-     * @param orderId
+     * setter
+     * @param settleOrderId
      */
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setSettleOrderId(Long settleOrderId) {
+        this.settleOrderId = settleOrderId;
     }
 
     /**
-     * @return order_code
+     * getter
+     * @return
      */
-    @FieldDef(label="orderCode", maxLength = 32)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    public String getOrderCode() {
-        return orderCode;
+    public String getSettleOrderCode() {
+        return settleOrderCode;
     }
 
     /**
-     * @param orderCode
+     * setter
+     * @param settleOrderCode
      */
-    public void setOrderCode(String orderCode) {
-        this.orderCode = orderCode;
+    public void setSettleOrderCode(String settleOrderCode) {
+        this.settleOrderCode = settleOrderCode;
     }
 
     /**
@@ -177,26 +175,16 @@ public class SettleWayDetail extends BaseDomain {
         this.notes = notes;
     }
 
-    /**
-     * 获取金额展示
-     * @return
-     */
-    @Transient
-    public String getAmountView() {
-        if (this.amount == null) {
-            return null;
-        }
-        return MoneyUtils.centToYuan(this.amount);
+    public static SettleWayDetail build(Long settleOrderId, String settleOrderCode, SettleWayDetail temp) {
+        SettleWayDetail settleWayDetail = new SettleWayDetail();
+        settleWayDetail.setSettleOrderId(settleOrderId);
+        settleWayDetail.setSettleOrderCode(settleOrderCode);
+        settleWayDetail.setWay(temp.getWay());
+        settleWayDetail.setAmount(temp.getAmount());
+        settleWayDetail.setSerialNumber(temp.getSerialNumber());
+        settleWayDetail.setChargeDate(temp.getChargeDate());
+        settleWayDetail.setNotes(temp.getNotes());
+        return settleWayDetail;
     }
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getWayName() {
-        if (this.way == null) {
-            return null;
-        }
-        return SettleWayEnum.getNameByCode(this.way);
-    }
+
 }
