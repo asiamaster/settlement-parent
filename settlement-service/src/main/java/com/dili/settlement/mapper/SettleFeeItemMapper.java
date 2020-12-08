@@ -20,4 +20,11 @@ public interface SettleFeeItemMapper extends MyMapper<SettleFeeItem> {
      * @return
      */
     List<SettleFeeItem> listBySettleOrderIdList(@Param("settleOrderIdList") List<Long> settleOrderIdList);
+
+    /**
+     * 根据结算单ID删除
+     * @param settleOrderId
+     * @return
+     */
+    int deleteBySettleOrderId(@Param("settleOrderId") Long settleOrderId);
 }

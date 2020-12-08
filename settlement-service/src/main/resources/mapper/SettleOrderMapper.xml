@@ -242,10 +242,4 @@
   <update id="delWithVersion" parameterType="com.dili.settlement.domain.SettleOrder">
     delete from settle_order where id = #{id} and version = #{version}
   </update>
-
-
-  <!-- 用于改数据接口-批量修改金额 -->
-  <update id="batchUpdateAmount" parameterType="java.util.Map">
-     update settle_order set amount = #{amount} where code = #{code}
-  </update>
 </mapper>

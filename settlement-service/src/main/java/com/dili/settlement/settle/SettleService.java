@@ -1,6 +1,7 @@
 package com.dili.settlement.settle;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import org.springframework.ui.ModelMap;
@@ -101,6 +102,21 @@ public interface SettleService {
      * @return
      */
     Integer getTradeChannel();
+
+    /**
+     * 作废
+     * @param po
+     * @param param
+     */
+    void invalid(SettleOrder po, InvalidRequestDto param);
+
+    /**
+     * 作废
+     * @param po
+     * @param reverseOrder
+     * @param param
+     */
+    void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param);
 
     /**
      * 支持的结算方式

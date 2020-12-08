@@ -1,6 +1,7 @@
 package com.dili.settlement.service;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.BaseService;
@@ -79,4 +80,37 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @param settleOrderList
      */
     int batchSettleUpdate(List<SettleOrder> settleOrderList, String tradeNo);
+
+    /**
+     * 根据结算单号查询结算单
+     * @param appId 应用ID
+     * @param orderCode 订单号
+     * @return
+     */
+    SettleOrder get(Long appId, String orderCode);
+
+    /**
+     * 根据结算单id取消
+     * @param id
+     */
+    void cancelById(Long id);
+
+    /**
+     * 根据结算单号取消
+     * @param code
+     */
+    void cancelByCode(String code);
+
+    /**
+     * 根据应用id、业务单号取消
+     * @param appId
+     * @param orderCode
+     */
+    void cancel(Long appId, String orderCode);
+
+    /**
+     * 作废
+     * @param param
+     */
+    void invalid(InvalidRequestDto param);
 }

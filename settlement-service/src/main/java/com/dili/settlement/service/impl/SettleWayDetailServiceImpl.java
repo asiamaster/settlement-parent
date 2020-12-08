@@ -6,6 +6,8 @@ import com.dili.settlement.service.SettleWayDetailService;
 import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 由MyBatis Generator工具自动生成
  * This file was generated on 2020-06-01 14:13:21.
@@ -15,5 +17,15 @@ public class SettleWayDetailServiceImpl extends BaseServiceImpl<SettleWayDetail,
 
     public SettleWayDetailMapper getActualDao() {
         return (SettleWayDetailMapper)getDao();
+    }
+
+    @Override
+    public List<SettleWayDetail> listBySettleOrderId(Long settleOrderId) {
+        return getActualDao().listBySettleOrderId(settleOrderId);
+    }
+
+    @Override
+    public List<SettleWayDetail> listBySettleOrderCode(String settleOrderCode) {
+        return getActualDao().listBySettleOrderCode(settleOrderCode);
     }
 }

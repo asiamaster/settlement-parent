@@ -1,10 +1,12 @@
 package com.dili.settlement.mapper;
 
 import com.dili.settlement.domain.CustomerAccount;
+import com.dili.settlement.dto.CustomerAccountDto;
 import com.dili.ss.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 
 public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
     /**
@@ -43,4 +45,11 @@ public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
      * @return
      */
     CustomerAccount lockGetById(@Param("id") Long id);
+
+    /**
+     * 分页查询账户信息
+     * @param query
+     * @return
+     */
+    List<CustomerAccount> list(CustomerAccountDto query);
 }

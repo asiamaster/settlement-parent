@@ -1,96 +1,4 @@
 use dili_settlement;
-/* 数据处理 start*/
-
--- 同步缴费单详情URL
-INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
-	SELECT
-	temp.id,
-	1,
-	case temp.business_type
-		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/leaseOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/earnestOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/depositOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		end
-    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
-
--- 同步退款单详情URL
-INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
-	SELECT
-	temp.id,
-	1,
-	case temp.business_type
-		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		end
-    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
-
--- 同步缴费单打印数据URL
-INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
-	SELECT
-	temp.id,
-	2,
-	case temp.business_type
-		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/api/leaseOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/api/earnestOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/api/depositOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		end
-    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
-
--- 同步退款单打印数据URL
-INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
-	SELECT
-	temp.id,
-	2,
-	case temp.business_type
-		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
-		end
-    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
-
--- 同步结算回调URL
-INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
-	SELECT
-	temp.id,
-	3,
-	temp.return_url
-    FROM  settle_order temp WHERE temp.business_type IN (1,2,3) AND temp.reverse = 0;
-
-/* 数据处理 end*/
-/* 调整 start*/
-ALTER TABLE settle_order DROP COLUMN edit_enable;
-ALTER TABLE settle_order DROP COLUMN return_url;
-ALTER TABLE settle_order ADD COLUMN market_code VARCHAR(20) COMMENT '市场编码';
-ALTER TABLE settle_order ADD COLUMN deduct_enable TINYINT DEFAULT 0 COMMENT '是否可抵扣';
-ALTER TABLE settle_order ADD COLUMN trailer_number VARCHAR(20) COMMENT '挂号(沈阳特有)';
-ALTER TABLE settle_order ADD COLUMN mch_id bigint COMMENT '商户ID';
-ALTER TABLE settle_order ADD COLUMN mch_name VARCHAR(20) COMMENT '商户名称';
-ALTER TABLE settle_order ADD COLUMN customer_certificate VARCHAR(40) COMMENT '客户证件号';
-ALTER TABLE settle_order ADD COLUMN deduct_amount BIGINT DEFAULT 0 COMMENT '抵扣金额';
-ALTER TABLE settle_order MODIFY COLUMN business_type VARCHAR(120);
-
-CREATE INDEX ix_settle_code ON settle_order(`code`);
-
-ALTER TABLE settle_way_detail CHANGE COLUMN order_id settle_order_id bigint;
-ALTER TABLE settle_way_detail CHANGE COLUMN order_code settle_order_code VARCHAR(32);
-
-drop table retry_error;
-drop table application_config;
-/* 调整 end*/
-
 /* 建表 start*/
 drop table if exists retry_record;
 create table retry_record
@@ -182,10 +90,100 @@ alter table customer_account_serial comment '客户资金流水';
 CREATE INDEX ix_customer_account_id ON customer_account_serial(customer_account_id);
 /* 建表 end*/
 
-/* 数据初始化 start*/
+/* 调整 start*/
+
+-- 同步缴费单详情URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	1,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/leaseOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/earnestOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/depositOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步退款单详情URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	1,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步缴费单打印数据URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	2,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/api/leaseOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/api/earnestOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/api/depositOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步退款单打印数据URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	2,
+	case temp.business_type
+		when 1 then
+			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 2 then
+			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		when 3 then
+		   CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		end
+    FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+-- 同步结算回调URL
+INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
+	SELECT
+	temp.id,
+	3,
+	temp.return_url
+    FROM  settle_order temp WHERE temp.business_type IN (1,2,3) AND temp.reverse = 0;
+
+ALTER TABLE settle_order DROP COLUMN edit_enable;
+ALTER TABLE settle_order DROP COLUMN return_url;
+ALTER TABLE settle_order ADD COLUMN market_code VARCHAR(20) COMMENT '市场编码';
+ALTER TABLE settle_order ADD COLUMN deduct_enable TINYINT DEFAULT 0 COMMENT '是否可抵扣';
+ALTER TABLE settle_order ADD COLUMN trailer_number VARCHAR(20) COMMENT '挂号(沈阳特有)';
+ALTER TABLE settle_order ADD COLUMN mch_id bigint COMMENT '商户ID';
+ALTER TABLE settle_order ADD COLUMN mch_name VARCHAR(20) COMMENT '商户名称';
+ALTER TABLE settle_order ADD COLUMN customer_certificate VARCHAR(40) COMMENT '客户证件号';
+ALTER TABLE settle_order ADD COLUMN deduct_amount BIGINT DEFAULT 0 COMMENT '抵扣金额';
+ALTER TABLE settle_order MODIFY COLUMN business_type VARCHAR(120);
+
+CREATE INDEX ix_settle_code ON settle_order(`code`);
+
+ALTER TABLE settle_way_detail CHANGE COLUMN order_id settle_order_id bigint;
+ALTER TABLE settle_way_detail CHANGE COLUMN order_code settle_order_code VARCHAR(32);
+
+drop table retry_error;
+drop table application_config;
+drop table market_application;
+
 UPDATE settle_order SET mch_id = 8,mch_name = '寿光' WHERE market_id = 8;
 UPDATE settle_order SET mch_id = 11,mch_name = '杭州水产' WHERE market_id = 11;
 UPDATE settle_order SET market_code = 'sg' WHERE market_id = 8;
 UPDATE settle_order SET market_code = 'hzsc' WHERE market_id = 11;
 
-/* 数据初始化 end*/
+UPDATE settle_config SET `state` = 2 WHERE `group_code` = 101 AND `code` = 6;
+/* 调整 end*/

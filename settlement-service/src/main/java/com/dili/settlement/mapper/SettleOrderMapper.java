@@ -7,7 +7,6 @@ import com.dili.ss.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SettleOrderMapper extends MyMapper<SettleOrder> {
     /**
@@ -51,12 +50,6 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @return
      */
     int delWithVersion(SettleOrder po);
-
-    /**
-     * 批量修改金额
-     * @param map
-     */
-    int batchUpdateAmount(Map<String, Object> map);
 
     /**
      * 根据id列表查询并锁定记录

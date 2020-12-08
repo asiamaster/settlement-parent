@@ -24,4 +24,11 @@ public interface SettleFeeItemService extends BaseService<SettleFeeItem, Long> {
      * @return
      */
     List<SettleFeeItem> listBySettleOrderIdList(List<Long> settleOrderIdList);
+
+    /**
+     * 根据结算单ID删除
+     * @param settleOrderId
+     * @return
+     */
+    int deleteBySettleOrderId(Long settleOrderId);
 }

@@ -25,6 +25,14 @@ public interface PayRpc {
     BaseOutput<TradeResponseDto> commitTrade(TradeRequestDto requestDto);
 
     /**
+     * 交易退款
+     *
+     * @date 2020/7/1
+     */
+    @RequestMapping(value = "/payment/api/gateway.do?service=payment.trade.service:refund", method = RequestMethod.POST)
+    BaseOutput<TradeResponseDto> refundTrade(RefundRequestDto requestDto);
+
+    /**
      * 创建交易（预支付）
      * @date 2020/7/1
      */

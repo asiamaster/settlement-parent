@@ -47,7 +47,7 @@ public class PayDispatcher implements SettleDispatcher {
 
     @Override
     public void invalid(SettleOrder po, InvalidRequestDto invalidRequestDto) {
-        //determineService(po.getWay()).invalid(po, invalidRequestDto);
+        determineService(po.getWay()).invalid(po, invalidRequestDto);
     }
 
     /**

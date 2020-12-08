@@ -35,4 +35,9 @@
       #{settleOrderId}
     </foreach>
   </select>
+
+  <!-- 根据结算单ID删除 -->
+  <delete id="deleteBySettleOrderId">
+    delete from settle_fee_item where settle_order_id = #{settleOrderId}
+  </delete>
 </mapper>

@@ -1,26 +1,24 @@
 package com.dili.settlement.enums;
 
 /**
- * 结算配置 组编码枚举
+ * 关联类型枚举
  */
-public enum AppGroupCodeEnum {
-    APP_BUSINESS_TYPE(101, "业务类型"),
-    APP_BUSINESS_URL_PAY_DETAIL(102, "业务缴费详情"),
-    APP_BUSINESS_URL_REFUND_DETAIL(103, "业务退款详情"),
-    APP_BUSINESS_URL_PAY_PRINT(104, "缴费打印数据"),
-    APP_BUSINESS_URL_REFUND_PRINT(105, "退款打印数据"),
-    APP_SIGN_KEY(201, "回调签名");
+public enum RelationTypeEnum {
+
+    SETTLE_ORDER(1, "结算单"),
+    TRANSFER_ORDER(2, "转移单")
+    ;
 
     private int code;
     private String name;
 
-    AppGroupCodeEnum(int code, String name) {
+    RelationTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static AppGroupCodeEnum getByCode(int code) {
-        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
+    public static RelationTypeEnum getByCode(int code) {
+        for (RelationTypeEnum temp : RelationTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -29,7 +27,7 @@ public enum AppGroupCodeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
+        for (RelationTypeEnum temp : RelationTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

@@ -2,7 +2,10 @@ package com.dili.settlement.service;
 
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
+import com.dili.settlement.dto.CustomerAccountDto;
+import com.dili.settlement.dto.EarnestTransferDto;
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.PageOutput;
 
 import java.util.List;
 
@@ -47,7 +50,7 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param amount 有正负值
      * @param accountSerialList
      */
-    void handlePay(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList);
+    void handle(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList);
 
     /**
      * 操作账户及流水 退款
@@ -71,4 +74,17 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param amount
      */
     void unfreeze(Long id, Long amount);
+
+    /**
+     * 分页查询客户账户信息
+     * @param query
+     * @return
+     */
+    PageOutput<List<CustomerAccount>> listPagination(CustomerAccountDto query);
+
+    /**
+     * 转移
+     * @param transferDto
+     */
+    void transfer(EarnestTransferDto transferDto);
 }

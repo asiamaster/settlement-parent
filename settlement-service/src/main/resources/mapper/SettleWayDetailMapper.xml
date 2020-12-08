@@ -20,4 +20,18 @@
     -->
     `id`, `settle_order_id`, `settle_order_code`, `way`, `amount`, `serial_number`, `charge_date`, `notes`
   </sql>
+
+  <!-- 根据结算单ID查询 -->
+  <select id="listBySettleOrderId" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from settle_way_detail where settle_order_id = #{settleOrderId}
+  </select>
+
+  <!-- 根据结算单code查询 -->
+  <select id="listBySettleOrderCode" resultMap="BaseResultMap">
+    select
+       <include refid="Base_Column_List"/>
+    from settle_way_detail where settle_order_code = #{settleOrderCode}
+  </select>
 </mapper>

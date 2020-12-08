@@ -5,6 +5,7 @@ import com.dili.settlement.mapper.SettleFeeItemMapper;
 import com.dili.settlement.service.SettleFeeItemService;
 import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,5 +28,11 @@ public class SettleFeeItemServiceImpl extends BaseServiceImpl<SettleFeeItem, Lon
     @Override
     public List<SettleFeeItem> listBySettleOrderIdList(List<Long> settleOrderIdList) {
         return getActualDao().listBySettleOrderIdList(settleOrderIdList);
+    }
+
+    @Transactional
+    @Override
+    public int deleteBySettleOrderId(Long settleOrderId) {
+        return getActualDao().deleteBySettleOrderId(settleOrderId);
     }
 }

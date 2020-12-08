@@ -85,17 +85,17 @@
     }
 
     /** 结算方式格式化器*/
-    function settleWayFormatter(value, item, index) {
-        if (item.way !== ${@com.dili.settlement.enums.SettleWayEnum.MIXED_PAY.getCode()}) {
+    function settleWayFormatter(value, row, index) {
+        if (row.way !== ${@com.dili.settlement.enums.SettleWayEnum.MIXED_PAY.getCode()}) {
             return value;
         }
-        return '<a href="javascript:;" onclick="showSettleWayDetailHandler(\''+item.code+'\'); return false;">'+ value +'</a>';
+        return '<a href="javascript:;" onclick="showSettleWayDetailHandler('+row.id+','+row.reverse+'); return false;">'+ value +'</a>';
     }
 
     /** 查看组合结算详情*/
-    function showSettleWayDetailHandler(code) {
+    function showSettleWayDetailHandler(id, reverse) {
         $.ajax({
-            url:"/settleWayDetail/listBySettleCode.action?settleCode=" + code,
+            url:"/settleWayDetail/listBySettleOrderId.action?settleOrderId=" + id + "&reverse=" + reverse,
             type:"POST",
             dataType:"json",
             success:function(result) {
@@ -139,8 +139,8 @@
         <tbody>
         {{each detailList detail index}}
         <tr>
-            <td class="text-center align-middle">{{detail.wayName}}</td>
-            <td class="text-center align-middle">{{detail.amountView}}</td>
+            <td class="text-center align-middle">{{detail.wayText}}</td>
+            <td class="text-center align-middle">{{detail.amountText}}</td>
             <td class="text-center align-middle">{{detail.serialNumber ? detail.serialNumber : '-'}}</td>
             <td class="text-center align-middle">{{detail.chargeDate ? detail.chargeDate : '-'}}</td>
             <td class="text-center align-middle">{{detail.notes ? detail.notes : '-'}}</td>

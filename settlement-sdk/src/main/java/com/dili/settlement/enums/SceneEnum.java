@@ -1,26 +1,33 @@
 package com.dili.settlement.enums;
 
 /**
- * 结算配置 组编码枚举
+ * <B>Description</B>
+ * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
+ * <B>农丰时代科技有限公司</B>
+ *
+ * @author jcy
+ * @createTime 2020-02-17 18:51
  */
-public enum AppGroupCodeEnum {
-    APP_BUSINESS_TYPE(101, "业务类型"),
-    APP_BUSINESS_URL_PAY_DETAIL(102, "业务缴费详情"),
-    APP_BUSINESS_URL_REFUND_DETAIL(103, "业务退款详情"),
-    APP_BUSINESS_URL_PAY_PRINT(104, "缴费打印数据"),
-    APP_BUSINESS_URL_REFUND_PRINT(105, "退款打印数据"),
-    APP_SIGN_KEY(201, "回调签名");
+public enum SceneEnum {
+    PAYMENT(1, "交费"),
+    DEDUCT(2, "抵扣消费"),
+    TRANSFER_IN(3, "定金转入"),
+    TRANSFER_OUT(4, "定金转出"),
+    REFUND(5, "退款"),
+    INVALID_IN(6, "业务交费作废转入"),
+    INVALID_OUT(7, "业务交费作废转出")
+    ;
 
     private int code;
     private String name;
 
-    AppGroupCodeEnum(int code, String name) {
+    SceneEnum(int code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static AppGroupCodeEnum getByCode(int code) {
-        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
+    public static SceneEnum getByCode(int code) {
+        for (SceneEnum temp : SceneEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -29,7 +36,7 @@ public enum AppGroupCodeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (AppGroupCodeEnum temp : AppGroupCodeEnum.values()) {
+        for (SceneEnum temp : SceneEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }

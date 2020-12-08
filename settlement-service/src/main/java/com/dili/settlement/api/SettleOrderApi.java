@@ -2,9 +2,9 @@ package com.dili.settlement.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.EnableEnum;
 import com.dili.settlement.enums.ReverseEnum;
@@ -36,9 +36,6 @@ public class SettleOrderApi {
 
     @Autowired
     private SettleOrderService settleOrderService;
-
-    @Autowired
-    private PayDispatcher settleDispatchHandler;
     /**
      * 提交结算单接口
      * @param settleOrderDto
@@ -118,6 +115,132 @@ public class SettleOrderApi {
         }
         if (!settleOrderDto.getAmount().equals(totalFeeAmount)) {
             throw new BusinessException("", "结算金额与费用项总额不相符");
+        }
+    }
+
+    /**
+     * 根据结算单id取消
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/cancelById")
+    public BaseOutput<String> cancelById(Long id) {
+        if (id == null) {
+            return BaseOutput.failure("结算单ID为空");
+        }
+        settleOrderService.cancelById(id);
+        return BaseOutput.success();
+    }
+
+    /**
+     * 根据结算单编号取消
+     * @param code
+     * @return
+     */
+    @RequestMapping(value = "/cancelByCode")
+    public BaseOutput<String> cancelByCode(String code) {
+        if (StrUtil.isBlank(code)) {
+            return BaseOutput.failure("结算单号为空");
+        }
+        settleOrderService.cancelByCode(code);
+        return BaseOutput.success();
+    }
+
+    /**
+     * 根据appId businessCode取消
+     * @param appId 应用ID
+     * @param orderCode 订单号
+     * @return
+     */
+    @RequestMapping(value = "/cancel")
+    public BaseOutput<String> cancel(Long appId, String orderCode) {
+        if (appId == null) {
+            return BaseOutput.failure("应用ID为空");
+        }
+        if (StrUtil.isBlank(orderCode)) {
+            return BaseOutput.failure("订单号为空");
+        }
+        settleOrderService.cancel(appId, orderCode);
+        return BaseOutput.success();
+    }
+
+    /**
+     * 根据id查询结算单
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/getById")
+    public BaseOutput<SettleOrder> getById(Long id) {
+        if (id == null) {
+            return BaseOutput.failure("ID为空");
+        }
+        return BaseOutput.success().setData(settleOrderService.get(id));
+    }
+
+    /**
+     * 根据结算单号查询结算单
+     * @param code
+     * @return
+     */
+    @RequestMapping(value = "/getByCode")
+    public BaseOutput<SettleOrder> getByCode(String code) {
+        if (StrUtil.isBlank(code)) {
+            return BaseOutput.failure("结算单号为空");
+        }
+        return BaseOutput.success().setData(settleOrderService.getByCode(code));
+    }
+
+    /**
+     * 根据appId businessCode 查询结算单
+     * @param appId 应用ID
+     * @param orderCode 业务编号
+     * @return
+     */
+    @RequestMapping(value = "/get")
+    public BaseOutput<SettleOrder> get(Long appId, String orderCode) {
+        if (appId == null) {
+            return BaseOutput.failure("应用ID为空");
+        }
+        if (StrUtil.isBlank(orderCode)) {
+            return BaseOutput.failure("订单号为空");
+        }
+        return BaseOutput.success().setData(settleOrderService.get(appId, orderCode));
+    }
+
+    /**
+     * 用于作废业务接口
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/invalid")
+    public BaseOutput<?> invalid(@RequestBody InvalidRequestDto param) {
+        checkInvalidParam(param);
+        settleOrderService.invalid(param);
+        return BaseOutput.success();
+    }
+
+    /**
+     * 验证作废请求参数
+     * @param param
+     */
+    private void checkInvalidParam(InvalidRequestDto param) {
+        if (param.getMarketId() == null) {
+            throw new BusinessException("", "市场ID为空");
+        }
+        if (StrUtil.isBlank(param.getMarketCode())) {
+            throw new BusinessException("", "市场编码为空");
+        }
+        if (param.getAppId() == null) {
+            throw new BusinessException("", "应用ID为空");
+        }
+        if (param.getOperatorId() == null) {
+            throw new BusinessException("", "操作员ID为空");
+        }
+        if (StrUtil.isBlank(param.getOperatorName())) {
+            throw new BusinessException("", "操作员姓名为空");
+        }
+        if (CollUtil.isEmpty(param.getOrderCodeList())) {
+            throw new BusinessException("", "订单号列表为空");
         }
     }
 }

@@ -81,4 +81,32 @@
     <update id="updateAmount" parameterType="com.dili.settlement.domain.CustomerAccount">
         update customer_account set amount = #{amount},frozen_amount = #{frozenAmount} where id = #{id}
     </update>
+
+    <!-- 查询列表 -->
+    <select id="list" parameterType="com.dili.settlement.dto.CustomerAccountDto" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"></include>
+        from customer_account where 1=1
+        <if test="marketId != null">
+            and `market_id` = #{marketId}
+        </if>
+        <if test="mchId != null">
+            and `mch_id` = #{mchId}
+        </if>
+        <if test="customerId != null">
+            and `customer_id` = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            and `customer_name` = #{customerName}
+        </if>
+        <if test="customerCertificate != null and customerCertificate != ''">
+            and `customer_certificate` = #{customerCertificate}
+        </if>
+        <if test="customerNameMatch != null and customerNameMatch !=''">
+            and `customer_name` like concat('%',#{customerNameMatch},'%')
+        </if>
+        <if test="sort != null and sort != '' and order != null and order != ''">
+            ORDER BY ${sort} ${order}
+        </if>
+    </select>
 </mapper>

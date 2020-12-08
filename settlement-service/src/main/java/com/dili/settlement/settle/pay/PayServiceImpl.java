@@ -5,12 +5,10 @@ import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.dto.pay.CreateTradeRequestDto;
-import com.dili.settlement.dto.pay.CreateTradeResponseDto;
-import com.dili.settlement.dto.pay.FeeItemDto;
-import com.dili.settlement.dto.pay.TradeRequestDto;
+import com.dili.settlement.dto.pay.*;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
@@ -78,10 +76,10 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             }
 
             //创建交易
-            CreateTradeRequestDto createTradeRequestDto = CreateTradeRequestDto.build(TradeTypeEnum.FEE.getCode(), getTradeFundAccountId(settleOrderDto), settleOrderDto.getTotalAmount(), "", "");
+            CreateTradeRequestDto createTradeRequestDto = CreateTradeRequestDto.build(TradeTypeEnum.SYNTHESIZE.getCode(), getTradeFundAccountId(settleOrderDto), settleOrderDto.getTotalAmount(), "", "");
             CreateTradeResponseDto createTradeResponseDto = RpcResultResolver.resolver(payRpc.prepareTrade(createTradeRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
             //操作定金账户
-            customerAccountService.handlePay(settleOrderDto.getMchId(), settleOrderDto.getCustomerId(), settleDataDto.getEarnestAmount(), settleDataDto.getAccountSerialList());
+            customerAccountService.handle(settleOrderDto.getMchId(), settleOrderDto.getCustomerId(), settleDataDto.getEarnestAmount(), settleDataDto.getAccountSerialList());
             //存储重试记录
             retryRecordService.batchInsert(settleDataDto.getRetryRecordList());
             //修改结算单
@@ -192,5 +190,32 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
     @Override
     public Long getTradeFundAccountId(SettleOrderDto settleOrderDto) {
         return 0L;
+    }
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param) {
+        long earnestAmount = 0L;
+        List<FeeItemDto> feeItemList = new ArrayList<>();
+        List<FeeItemDto> deductFeeItemList = new ArrayList<>();
+        List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
+        if (po.getDeductAmount() != null && po.getDeductAmount() > 0L) {
+            earnestAmount = po.getDeductAmount();
+            deductFeeItemList.add(FeeItemDto.build(po.getDeductAmount(), FeeTypeEnum.定金.getCode(), FeeTypeEnum.定金.getName()));
+            accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.INVALID_IN.getCode(), po.getDeductAmount(), reverseOrder.getOperateTime(), reverseOrder.getOperatorId(), reverseOrder.getOperatorName(), reverseOrder.getCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), ""));
+        }
+        List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(po.getId());
+        for (SettleFeeItem settleFeeItem : settleFeeItemList) {//构建流水、退款费用项列表
+            feeItemList.add(FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getFeeType(), settleFeeItem.getFeeName()));
+            //如果有定金,则计算定金总额以及构建流水
+            if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
+                earnestAmount -= settleFeeItem.getAmount();
+                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.INVALID_OUT.getCode(), settleFeeItem.getAmount(), reverseOrder.getOperateTime(), reverseOrder.getOperatorId(), reverseOrder.getOperatorName(), reverseOrder.getCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), ""));
+            }
+        }
+        //操作客户定金账户
+        customerAccountService.handle(po.getMchId(), po.getCustomerId(), earnestAmount, accountSerialList);
+        //提交交易
+        RefundRequestDto refundRequestDto = RefundRequestDto.build(po.getTradeNo(), po.getAmount(), feeItemList, deductFeeItemList);
+        RpcResultResolver.resolver(payRpc.refundTrade(refundRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
     }
 }

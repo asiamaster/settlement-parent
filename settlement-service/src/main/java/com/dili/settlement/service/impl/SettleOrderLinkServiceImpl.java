@@ -5,6 +5,7 @@ import com.dili.settlement.mapper.SettleOrderLinkMapper;
 import com.dili.settlement.service.SettleOrderLinkService;
 import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -24,5 +25,11 @@ public class SettleOrderLinkServiceImpl extends BaseServiceImpl<SettleOrderLink,
         query.setType(type);
         SettleOrderLink settleOrderLink = listByExample(query).stream().findFirst().orElse(null);
         return settleOrderLink != null ? settleOrderLink.getUrl() : "";
+    }
+
+    @Transactional
+    @Override
+    public int deleteBySettleOrderId(Long settleOrderId) {
+        return getActualDao().deleteBySettleOrderId(settleOrderId);
     }
 }

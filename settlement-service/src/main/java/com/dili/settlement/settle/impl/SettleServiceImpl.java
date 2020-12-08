@@ -1,8 +1,13 @@
 package com.dili.settlement.settle.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.handler.ServiceNameHolder;
+import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.settlement.rpc.PayRpc;
 import com.dili.settlement.rpc.UidRpc;
@@ -11,6 +16,7 @@ import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleFeeItemService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.settle.SettleService;
+import com.dili.settlement.util.DateUtil;
 import com.dili.ss.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -86,5 +92,26 @@ public abstract class SettleServiceImpl implements SettleService {
     @Override
     public void validParams(SettleOrderDto settleOrderDto) {
         validParamsSpecial(settleOrderDto);
+    }
+
+    @Override
+    public void invalid(SettleOrder po, InvalidRequestDto param) {
+        SettleOrder reverseOrder = new SettleOrder();
+        BeanUtil.copyProperties(po, reverseOrder);
+        reverseOrder.setId(null);
+        reverseOrder.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(param.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
+        reverseOrder.setOrderCode(po.getCode());
+        reverseOrder.setOperatorId(param.getOperatorId());
+        reverseOrder.setOperatorName(param.getOperatorName());
+        reverseOrder.setOperateTime(DateUtil.nowDateTime());
+        reverseOrder.setReverse(ReverseEnum.YES.getCode());
+        settleOrderService.insertSelective(reverseOrder);
+
+        invalidSpecial(po, reverseOrder, param);
+    }
+
+    @Override
+    public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param) {
+        return;
     }
 }

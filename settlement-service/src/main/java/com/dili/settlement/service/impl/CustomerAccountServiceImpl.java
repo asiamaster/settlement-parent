@@ -2,16 +2,26 @@ package com.dili.settlement.service.impl;
 
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
+import com.dili.settlement.dto.CustomerAccountDto;
+import com.dili.settlement.dto.EarnestTransferDto;
+import com.dili.settlement.enums.ActionEnum;
+import com.dili.settlement.enums.RelationTypeEnum;
+import com.dili.settlement.enums.SceneEnum;
 import com.dili.settlement.mapper.CustomerAccountMapper;
 import com.dili.settlement.service.CustomerAccountSerialService;
 import com.dili.settlement.service.CustomerAccountService;
+import com.dili.settlement.util.DateUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -43,14 +53,13 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         return getActualDao().getBy(mchId, customerId);
     }
 
+    @Transactional
     @Override
     public void create(CustomerAccount customerAccount) {
         try {
             if (exists(customerAccount.getMchId(), customerAccount.getCustomerId())) {
                 return;
             }
-            customerAccount.setAmount(0L);
-            customerAccount.setFrozenAmount(0L);
             getActualDao().save(customerAccount);
         } catch (SQLIntegrityConstraintViolationException e) {
             //捕获调唯一索引冲突异常
@@ -65,7 +74,7 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
      */
     @Transactional
     @Override
-    public void handlePay(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
+    public void handle(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
         if (customerId == null) {
             throw new BusinessException("", "客户ID为空");
         }
@@ -155,6 +164,72 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         }
         customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() - amount);
         getActualDao().updateAmount(customerAccount);
+    }
+
+    @Override
+    public PageOutput<List<CustomerAccount>> listPagination(CustomerAccountDto query) {
+        PageHelper.startPage(query.getPage(), query.getRows());
+        List<CustomerAccount> itemList = getActualDao().list(query);
+
+        Page<CustomerAccount> page = (Page)itemList;
+        PageOutput<List<CustomerAccount>> output = PageOutput.success();
+        output.setData(itemList);
+        output.setPageNum(page.getPageNum());
+        output.setPageSize(page.getPageSize());
+        output.setTotal(page.getTotal());
+        output.setStartRow(page.getStartRow());
+        output.setEndRow(page.getEndRow());
+        output.setPages(page.getPages());
+        return output;
+    }
+
+    /**
+     * 定金转移
+     * @param transferDto
+     */
+    @Transactional
+    @Override
+    public void transfer(EarnestTransferDto transferDto) {
+        CustomerAccount payAccount = lockGetById(transferDto.getAccountId());
+        if (payAccount == null) {
+            throw new BusinessException("", "转出账户不存在");
+        }
+        long availableAmount = payAccount.getAmount() - payAccount.getFrozenAmount();
+        if (availableAmount < transferDto.getAmount()) {
+            throw new BusinessException("", "转出账户余额不足");
+        }
+        CustomerAccount receiveAccount = lockGetAndCreate(CustomerAccount.build(payAccount.getMarketId(), payAccount.getMarketCode(), payAccount.getMchId(), payAccount.getMchName(), payAccount.getCustomerId(), payAccount.getCustomerName(), payAccount.getCustomerPhone(), payAccount.getCustomerCertificate()));
+
+        payAccount.setAmount(payAccount.getAmount() - transferDto.getAmount());
+        receiveAccount.setAmount(receiveAccount.getAmount() + transferDto.getAmount());
+
+        LocalDateTime localDateTime = DateUtil.nowDateTime();
+        getActualDao().updateAmount(payAccount);
+        CustomerAccountSerial payAccountSerial = CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.TRANSFER_OUT.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), transferDto.getNotes());
+        payAccountSerial.setCustomerAccountId(payAccount.getId());
+        customerAccountSerialService.insertSelective(payAccountSerial);
+        getActualDao().updateAmount(receiveAccount);
+        CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), transferDto.getNotes());
+        payAccountSerial.setCustomerAccountId(receiveAccount.getId());
+        customerAccountSerialService.insertSelective(receiveAccountSerial);
+    }
+
+    /**
+     * 加锁获取 如为空则创建
+     * @param account
+     * @return
+     */
+    private CustomerAccount lockGetAndCreate(CustomerAccount account) {
+        CustomerAccount po = getActualDao().lockGet(account.getMchId(), account.getCustomerId());
+        if (po != null) {
+            return po;
+        }
+        try {
+            getActualDao().save(account);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            lockGetAndCreate(account);
+        }
+        return lockGetAndCreate(account);
     }
 
     /**

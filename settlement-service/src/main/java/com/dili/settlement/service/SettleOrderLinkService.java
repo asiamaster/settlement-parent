@@ -15,4 +15,11 @@ public interface SettleOrderLinkService extends BaseService<SettleOrderLink, Lon
      * @return
      */
     String getUrl(Long settleOrderId, int type);
+
+    /**
+     * 根据结算单ID删除
+     * @param settleOrderId
+     * @return
+     */
+    int deleteBySettleOrderId(Long settleOrderId);
 }

@@ -12,6 +12,7 @@ public enum TradeTypeEnum {
     PRE_DEPOSIT(14,"预存款"),
     EBANK_RECHARGE(15,"网银充值(充值失败后的补偿，是个特殊操作)"),
     TRANSFER_REFUND(16, "转账退款"),
+    SYNTHESIZE(17, "综合收费"),
     DIRECT_TRADE(20,"即时交易"),
     AUTH_TRADE(21,"预授权交易"),
     VOUCH_TRADE(22,"担保交易"),

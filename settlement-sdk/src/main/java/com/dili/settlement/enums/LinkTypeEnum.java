@@ -1,21 +1,24 @@
 package com.dili.settlement.enums;
 
 /**
- * 重试记录类型枚举
+ * 链接类型
  */
-public enum RetryTypeEnum {
+public enum LinkTypeEnum {
 
-    SETTLE_CALLBACK(1, "结算回调");
+    DETAIL(1, "详情"),
+    PRINT(2, "打印"),
+    CALLBACK(3, "回调");
+
     private int code;
     private String name;
 
-    RetryTypeEnum(int code, String name) {
+    LinkTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static RetryTypeEnum getByCode(int code) {
-        for (RetryTypeEnum temp : RetryTypeEnum.values()) {
+    public static LinkTypeEnum getByCode(int code) {
+        for (LinkTypeEnum temp : LinkTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp;
             }
@@ -24,7 +27,7 @@ public enum RetryTypeEnum {
     }
 
     public static String getNameByCode(int code) {
-        for (RetryTypeEnum temp : RetryTypeEnum.values()) {
+        for (LinkTypeEnum temp : LinkTypeEnum.values()) {
             if (temp.getCode() == code) {
                 return temp.getName();
             }
