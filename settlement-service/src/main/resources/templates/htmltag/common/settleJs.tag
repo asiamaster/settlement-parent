@@ -182,6 +182,7 @@
     <hr>
     <div class="row">
         <input type="hidden" id="settle-customer-id" value="{{id}}"/>
+        <input type="hidden" id="settle-customer-name" value="{{name}}"/>
         <div class="col-2">{{name}}</div>
         <div class="col-2">{{certificateNumber}}</div>
         <div class="col-1">{{contactsPhone}}</div>
@@ -219,6 +220,48 @@
     $(function(){
         $(document).on('click', '#table-customer-list tr', function () {
             $(this).find('[name="customerRadio"]').prop('checked', true);
-        })
+        });
+
+        // 商户单选框事件处理
+        $('#table-settle-order-list').on('click', '[name="mchRadio"]', function() {
+            let mchId = $(this).val();
+            $('#table_' + mchId).find(':checkbox').prop("disabled", false);
+            $('#table-settle-order-list table').not('#table_' + mchId).find(':checkbox').prop("checked", false).prop("disabled", true);
+        });
+
+        // 表格列头复选框事件
+        $('#table-settle-order-list').on('click', '[name="checkAll"]', function() {
+            let checked = $(this).prop("checked");
+            $(this).closest('table').find(':checkbox').prop("checked", checked);
+        });
+
+        // 表格内复选框click事件
+        $('#table-settle-order-list').on('click', '[name="chk"]', function() {
+            $(this).trigger('change');
+        });
+
+        // 表格内复选框change事件
+        $('#table-settle-order-list').on('change', '[name="chk"]', function() {
+            let checked = true;
+            $(this).closest('table').find('[name="chk"]').each(function(){
+                if (!$(this).prop("checked")) {
+                    checked = false;
+                }
+            });
+            $(this).closest('table').find('[name="checkAll"]').prop("checked", checked);
+        });
+
+        // tr单击事件处理
+        $('#table-settle-order-list').on('click', 'table tr', function(e) {
+            if (e.target.type === 'checkbox') {
+                return;
+            }
+            let mchId = $(this).closest('table').attr("bind-mchId");
+            if (!$('#mchRadio_' + mchId).prop("checked")) {
+                return;
+            }
+            let checked = $(this).find('[name="chk"]').prop('checked');
+            $(this).find('[name="chk"]').prop('checked', !checked).trigger('change');
+        });
     })
 </script>

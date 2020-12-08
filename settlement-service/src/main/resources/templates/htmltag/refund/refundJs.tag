@@ -11,7 +11,7 @@
         if (!way) {
             return;
         }
-        $('#div-special').load("/settleOrder/forwardRefundSpecial.html?way="+way+"&ids="+$('#ids').val());
+        $('#div-special').load("/settleOrder/forwardRefundSpecial.html?way="+way+"&customerId="+$('#customerId').val()+"&customerName="+$('#customerName').val());
     }
 
     /** 退款表单验证 */

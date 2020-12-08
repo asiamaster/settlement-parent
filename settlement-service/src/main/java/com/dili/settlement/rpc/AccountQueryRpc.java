@@ -1,6 +1,7 @@
 package com.dili.settlement.rpc;
 
 import com.dili.settlement.dto.AccountSimpleResponseDto;
+import com.dili.settlement.dto.UserAccountCardQuery;
 import com.dili.settlement.dto.UserAccountCardResponseDto;
 import com.dili.settlement.dto.UserAccountSingleQueryDto;
 import com.dili.ss.domain.BaseOutput;
@@ -8,6 +9,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * 卡相关rpc
@@ -31,4 +34,12 @@ public interface AccountQueryRpc {
      */
     @GetMapping("/simpleInfo")
     BaseOutput<AccountSimpleResponseDto> getInfoByCardNo(@RequestParam String cardNo, @RequestParam Long firmId);
+
+    /**
+     * 条件查询（没有total）
+     * @author miaoguoxin
+     * @date 2020/6/19
+     */
+    @PostMapping("/getList")
+    BaseOutput<List<UserAccountCardResponseDto>> getList(UserAccountCardQuery param);
 }

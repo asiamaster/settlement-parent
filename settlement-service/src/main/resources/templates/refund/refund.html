@@ -2,14 +2,19 @@
 <div class="container-fluid">
     <form id="form-refund" action="">
         <input type="text" style="display: none"/>
+        <input type="hidden" id="customerId" name="customerId" value="${customerId!}"/>
+        <input type="hidden" id="customerName" name="customerName" value="${customerName!}"/>
+        <input type="hidden" name="mchId" value="${mchId!}"/>
         <input type="hidden" name="token" value="${token!}"/>
-        <input type="hidden" id="ids" name="ids" value="${ids!}"/>
+        <input type="hidden" name="ids" value="${ids!}"/>
+        <input type="hidden" name="totalAmount" id="totalAmount" value="${totalAmount!}"/>
+        <input type="hidden" name="settleAmount" id="settleAmount" value="${settleAmount!}"/>
         <div class="row">
             <div class="col-2 text-right">
                 退款金额:
             </div>
             <div class="col-4 text-left">
-                <input type="text" class="form-control" value="${totalAmount!}" readonly/>
+                <input type="text" class="form-control" value="${totalAmountText!}" readonly/>
             </div>
         </div>
         <div class="row mt-2">
@@ -17,7 +22,6 @@
                 结算方式:
             </div>
             <% if(isNotEmpty(wayList) && wayList.~size > 0) {
-                  if(isNotEmpty(settleOrder) && settleOrder.editEnable == 1) {
                       for (way in wayList) {
                           if (wayLP.first) {
             %>
@@ -28,18 +32,7 @@
             <div class="auto-col pl-3 text-left">
                 <input type="radio" name="way" value="${way.code}"/>${way.val}
             </div>
-            <% }}} else {
-               for (way in wayList) {
-                  if (isNotEmpty(settleOrder) && way.code == settleOrder.way) {
-            %>
-            <div class="auto-col pl-3 text-left">
-                <input type="radio" name="way" value="${way.code}" checked/>${way.val}
-            </div>
-            <% } else {%>
-            <div class="auto-col pl-3 text-left">
-                <input type="radio" name="way" value="${way.code}" disabled/>${way.val}
-            </div>
-            <% }}}}%>
+            <% }}} %>
         </div>
         <div class="" id="div-special">
 

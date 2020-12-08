@@ -277,7 +277,7 @@ public class SettleOrderController extends AbstractController {
     public String listRefundOrders(Long customerId, ModelMap modelMap) {
         List<SettleOrder> settleOrderList = listSettleOrders(customerId, SettleTypeEnum.REFUND.getCode());
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", items);
+        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
         return "refund/table";
     }
 
@@ -295,6 +295,7 @@ public class SettleOrderController extends AbstractController {
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
         modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
+        modelMap.addAttribute("customerName", settleOrderDto.getCustomerName());
         modelMap.addAttribute("mchId", settleOrderDto.getMchId());
         modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
         modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
@@ -316,6 +317,7 @@ public class SettleOrderController extends AbstractController {
     @RequestMapping(value = "/forwardRefundSpecial.html")
     public String forwardRefundSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
         settleOrderDto.setMarketId(getUserTicket().getFirmId());
+        modelMap.addAttribute("customerName", settleOrderDto.getCustomerName());
         return refundDispatcher.forwardSpecial(settleOrderDto, modelMap);
     }
 

@@ -3,6 +3,7 @@ package com.dili.settlement.settle.impl;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.settlement.rpc.PayRpc;
 import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.CustomerAccountService;
@@ -38,6 +39,9 @@ public abstract class SettleServiceImpl implements SettleService {
 
     @Autowired
     protected UidRpc uidRpc;
+
+    @Autowired
+    protected AccountQueryRpc accountQueryRpc;
 
     @Override
     public List<SettleOrder> canSettle(List<Long> ids) {

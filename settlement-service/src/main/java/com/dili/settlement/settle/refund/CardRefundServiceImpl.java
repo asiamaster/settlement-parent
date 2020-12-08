@@ -1,16 +1,22 @@
 package com.dili.settlement.settle.refund;
 
-import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.UserAccountCardQuery;
+import com.dili.settlement.dto.UserAccountCardResponseDto;
+import com.dili.settlement.dto.UserAccountSingleQueryDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.enums.TradeChannelEnum;
+import com.dili.settlement.handler.ServiceNameHolder;
+import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.settle.RefundService;
 import com.dili.ss.exception.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 园区卡
@@ -20,26 +26,39 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
 
     @Override
     public String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
+        UserAccountCardQuery query = new UserAccountCardQuery();
+        List<Long> customerIdList = new ArrayList<>(1);
+        customerIdList.add(settleOrderDto.getCustomerId());
+        query.setCustomerIds(customerIdList);
+        query.setFirmId(settleOrderDto.getMarketId());
+        modelMap.addAttribute("cardList", RpcResultResolver.resolver(accountQueryRpc.getList(query), ServiceNameHolder.ACCOUNT_SERVICE_NAME));
         return "refund/special_card";
     }
 
     @Override
     public void validParamsSpecial(SettleOrderDto settleOrderDto) {
-        if (StrUtil.isBlank(settleOrderDto.getTradeCardNo())) {
-            throw new BusinessException("", "交易卡号为空");
-        }
-        if (settleOrderDto.getTradeFundAccountId() == null) {
-            throw new BusinessException("", "交易资金账户ID为空");
-        }
         if (settleOrderDto.getTradeAccountId() == null) {
             throw new BusinessException("", "交易账户ID为空");
         }
-        if (settleOrderDto.getTradeCustomerId() == null) {
-            throw new BusinessException("", "交易客户ID为空");
-        }
-        if (StrUtil.isBlank(settleOrderDto.getTradeCustomerName())) {
-            throw new BusinessException("", "交易客户姓名为空");
-        }
+        UserAccountCardResponseDto cardResponseDto = checkCardInfo(settleOrderDto.getTradeAccountId(), settleOrderDto.getMarketId());
+        settleOrderDto.setTradeCardNo(cardResponseDto.getCardNo());
+        settleOrderDto.setTradeAccountId(cardResponseDto.getAccountId());
+        settleOrderDto.setTradeFundAccountId(cardResponseDto.getFundAccountId());
+        settleOrderDto.setTradeCustomerId(cardResponseDto.getCustomerId());
+        settleOrderDto.setTradeCustomerName(cardResponseDto.getCustomerName());
+    }
+
+    /**
+     * 验证卡账户信息
+     * @param tradeAccountId
+     * @param marketId
+     * @return
+     */
+    private UserAccountCardResponseDto checkCardInfo(Long tradeAccountId, Long marketId) {
+        UserAccountSingleQueryDto query = new UserAccountSingleQueryDto();
+        query.setAccountId(tradeAccountId);
+        query.setFirmId(marketId);
+        return RpcResultResolver.resolver(accountQueryRpc.findSingle(query), ServiceNameHolder.ACCOUNT_SERVICE_NAME);
     }
 
     @Override

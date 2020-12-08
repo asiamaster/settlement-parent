@@ -5,16 +5,19 @@
 
     /** 退款页面确定按钮点击事件处理器 */
     function refundCertainClickHandler() {
-        let rows = $('#table-settle-order-list').bootstrapTable('getSelections');
+        let mchId = $('[name="mchRadio"]:checked').val();
+        let customerId = $('#settle-customer-id').val();
+        let customerName = $('#settle-customer-name').val();
+        let rows = $('#table_' + mchId).find('[name="chk"]:checked');
         if (null == rows || rows.length === 0) {
             showWarning('请至少选中一条数据');
             return;
         }
         let idList = [];
         for (let row of rows) {
-            idList.push(row.id);
+            idList.push($(row).val());
         }
-        let url = "/settleOrder/forwardRefund.html?ids="+idList.join(",");
+        let url = "/settleOrder/forwardRefund.html?mchId="+mchId+"&customerId="+customerId+"&customerName="+customerName+"&ids="+idList.join(",");
         bs4pop.dialog({
             id:'dialog-refund',
             content:url,
@@ -59,9 +62,19 @@
         });
     }
 
+    let url = '';
     /** 加载客户退款单据处理器 */
     function loadCustomerOrdersHandler(cusId) {
         $('#settle-order-list').removeClass("d-none");
-        $('#table-settle-order-list').bootstrapTable("refreshOptions", {url:"/settleOrder/listRefundOrders.action?customerId="+cusId});
+        url = "/settleOrder/listRefundOrders.action?customerId=" + cusId;
+        $('#table-settle-order-list').load(url);
+    }
+
+    /** 刷新表格处理器 */
+    function refreshTableHandler() {
+        if (url === '') {
+            return;
+        }
+        $('#table-settle-order-list').load(url);
     }
 </script>

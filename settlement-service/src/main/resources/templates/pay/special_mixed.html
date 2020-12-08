@@ -79,11 +79,11 @@
     /** 特殊验证*/
     function validateSpecial() {
         let arr = $('input[name="wayCheckBox"]:checked');
-        if (arr.length == 0) {
+        if (arr.length === 0) {
             showWarning("请先选择组合结算方式");
             return false;
         }
-        let totalAmount = parseInt($('#totalAmount').val());
+        let settleAmount = parseInt($('#settleAmount').val());
         let detailList = [];
         for (let e of arr) {
             let temp = {};
@@ -92,10 +92,10 @@
             temp.serialNumber = $.trim($('#serialNumber_' + temp.way).val());
             temp.chargeDate = $.trim($('#chargeDate_' + temp.way).val());
             temp.notes = $.trim($('#notes_' + temp.way).val());
-            totalAmount -= temp.amount;
+            settleAmount -= temp.amount;
             detailList.push(temp);
         }
-        if (totalAmount != 0) {
+        if (settleAmount !== 0) {
             showWarning("收款金额与结算金额不相等");
             return false;
         }

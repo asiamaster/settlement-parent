@@ -2,8 +2,8 @@
 <div class="container-fluid">
     <form id="form-pay" action="">
         <input type="text" style="display: none"/>
-        <input type="hidden" name="customerId" value="${customerId}"/>
-        <input type="hidden" name="mchId" value="${mchId}"/>
+        <input type="hidden" name="customerId" value="${customerId!}"/>
+        <input type="hidden" name="mchId" value="${mchId!}"/>
         <input type="hidden" name="token" value="${token!}"/>
         <input type="hidden" name="ids" value="${ids!}"/>
         <input type="hidden" name="deductEnable" id="deductEnable" value="${deductEnable!}"/>
