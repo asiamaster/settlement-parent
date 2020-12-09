@@ -214,8 +214,12 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         }
         //操作客户定金账户
         customerAccountService.handle(po.getMchId(), po.getCustomerId(), earnestAmount, accountSerialList);
+
+        MchIdHolder.set(po.getMchId());
         //提交交易
         RefundRequestDto refundRequestDto = RefundRequestDto.build(po.getTradeNo(), po.getAmount(), feeItemList, deductFeeItemList);
         RpcResultResolver.resolver(payRpc.refundTrade(refundRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
+
+        MchIdHolder.clear();
     }
 }
