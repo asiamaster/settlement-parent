@@ -14,10 +14,11 @@ public class SupportHandler {
      * @return
      */
     public static boolean cardQuerySupport() {
-        if ("sg".equalsIgnoreCase(getUserTicket().getFirmCode())) {
-            return true;
+        UserTicket userTicket = getUserTicket();
+        if ("hzsc".equalsIgnoreCase(userTicket.getFirmCode()) || "gx".equalsIgnoreCase(userTicket.getFirmCode())) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -25,7 +26,8 @@ public class SupportHandler {
      * @return
      */
     public static boolean trailerNumberQuerySupport() {
-        if ("sy".equalsIgnoreCase(getUserTicket().getFirmCode())) {
+        UserTicket userTicket = getUserTicket();
+        if ("sy".equalsIgnoreCase(userTicket.getFirmCode())) {
             return true;
         }
         return false;
