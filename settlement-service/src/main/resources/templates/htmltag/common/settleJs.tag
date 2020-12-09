@@ -191,7 +191,7 @@
 <script id="template-trailer-number-info" type="text/html">
     <hr>
     <div class="row">
-        <div class="col-2">{{trailerNumber}}</div>
+        <div class="col-2">挂号：{{trailerNumber}}</div>
     </div>
 </script>
 <script id="template-customer-list" type="text/html">
