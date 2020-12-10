@@ -15,12 +15,6 @@ import java.util.List;
  */
 public interface SettleOrderService extends BaseService<SettleOrder, Long> {
     /**
-     * 保存结算方法
-     * @param settleOrderDto
-     */
-    SettleOrder save(SettleOrderDto settleOrderDto);
-
-    /**
      * 验证业务订单号是否存在
      * @return
      */
@@ -113,4 +107,12 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @param param
      */
     void invalid(InvalidRequestDto param);
+
+    /**
+     * 根据ID删除
+     * @param id
+     * @param version
+     * @return
+     */
+    int deleteById(Long id, Integer version);
 }

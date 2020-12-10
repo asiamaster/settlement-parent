@@ -5,8 +5,8 @@ package com.dili.settlement.enums;
  */
 public enum SettleStateEnum {
     WAIT_DEAL(1, "待处理"),
-    DEAL(2, "已处理"),
-    CANCEL(3, "已取消");
+    DEAL(2, "已处理")
+    ;
 
     private int code;
     private String name;

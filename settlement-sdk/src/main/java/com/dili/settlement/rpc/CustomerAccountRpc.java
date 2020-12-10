@@ -7,7 +7,6 @@ import com.dili.settlement.dto.EarnestTransferDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -56,18 +55,4 @@ public interface CustomerAccountRpc {
      */
     @RequestMapping(value = "/listSerialPage")
     PageOutput<List<CustomerAccountSerialDto>> listSerialPage(CustomerAccountSerialDto query);
-
-    /**
-     * 冻结
-     * @return
-     */
-    @RequestMapping(value = "/freeze")
-    BaseOutput<?> freeze(@RequestBody CustomerAccountDto customerAccountDto);
-
-    /**
-     * 解冻
-     * @return
-     */
-    @RequestMapping(value = "/unfreeze")
-    BaseOutput<?> unfreeze(CustomerAccountDto customerAccountDto);
 }

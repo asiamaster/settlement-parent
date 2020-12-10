@@ -239,7 +239,7 @@
   </select>
 
   <!-- 根据id、version删除记录 -->
-  <update id="delWithVersion" parameterType="com.dili.settlement.domain.SettleOrder">
+  <update id="deleteById">
     delete from settle_order where id = #{id} and version = #{version}
   </update>
 </mapper>

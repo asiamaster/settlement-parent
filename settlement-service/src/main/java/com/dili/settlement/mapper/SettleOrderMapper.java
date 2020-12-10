@@ -45,13 +45,6 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
     SettleAmountDto queryAmount(SettleOrderDto settleOrderDto);
 
     /**
-     * 带版本条件删除
-     * @param po
-     * @return
-     */
-    int delWithVersion(SettleOrder po);
-
-    /**
      * 根据id列表查询并锁定记录
      * @param ids
      * @return
@@ -63,4 +56,12 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @param settleOrderList
      */
     int batchSettleUpdate(@Param("settleOrderList") List<SettleOrder> settleOrderList, @Param("tradeNo") String tradeNo);
+
+    /**
+     * 根据ID删除
+     * @param id
+     * @param version
+     * @return
+     */
+    int deleteById(@Param("id") Long id, @Param("version") Integer version);
 }

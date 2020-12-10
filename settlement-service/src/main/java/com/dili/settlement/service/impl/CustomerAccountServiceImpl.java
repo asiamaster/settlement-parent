@@ -144,6 +144,23 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         getActualDao().updateAmount(customerAccount);
     }
 
+    @Override
+    public void freeze(Long mchId, Long customerId, Long amount) {
+        if (amount == 0L) {
+            return;
+        }
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户定金账户不存在");
+        }
+        long availableAmount = customerAccount.getAmount() - customerAccount.getFrozenAmount();
+        if (availableAmount - amount < 0) {
+            throw new BusinessException("", "客户定金账户余额不足");
+        }
+        customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() + amount);
+        getActualDao().updateAmount(customerAccount);
+    }
+
     /**
      *
      * @param id
@@ -156,6 +173,22 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
             return;
         }
         CustomerAccount customerAccount = lockGetById(id);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户定金账户不存在");
+        }
+        if (customerAccount.getFrozenAmount() - amount < 0) {
+            throw new BusinessException("", "客户定金账户冻结金额不足");
+        }
+        customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() - amount);
+        getActualDao().updateAmount(customerAccount);
+    }
+
+    @Override
+    public void unfreeze(Long mchId, Long customerId, Long amount) {
+        if (amount == 0L) {
+            return;
+        }
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
         if (customerAccount == null) {
             throw new BusinessException("", "客户定金账户不存在");
         }

@@ -2,6 +2,7 @@ package com.dili.settlement.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.settlement.dispatcher.OrderDispatcher;
 import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
@@ -36,6 +37,9 @@ public class SettleOrderApi {
 
     @Autowired
     private SettleOrderService settleOrderService;
+
+    @Autowired
+    private OrderDispatcher orderDispatcher;
     /**
      * 提交结算单接口
      * @param settleOrderDto
@@ -49,7 +53,7 @@ public class SettleOrderApi {
         settleOrderDto.setSubmitTime(DateUtil.nowDateTime());
         settleOrderDto.setDeductEnable(settleOrderDto.getDeductEnable() == null ? EnableEnum.NO.getCode() : settleOrderDto.getDeductEnable());
         settleOrderDto.setReverse(ReverseEnum.NO.getCode());
-        SettleOrder settleOrder = settleOrderService.save(settleOrderDto);
+        SettleOrder settleOrder = orderDispatcher.save(settleOrderDto);
         return BaseOutput.success().setData(settleOrder);
     }
 

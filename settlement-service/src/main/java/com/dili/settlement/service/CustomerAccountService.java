@@ -69,11 +69,27 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
     void freeze(Long id, Long amount);
 
     /**
+     * 冻结
+     * @param mchId
+     * @param customerId
+     * @param amount
+     */
+    void freeze(Long mchId, Long customerId, Long amount);
+
+    /**
      * 解冻
      * @param id
      * @param amount
      */
     void unfreeze(Long id, Long amount);
+
+    /**
+     * 解冻
+     * @param mchId
+     * @param customerId
+     * @param amount
+     */
+    void unfreeze(Long mchId, Long customerId, Long amount);
 
     /**
      * 分页查询客户账户信息

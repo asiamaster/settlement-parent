@@ -104,36 +104,4 @@ public class CustomerAccountApi {
     public PageOutput<List<CustomerAccountSerialDto>> listSerialPage(@RequestBody CustomerAccountSerialDto query) {
         return customerAccountSerialService.listPagination(query);
     }
-
-    /**
-     * 冻结
-     * @return
-     */
-    @RequestMapping(value = "/freeze")
-    public BaseOutput<?> freeze(@RequestBody CustomerAccountDto customerAccountDto) {
-        if (customerAccountDto.getId() == null) {
-            return BaseOutput.failure("客户定金账户ID为空");
-        }
-        if (customerAccountDto.getAmount() == null || customerAccountDto.getAmount() < 0L) {
-            return BaseOutput.failure("冻结金额不合法");
-        }
-        customerAccountService.freeze(customerAccountDto.getId(), customerAccountDto.getAmount());
-        return BaseOutput.success();
-    }
-
-    /**
-     * 解冻
-     * @return
-     */
-    @RequestMapping(value = "/unfreeze")
-    public BaseOutput<?> unfreeze(@RequestBody CustomerAccountDto customerAccountDto) {
-        if (customerAccountDto.getId() == null) {
-            return BaseOutput.failure("客户定金账户ID为空");
-        }
-        if (customerAccountDto.getAmount() == null || customerAccountDto.getAmount() < 0L) {
-            return BaseOutput.failure("冻结金额不合法");
-        }
-        customerAccountService.unfreeze(customerAccountDto.getId(), customerAccountDto.getAmount());
-        return BaseOutput.success();
-    }
 }
