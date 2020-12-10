@@ -7,6 +7,7 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleOrderLink;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.service.CustomerAccountService;
 import com.dili.settlement.service.SettleFeeItemService;
@@ -41,7 +42,7 @@ public abstract class OrderServiceImpl implements OrderService {
     @Override
     public SettleOrder save(SettleOrderDto settleOrderDto) {
         //查询商户名称并赋值，以便存储
-        Firm firm = RpcResultResolver.resolver(firmRpc.getById(settleOrderDto.getMchId()), "uap-service");
+        Firm firm = RpcResultResolver.resolver(firmRpc.getById(settleOrderDto.getMchId()), ServiceNameHolder.UAP_SERVICE_NAME);
         settleOrderDto.setMchName(firm.getName());
 
         if (settleOrderService.existsOrderCode(settleOrderDto.getAppId(), settleOrderDto.getOrderCode())) {
