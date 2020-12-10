@@ -1,0 +1,5 @@
+1、更改business_type数据类型为String;
+2、去除edit_enable、return_url字段；
+3、新增market_code、deduct_enable(对应EnableEnum，标记是否可用定金抵扣)、trailer_number(挂号，沈阳特有)、mch_id、mch_name、customer_certificate字段；
+4、提交结算单时新增settleFeeItemList(费用项列表)、settleOrderLinkList(链接信息列表，详情、打印数据、回调，需构建好参数)；
+5、sdk包新增定金账户、结算单相关RPC，建议去除本地自写的相关接口RPC；
