@@ -50,6 +50,7 @@ public class GlobalExceptionHandler {
      */
     private String dealResult(String code, String message, Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException {
        String accept = request.getHeader("Accept");
+       LOGGER.info("请求头:Content-Type:{}, Accept:{}", request.getHeader("Content-Type"), request.getHeader("Accept"));
        if (MediaType.APPLICATION_JSON_VALUE.equals(accept)) {
            response.setContentType("application/json;charset=UTF-8");
            response.getWriter().write(JSON.toJSONString(BaseOutput.create(code, message)));
