@@ -30,7 +30,7 @@
     </parent>
 
     <build>
-        <finalName>settlement-service</finalName>
+        <finalName>settlement</finalName>
         <!-- 资源文件过滤 -->
         <resources>
             <resource>
