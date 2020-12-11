@@ -68,6 +68,7 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
     private SortedMap<String, String> getMapData(SettleOrder settleOrder) {
         SortedMap<String, String> map = new TreeMap<>();
         map.put("marketId", String.valueOf(settleOrder.getMarketId()));
+        map.put("mchId", String.valueOf(settleOrder.getMchId()));
         map.put("appId", String.valueOf(settleOrder.getAppId()));
         map.put("code", settleOrder.getCode());
         map.put("orderCode", settleOrder.getOrderCode());
