@@ -1,3 +1,4 @@
 1、nacos上新增settlement.properties配置文件并合并原 settlement-service.properties 与 settlement-client.properties 内容，然后删除后两个文件。
 2、nacos上新增配置 log.maxHistory = 30。
 3、迁移fund_account数据到支付系统(检查结算单，寿光如果仅有园区卡结算则不迁移)，迁移完成后删除fund_account;
+4、新上市场需配置uid结算编号规则。
