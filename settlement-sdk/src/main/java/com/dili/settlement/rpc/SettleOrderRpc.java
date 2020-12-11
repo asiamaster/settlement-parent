@@ -22,8 +22,8 @@ public interface SettleOrderRpc {
      * @param settleOrderDto
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/save")
-    BaseOutput<SettleOrder> save(SettleOrderDto settleOrderDto);
+    @RequestMapping(value = "/api/settleOrder/submit")
+    BaseOutput<SettleOrder> submit(SettleOrderDto settleOrderDto);
 
     /**
      * 根据结算单id取消

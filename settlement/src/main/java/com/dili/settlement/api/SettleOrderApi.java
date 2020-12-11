@@ -45,8 +45,8 @@ public class SettleOrderApi {
      * @param settleOrderDto
      * @return
      */
-    @RequestMapping(value = "/save")
-    public BaseOutput<SettleOrder> save(@RequestBody SettleOrderDto settleOrderDto) {
+    @RequestMapping(value = "/submit")
+    public BaseOutput<SettleOrder> submit(@RequestBody SettleOrderDto settleOrderDto) {
         validateSaveParams(settleOrderDto);
         settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
         settleOrderDto.setState(SettleStateEnum.WAIT_DEAL.getCode());
