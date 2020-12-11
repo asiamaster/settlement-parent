@@ -10,6 +10,8 @@ public class PrintDto {
     //打印数据 由业务系统和客户端沟通
     private Object item;
 
+    public PrintDto() {}
+
     public PrintDto(String name, Object item){
         this.name = name;
         this.item = item;
