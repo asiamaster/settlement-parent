@@ -73,6 +73,7 @@ create table customer_account_serial
 (
    `id`                   bigint not null auto_increment comment '主键ID',
    `customer_account_id`  bigint comment '客户资金ID',
+   `action`               tinyint comment '资金动作 1-入账 2-出账',
    `scene`                tinyint comment '场景 1-缴费...',
    `amount`               bigint comment '金额',
    `operate_time`         datetime comment '时间',

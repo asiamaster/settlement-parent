@@ -213,7 +213,7 @@
         trade_card_no = #{item.tradeCardNo},
         trade_no = #{tradeNo},
         version = version + 1
-      where id = #{id}
+      where id = #{item.id}
     </foreach>
   </update>
 
