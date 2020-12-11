@@ -7,7 +7,6 @@ import com.dili.ss.exception.BusinessException;
 import com.dili.ss.util.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -49,9 +48,8 @@ public class GlobalExceptionHandler {
      * @param response
      */
     private String dealResult(String code, String message, Throwable e, HttpServletRequest request, HttpServletResponse response) throws IOException {
-       String accept = request.getHeader("Accept");
-       LOGGER.info("请求头:Content-Type:{}, Accept:{}", request.getHeader("Content-Type"), request.getHeader("Accept"));
-       if (MediaType.APPLICATION_JSON_VALUE.equals(accept)) {
+       Boolean returnJsonType = (Boolean) request.getAttribute("return_json_type");
+       if (Boolean.TRUE.equals(returnJsonType)) {
            response.setContentType("application/json;charset=UTF-8");
            response.getWriter().write(JSON.toJSONString(BaseOutput.create(code, message)));
            return null;

@@ -42,7 +42,7 @@
     )
     values(
         #{marketId},
-        #{marketCode}
+        #{marketCode},
         #{mchId},
         #{mchName},
         #{customerId},
