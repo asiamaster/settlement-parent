@@ -23,7 +23,7 @@ public interface CustomerAccountRpc {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/list")
+    @RequestMapping(value = "/api/customerAccount/list")
     BaseOutput<List<CustomerAccount>> list(CustomerAccount query);
 
     /**
@@ -31,14 +31,14 @@ public interface CustomerAccountRpc {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/listPage")
+    @RequestMapping(value = "/api/customerAccount/listPage")
     PageOutput<List<CustomerAccount>> listPage(CustomerAccountDto query);
 
     /**
      * 定金转移
      * @return
      */
-    @RequestMapping(value = "/transfer")
+    @RequestMapping(value = "/api/customerAccount/transfer")
     BaseOutput<?> transfer(EarnestTransferDto transferDto);
 
     /**
@@ -46,13 +46,13 @@ public interface CustomerAccountRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getById")
+    @RequestMapping(value = "/api/customerAccount/getById")
     BaseOutput<CustomerAccount> getById(@RequestParam Long id);
 
     /**
      * 分页查询账户流水列表
      * @return
      */
-    @RequestMapping(value = "/listSerialPage")
+    @RequestMapping(value = "/api/customerAccount/listSerialPage")
     PageOutput<List<CustomerAccountSerialDto>> listSerialPage(CustomerAccountSerialDto query);
 }

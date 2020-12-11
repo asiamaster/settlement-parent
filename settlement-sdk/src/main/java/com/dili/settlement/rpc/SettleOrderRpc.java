@@ -22,7 +22,7 @@ public interface SettleOrderRpc {
      * @param settleOrderDto
      * @return
      */
-    @RequestMapping(value = "/save")
+    @RequestMapping(value = "/api/settleOrder/save")
     BaseOutput<SettleOrder> save(SettleOrderDto settleOrderDto);
 
     /**
@@ -30,7 +30,7 @@ public interface SettleOrderRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/cancelById")
+    @RequestMapping(value = "/api/settleOrder/cancelById")
     BaseOutput<String> cancelById(@RequestParam Long id);
 
     /**
@@ -38,7 +38,7 @@ public interface SettleOrderRpc {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/cancelByCode")
+    @RequestMapping(value = "/api/settleOrder/cancelByCode")
     BaseOutput<String> cancelByCode(@RequestParam String code);
 
     /**
@@ -47,7 +47,7 @@ public interface SettleOrderRpc {
      * @param orderCode 订单号
      * @return
      */
-    @RequestMapping(value = "/cancel")
+    @RequestMapping(value = "/api/settleOrder/cancel")
     BaseOutput<String> cancel(@RequestParam Long appId, @RequestParam String orderCode);
 
     /**
@@ -55,7 +55,7 @@ public interface SettleOrderRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getById")
+    @RequestMapping(value = "/api/settleOrder/getById")
     BaseOutput<SettleOrder> getById(@RequestParam Long id);
 
     /**
@@ -63,7 +63,7 @@ public interface SettleOrderRpc {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/getByCode")
+    @RequestMapping(value = "/api/settleOrder/getByCode")
     BaseOutput<SettleOrder> getByCode(@RequestParam String code);
 
     /**
@@ -72,7 +72,7 @@ public interface SettleOrderRpc {
      * @param orderCode 业务编号
      * @return
      */
-    @RequestMapping(value = "/get")
+    @RequestMapping(value = "/api/settleOrder/get")
     BaseOutput<SettleOrder> get(@RequestParam Long appId, @RequestParam String orderCode);
 
     /**
@@ -80,14 +80,14 @@ public interface SettleOrderRpc {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/invalid")
+    @RequestMapping(value = "/api/settleOrder/invalid")
     BaseOutput<?> invalid(InvalidRequestDto param);
 
     /**
      * @param settleOrderCode 根据结算单号查询结算明细列表
      * @return
      */
-    @RequestMapping(value = "/listByCode")
+    @RequestMapping(value = "/api/settleOrder/listByCode")
     BaseOutput<List<SettleWayDetail>> listByCode(@RequestParam String settleOrderCode);
 
     /**
