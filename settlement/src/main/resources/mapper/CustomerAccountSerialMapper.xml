@@ -77,6 +77,9 @@
         <if test="customerName != null and customerName != ''">
             and b.`customer_name` = #{customerName}
         </if>
+        <if test="customerPhone != null and customerPhone != ''">
+            and b.`customer_phone` = #{customerPhone}
+        </if>
         <if test="customerCertificate != null and customerCertificate != ''">
             and b.`customer_certificate` = #{customerCertificate}
         </if>
