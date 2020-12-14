@@ -243,7 +243,7 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         customerAccountSerialService.insertSelective(payAccountSerial);
         getActualDao().updateAmount(receiveAccount);
         CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), transferDto.getNotes());
-        payAccountSerial.setCustomerAccountId(receiveAccount.getId());
+        receiveAccountSerial.setCustomerAccountId(receiveAccount.getId());
         customerAccountSerialService.insertSelective(receiveAccountSerial);
     }
 
