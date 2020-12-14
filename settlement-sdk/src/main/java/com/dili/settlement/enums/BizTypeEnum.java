@@ -24,7 +24,8 @@ public enum BizTypeEnum {
     LABOR_VEST_REMODEL("13", "劳务马甲更型费", "laborVestRemodel"),
     MESSAGEFEE("14", "信息费", "messageFee"),
     WATER("15", "水费", "water"),
-    ELECTRICITY("16", "电费", "electricity")
+    ELECTRICITY("16", "电费", "electricity"),
+    ENTRANCE_CARD("301", "车辆进门办卡", "entranceCard")
     ;
 
     private String name;
