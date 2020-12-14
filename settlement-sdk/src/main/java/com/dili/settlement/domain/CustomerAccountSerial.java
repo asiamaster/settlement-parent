@@ -2,13 +2,9 @@ package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -16,41 +12,34 @@ import java.time.LocalDateTime;
  * 客户资金流水
  * This file was generated on 2020-12-03 18:15:40.
  */
-@Table(name = "`customer_account_serial`")
 public class CustomerAccountSerial extends BaseDomain {
     /**
      * 主键ID
      */
-    @Id
-    @Column(name = "`id`")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
      * 客户资金ID
      */
-    @Column(name = "`customer_account_id`")
     private Long customerAccountId;
-
-    @Column(name = "`action`")
+    /**
+     * 资金动作 ActionEnum
+     */
     private Integer action;
 
     /**
      * 场景 1-缴费...
      */
-    @Column(name = "`scene`")
     private Integer scene;
 
     /**
      * 金额 正值表示收入 负值表示支出
      */
-    @Column(name = "`amount`")
     private Long amount;
 
     /**
      * 时间
      */
-    @Column(name = "`operate_time`")
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -59,31 +48,26 @@ public class CustomerAccountSerial extends BaseDomain {
     /**
      * 操作员ID
      */
-    @Column(name = "`operator_id`")
     private Long operatorId;
 
     /**
      * 操作员姓名
      */
-    @Column(name = "`operator_name`")
     private String operatorName;
 
     /**
      * 关联单号
      */
-    @Column(name = "`relation_code`")
     private String relationCode;
 
     /**
      * 关联单号
      */
-    @Column(name = "`relation_type`")
     private Integer relationType;
 
     /**
      * 备注
      */
-    @Column(name = "`notes`")
     private String notes;
 
     /**
@@ -91,8 +75,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return id - 主键ID
      */
-    @FieldDef(label="主键ID")
-    @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
@@ -111,8 +93,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return customer_account_id - 客户资金ID
      */
-    @FieldDef(label="客户资金ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getCustomerAccountId() {
         return customerAccountId;
     }
@@ -147,8 +127,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return scene - 场景 1-缴费...
      */
-    @FieldDef(label="场景 1-缴费...")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public Integer getScene() {
         return scene;
     }
@@ -167,8 +145,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return amount - 金额
      */
-    @FieldDef(label="金额")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getAmount() {
         return amount;
     }
@@ -187,8 +163,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return operate_time - 时间
      */
-    @FieldDef(label="时间")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
     public LocalDateTime getOperateTime() {
         return operateTime;
     }
@@ -207,8 +181,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return operator_id - 操作员ID
      */
-    @FieldDef(label="操作员ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getOperatorId() {
         return operatorId;
     }
@@ -227,8 +199,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return operator_name - 操作员姓名
      */
-    @FieldDef(label="操作员姓名", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getOperatorName() {
         return operatorName;
     }
@@ -247,8 +217,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return relation_code - 关联单号
      */
-    @FieldDef(label="关联单号", maxLength = 32)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getRelationCode() {
         return relationCode;
     }
@@ -267,8 +235,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return relation_type - 关联单号
      */
-    @FieldDef(label="关联单号", maxLength = 32)
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Integer getRelationType() {
         return relationType;
     }
@@ -287,8 +253,6 @@ public class CustomerAccountSerial extends BaseDomain {
      *
      * @return notes - 备注
      */
-    @FieldDef(label="备注", maxLength = 120)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getNotes() {
         return notes;
     }

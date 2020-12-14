@@ -2,13 +2,9 @@ package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -16,42 +12,42 @@ import java.time.LocalDate;
  * 
  * This file was generated on 2020-06-01 14:13:21.
  */
-@Table(name = "`settle_way_detail`")
 public class SettleWayDetail extends BaseDomain {
-    @Id
-    @Column(name = "`id`")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-
-    @Column(name = "`settle_order_id`")
+    /**
+     * 结算单ID
+     */
     private Long settleOrderId;
-
-    @Column(name = "`settle_order_code`")
+    /**
+     * 结算单CODE
+     */
     private String settleOrderCode;
-
-    @Column(name = "`way`")
+    /**
+     * 结算方式 SettleWayEnum
+     */
     private Integer way;
-
-    @Column(name = "`amount`")
+    /**
+     * 金额
+     */
     private Long amount;
-
-    @Column(name = "`serial_number`")
+    /**
+     * 流水号
+     */
     private String serialNumber;
 
     @JSONField(format = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "`charge_date`")
     private LocalDate chargeDate;
-
-    @Column(name = "`notes`")
+    /**
+     * 备注
+     */
     private String notes;
 
     /**
      * @return id
      */
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
@@ -98,8 +94,6 @@ public class SettleWayDetail extends BaseDomain {
     /**
      * @return way
      */
-    @FieldDef(label="way")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public Integer getWay() {
         return way;
     }
@@ -114,8 +108,6 @@ public class SettleWayDetail extends BaseDomain {
     /**
      * @return amount
      */
-    @FieldDef(label="amount")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getAmount() {
         return amount;
     }
@@ -146,8 +138,6 @@ public class SettleWayDetail extends BaseDomain {
     /**
      * @return charge_date
      */
-    @FieldDef(label="chargeDate")
-    @EditMode(editor = FieldEditor.Date, required = false)
     public LocalDate getChargeDate() {
         return chargeDate;
     }
@@ -162,8 +152,6 @@ public class SettleWayDetail extends BaseDomain {
     /**
      * @return notes
      */
-    @FieldDef(label="notes", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getNotes() {
         return notes;
     }

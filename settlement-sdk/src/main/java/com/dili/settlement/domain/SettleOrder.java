@@ -2,13 +2,10 @@ package com.dili.settlement.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -17,118 +14,88 @@ import java.time.LocalDateTime;
  * 
  * This file was generated on 2020-02-05 16:39:11.
  */
-@Table(name = "`settle_order`")
 public class SettleOrder extends BaseDomain {
-    @Id
-    @Column(name = "`id`")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //市场ID
-    @Column(name = "`market_id`")
     private Long marketId;
 
     //市场编码
-    @Column(name = "`market_code`")
     private String marketCode;
 
     //商户ID
-    @Column(name = "`mch_id`")
     private Long mchId;
 
     //商户名称
-    @Column(name = "`mch_name`")
     private String mchName;
 
     //应用ID
-    @Column(name = "`app_id`")
     private Long appId;
 
     //结算编号
-    @Column(name = "`code`")
     private String code;
 
     //订单号  唯一
-    @Column(name = "`order_code`")
     private String orderCode;
 
     //业务编号 具体业务单号
-    @Column(name = "`business_code`")
     private String businessCode;
 
     //业务类型
-    @Column(name = "`business_type`")
     private String businessType;
 
     //业务部门id
-    @Column(name = "`business_dep_id`")
     private Long businessDepId;
 
     //业务部门名称
-    @Column(name = "`business_dep_name`")
     private String businessDepName;
 
     //客户ID
-    @Column(name = "`customer_id`")
     private Long customerId;
 
     //客户姓名
-    @Column(name = "`customer_name`")
     private String customerName;
 
     //客户手机号
-    @Column(name = "`customer_phone`")
     private String customerPhone;
 
     //客户证件号
-    @Column(name = "`customer_certificate`")
     private String customerCertificate;
 
     //金额
-    @Column(name = "`amount`")
     private Long amount;
 
     //抵扣金额
-    @Column(name = "`deduct_amount`")
     private Long deductAmount;
 
     //提交人ID
-    @Column(name = "`submitter_id`")
     private Long submitterId;
 
     //提交人姓名
-    @Column(name = "`submitter_name`")
     private String submitterName;
 
     //提交人部门ID
-    @Column(name = "`submitter_dep_id`")
     private Long submitterDepId;
 
     //提交人部门名称
-    @Column(name = "`submitter_dep_name`")
     private String submitterDepName;
 
     //提交时间
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "`submit_time`")
     private LocalDateTime submitTime;
 
     //结算类型 枚举 SettleTypeEnum
-    @Column(name = "`type`")
     private Integer type;
 
     //结算方式 枚举 SettleWayEnum
-    @Column(name = "`way`")
     private Integer way;
 
     //结算状态 枚举 SettleStateEnum
-    @Column(name = "`state`")
     private Integer state;
 
     //结算员ID
-    @Column(name = "`operator_id`")
     private Long operatorId;
 
     //结算员姓名
@@ -139,79 +106,60 @@ public class SettleOrder extends BaseDomain {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "`operate_time`")
     private LocalDateTime operateTime;
 
     //银行卡号
-    @Column(name = "`account_number`")
     private String accountNumber;
 
     //银行名称
-    @Column(name = "`bank_name`")
     private String bankName;
 
     //银行卡主
-    @Column(name = "`bank_card_holder`")
     private String bankCardHolder;
 
     //流水号
-    @Column(name = "`serial_number`")
     private String serialNumber;
 
     //备注
-    @Column(name = "`notes`")
     private String notes;
 
-    @Column(name = "`version`")
     private Integer version;
 
     @JSONField(format = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "`charge_date`")
     private LocalDate chargeDate;
 
     /** 交易资金账户ID */
-    @Column(name = "`trade_fund_account_id`")
     private Long tradeFundAccountId;
 
     /** 交易卡账户ID */
-    @Column(name = "`trade_account_id`")
     private Long tradeAccountId;
 
     /** 交易卡客户ID */
-    @Column(name = "`trade_customer_id`")
     private Long tradeCustomerId;
 
     /** 交易卡客户姓名 */
-    @Column(name = "`trade_customer_name`")
     private String tradeCustomerName;
 
     /** 交易卡号 */
-    @Column(name = "`trade_card_no`")
     private String tradeCardNo;
 
     /** 交易流水号 */
-    @Column(name = "`trade_no`")
     private String tradeNo;
 
     /** 是否冲正 0-否 1-是*/
-    @Column(name = "`reverse`")
     private Integer reverse;
 
     /** 是否可抵扣 0-否 1-是*/
-    @Column(name = "`deduct_enable`")
     private Integer deductEnable;
 
     /** 挂号(沈阳特有)*/
-    @Column(name = "`trailer_number`")
     private String trailerNumber;
 
     /**
      * @return id
      */
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
@@ -226,8 +174,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return market_id
      */
-    @FieldDef(label="marketId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getMarketId() {
         return marketId;
     }
@@ -290,8 +236,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return app_id
      */
-    @FieldDef(label="appId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getAppId() {
         return appId;
     }
@@ -306,8 +250,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return code
      */
-    @FieldDef(label="code", maxLength = 32)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCode() {
         return code;
     }
@@ -338,8 +280,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return business_code
      */
-    @FieldDef(label="businessCode", maxLength = 32)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getBusinessCode() {
         return businessCode;
     }
@@ -354,8 +294,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return business_type
      */
-    @FieldDef(label="businessType")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getBusinessType() {
         return businessType;
     }
@@ -370,8 +308,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return business_dep_id
      */
-    @FieldDef(label="businessDepId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getBusinessDepId() {
         return businessDepId;
     }
@@ -386,8 +322,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return business_dep_name
      */
-    @FieldDef(label="businessDepName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getBusinessDepName() {
         return businessDepName;
     }
@@ -402,8 +336,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return customer_id
      */
-    @FieldDef(label="customerId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getCustomerId() {
         return customerId;
     }
@@ -418,8 +350,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return customer_name
      */
-    @FieldDef(label="customerName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCustomerName() {
         return customerName;
     }
@@ -434,8 +364,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return customer_phone
      */
-    @FieldDef(label="customerPhone", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCustomerPhone() {
         return customerPhone;
     }
@@ -466,8 +394,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return amount
      */
-    @FieldDef(label="amount")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getAmount() {
         return amount;
     }
@@ -498,8 +424,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return submitter_id
      */
-    @FieldDef(label="submitterId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getSubmitterId() {
         return submitterId;
     }
@@ -514,8 +438,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return submitter_name
      */
-    @FieldDef(label="submitterName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getSubmitterName() {
         return submitterName;
     }
@@ -530,8 +452,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return submitter_dep_id
      */
-    @FieldDef(label="submitterDepId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getSubmitterDepId() {
         return submitterDepId;
     }
@@ -546,8 +466,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return submitter_dep_name
      */
-    @FieldDef(label="submitterDepName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getSubmitterDepName() {
         return submitterDepName;
     }
@@ -562,8 +480,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return submit_time
      */
-    @FieldDef(label="submitTime")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
     public LocalDateTime getSubmitTime() {
         return submitTime;
     }
@@ -578,8 +494,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return type
      */
-    @FieldDef(label="type")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public Integer getType() {
         return type;
     }
@@ -594,8 +508,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return way
      */
-    @FieldDef(label="way")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public Integer getWay() {
         return way;
     }
@@ -610,8 +522,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return state
      */
-    @FieldDef(label="state")
-    @EditMode(editor = FieldEditor.Text, required = false)
     public Integer getState() {
         return state;
     }
@@ -626,8 +536,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return operator_id
      */
-    @FieldDef(label="operatorId")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getOperatorId() {
         return operatorId;
     }
@@ -642,8 +550,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return operator_name
      */
-    @FieldDef(label="operatorName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getOperatorName() {
         return operatorName;
     }
@@ -658,8 +564,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return operate_time
      */
-    @FieldDef(label="operateTime")
-    @EditMode(editor = FieldEditor.Datetime, required = false)
     public LocalDateTime getOperateTime() {
         return operateTime;
     }
@@ -674,8 +578,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return account_number
      */
-    @FieldDef(label="accountNumber", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -690,8 +592,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return bank_name
      */
-    @FieldDef(label="bankName", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getBankName() {
         return bankName;
     }
@@ -706,8 +606,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return bank_card_holder
      */
-    @FieldDef(label="bankCardHolder", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getBankCardHolder() {
         return bankCardHolder;
     }
@@ -722,8 +620,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return serial_number
      */
-    @FieldDef(label="serialNumber", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -738,8 +634,6 @@ public class SettleOrder extends BaseDomain {
     /**
      * @return notes
      */
-    @FieldDef(label="notes", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getNotes() {
         return notes;
     }

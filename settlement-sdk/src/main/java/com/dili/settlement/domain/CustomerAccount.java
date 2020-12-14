@@ -1,84 +1,64 @@
 package com.dili.settlement.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-
-import javax.persistence.*;
 
 /**
  * 由MyBatis Generator工具自动生成
  * 客户资金表
  * This file was generated on 2020-12-01 16:37:13.
  */
-@Table(name = "`customer_account`")
 public class CustomerAccount extends BaseDomain {
     /**
      * 主键ID
      */
-    @Id
-    @Column(name = "`id`")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
      * 市场ID
      */
-    @Column(name = "`market_id`")
     private Long marketId;
 
     /**
      * 市场code
      */
-    @Column(name = "`market_code`")
     private String marketCode;
 
     //商户ID
-    @Column(name = "`mch_id`")
     private Long mchId;
 
     //商户名称
-    @Column(name = "`mch_name`")
     private String mchName;
 
     /**
      * 客户ID
      */
-    @Column(name = "`customer_id`")
     private Long customerId;
 
     /**
      * 客户姓名
      */
-    @Column(name = "`customer_name`")
     private String customerName;
 
     /**
      * 客户手机号
      */
-    @Column(name = "`customer_phone`")
     private String customerPhone;
 
     /**
      * 客户证件号
      */
-    @Column(name = "`customer_certificate`")
     private String customerCertificate;
 
     /**
      * 金额
      */
-    @Column(name = "`amount`")
     private Long amount;
 
     /**
      * 冻结金额
      */
-    @Column(name = "`frozen_amount`")
     private Long frozenAmount;
 
-    @Column(name = "`version`")
     private Integer version;
 
     /**
@@ -86,8 +66,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return id - 主键ID
      */
-    @FieldDef(label="主键ID")
-    @EditMode(editor = FieldEditor.Number, required = true)
     public Long getId() {
         return id;
     }
@@ -106,8 +84,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return market_id - 市场ID
      */
-    @FieldDef(label="市场ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getMarketId() {
         return marketId;
     }
@@ -174,8 +150,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return customer_id - 客户ID
      */
-    @FieldDef(label="客户ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getCustomerId() {
         return customerId;
     }
@@ -194,8 +168,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return customer_name - 客户姓名
      */
-    @FieldDef(label="客户姓名", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCustomerName() {
         return customerName;
     }
@@ -214,8 +186,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return customer_phone - 客户手机号
      */
-    @FieldDef(label="客户手机号", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCustomerPhone() {
         return customerPhone;
     }
@@ -234,8 +204,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return customer_certificate - 客户证件号
      */
-    @FieldDef(label="客户证件号", maxLength = 40)
-    @EditMode(editor = FieldEditor.Text, required = false)
     public String getCustomerCertificate() {
         return customerCertificate;
     }
@@ -254,8 +222,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return amount - 金额
      */
-    @FieldDef(label="金额")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getAmount() {
         return amount;
     }
@@ -274,8 +240,6 @@ public class CustomerAccount extends BaseDomain {
      *
      * @return frozen_amount - 冻结金额
      */
-    @FieldDef(label="冻结金额")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Long getFrozenAmount() {
         return frozenAmount;
     }
@@ -292,8 +256,6 @@ public class CustomerAccount extends BaseDomain {
     /**
      * @return version
      */
-    @FieldDef(label="version")
-    @EditMode(editor = FieldEditor.Number, required = false)
     public Integer getVersion() {
         return version;
     }
