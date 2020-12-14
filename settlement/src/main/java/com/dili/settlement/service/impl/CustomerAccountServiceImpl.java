@@ -231,7 +231,7 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         if (availableAmount < transferDto.getAmount()) {
             throw new BusinessException("", "转出账户余额不足");
         }
-        CustomerAccount receiveAccount = lockGetAndCreate(CustomerAccount.build(payAccount.getMarketId(), payAccount.getMarketCode(), payAccount.getMchId(), payAccount.getMchName(), payAccount.getCustomerId(), payAccount.getCustomerName(), payAccount.getCustomerPhone(), payAccount.getCustomerCertificate()));
+        CustomerAccount receiveAccount = lockGetAndCreate(CustomerAccount.build(payAccount.getMarketId(), payAccount.getMarketCode(), payAccount.getMchId(), payAccount.getMchName(), transferDto.getCustomerId(), transferDto.getCustomerName(), transferDto.getCustomerPhone(), transferDto.getCustomerCertificate()));
 
         payAccount.setAmount(payAccount.getAmount() - transferDto.getAmount());
         receiveAccount.setAmount(receiveAccount.getAmount() + transferDto.getAmount());
