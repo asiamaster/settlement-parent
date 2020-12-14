@@ -83,6 +83,12 @@
         <if test="customerCertificate != null and customerCertificate != ''">
             and b.`customer_certificate` = #{customerCertificate}
         </if>
+        <if test="action != null">
+            and a.`action` = #{action}
+        </if>
+        <if test="scene != null">
+            and a.`scene` = #{scene}
+        </if>
         <if test="operateTimeStart != null and operateTimeStart != ''">
             and a.`operate_time` &gt;= #{operateTimeStart}
         </if>
