@@ -81,7 +81,7 @@ create table customer_account_serial
    `operator_name`        varchar(40) comment '操作员姓名',
    `relation_code`        varchar(32) comment '关联单号',
    `relation_type`        varchar(32) comment '关联单号',
-   `notes`                varchar(120) comment '备注',
+   `notes`                varchar(200) comment '备注',
    primary key (id)
 )
 ENGINE = InnoDB

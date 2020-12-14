@@ -26,6 +26,8 @@ import org.springframework.ui.ModelMap;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 退款数据验证基础实现类
@@ -99,9 +101,11 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         List<RetryRecord> retryRecordList = new ArrayList<>(settleOrderList.size());
         List<FeeItemDto> feeItemList = new ArrayList<>();
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
+        Map<Long, String> businessCodeMap = new ConcurrentHashMap<>();
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
+            businessCodeMap.put(settleOrder.getId(), settleOrder.getBusinessCode());
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
@@ -109,7 +113,7 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
-                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.REFUND.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), ""));
+                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.REFUND.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), businessCodeMap.get(settleFeeItem.getSettleOrderId())));
             }
         }
         //设置值
