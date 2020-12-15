@@ -74,6 +74,7 @@ public class PrepareQueueTask extends QueueTask implements Callable<Boolean> {
         map.put("orderCode", settleOrder.getOrderCode());
         map.put("businessCode", settleOrder.getBusinessCode());
         map.put("amount", String.valueOf(settleOrder.getAmount()));
+        map.put("deductAmount", String.valueOf(settleOrder.getDeductAmount()));
         map.put("way", String.valueOf(settleOrder.getWay()));
         map.put("state", String.valueOf(settleOrder.getState()));
         map.put("operatorId", String.valueOf(settleOrder.getOperatorId()));
