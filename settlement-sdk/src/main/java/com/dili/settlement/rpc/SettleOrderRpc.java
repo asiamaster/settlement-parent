@@ -6,6 +6,7 @@ import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,6 +17,14 @@ import java.util.List;
  */
 @FeignClient(name = "settlement", contextId = "settleOrderRpc", url="${SettleRpc.url:}")
 public interface SettleOrderRpc {
+
+    /**
+     * 查询结算单列表
+     * @param query
+     * @return
+     */
+    @RequestMapping(value = "/api/settleOrder/list")
+    BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query);
 
     /**
      * 提交结算单接口

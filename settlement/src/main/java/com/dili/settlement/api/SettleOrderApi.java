@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 结算单相关api
  */
@@ -40,6 +42,18 @@ public class SettleOrderApi {
 
     @Autowired
     private OrderDispatcher orderDispatcher;
+
+    /**
+     * 查询结算单列表
+     * @param query
+     * @return
+     */
+    @RequestMapping(value = "/list")
+    public BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query) {
+        List<SettleOrder> itemList = settleOrderService.list(query);
+        return BaseOutput.success().setData(itemList);
+    }
+
     /**
      * 提交结算单接口
      * @param settleOrderDto
