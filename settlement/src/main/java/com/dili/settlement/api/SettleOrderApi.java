@@ -126,6 +126,12 @@ public class SettleOrderApi {
         }
         long totalFeeAmount = 0L;
         for (SettleFeeItem feeItem : settleOrderDto.getSettleFeeItemList()) {
+            if (feeItem.getChargeItemId() == null) {
+                throw new BusinessException("", "费用项ID为空");
+            }
+            if (StrUtil.isBlank(feeItem.getChargeItemName())) {
+                throw new BusinessException("", "费用项名称为空");
+            }
             if (feeItem.getAmount() == null || feeItem.getAmount() < 0L) {
                 throw new BusinessException("", "费用项金额不合法");
             }
