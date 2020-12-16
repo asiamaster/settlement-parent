@@ -34,6 +34,8 @@ create table settle_fee_item
    `id`                   bigint not null auto_increment comment '主键ID',
    `settle_order_id`      bigint comment '结算单ID',
    `settle_order_code`    varchar(32) comment '结算单编码',
+   `charge_item_id`       bigint comment '收费项ID',
+   `charge_item_name`     varchar(50) comment '收费项名称',
    `fee_type`             int comment '费用类型',
    `fee_name`             varchar(50) comment '费用名称',
    `amount`               bigint comment '金额',

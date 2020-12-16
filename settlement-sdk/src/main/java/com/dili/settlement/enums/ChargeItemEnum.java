@@ -8,7 +8,7 @@ package com.dili.settlement.enums;
  * @author jcy
  * @createTime 2020-02-17 18:51
  */
-public enum FeeItemEnum {
+public enum ChargeItemEnum {
     //静态收费项，费用项定义，神农号段 200 ~ 300
     定金(201L, "定金"),
     保证金(202L, " 保证金"),
@@ -20,13 +20,13 @@ public enum FeeItemEnum {
     private long id;
     private String name;
 
-    FeeItemEnum(long id, String name){
+    ChargeItemEnum(long id, String name){
         this.id = id;
         this.name = name;
     }
 
-    public static FeeItemEnum getByCode(long id) {
-        for (FeeItemEnum temp : FeeItemEnum.values()) {
+    public static ChargeItemEnum getByCode(long id) {
+        for (ChargeItemEnum temp : ChargeItemEnum.values()) {
             if (temp.getId() == id) {
                 return temp;
             }
@@ -35,7 +35,7 @@ public enum FeeItemEnum {
     }
 
     public static String getNameByCode(long id) {
-        for (FeeItemEnum temp : FeeItemEnum.values()) {
+        for (ChargeItemEnum temp : ChargeItemEnum.values()) {
             if (temp.getId() == id) {
                 return temp.getName();
             }
