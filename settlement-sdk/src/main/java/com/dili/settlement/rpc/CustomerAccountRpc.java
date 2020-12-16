@@ -7,7 +7,8 @@ import com.dili.settlement.dto.EarnestTransferDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface CustomerAccountRpc {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/api/customerAccount/list")
+    @PostMapping(value = "/api/customerAccount/list")
     BaseOutput<List<CustomerAccount>> list(CustomerAccount query);
 
     /**
@@ -31,14 +32,14 @@ public interface CustomerAccountRpc {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/api/customerAccount/listPage")
+    @PostMapping(value = "/api/customerAccount/listPage")
     PageOutput<List<CustomerAccount>> listPage(CustomerAccountDto query);
 
     /**
      * 定金转移
      * @return
      */
-    @RequestMapping(value = "/api/customerAccount/transfer")
+    @PostMapping(value = "/api/customerAccount/transfer")
     BaseOutput<?> transfer(EarnestTransferDto transferDto);
 
     /**
@@ -46,13 +47,13 @@ public interface CustomerAccountRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/api/customerAccount/getById")
+    @GetMapping(value = "/api/customerAccount/getById")
     BaseOutput<CustomerAccount> getById(@RequestParam Long id);
 
     /**
      * 分页查询账户流水列表
      * @return
      */
-    @RequestMapping(value = "/api/customerAccount/listSerialPage")
+    @PostMapping(value = "/api/customerAccount/listSerialPage")
     PageOutput<List<CustomerAccountSerialDto>> listSerialPage(CustomerAccountSerialDto query);
 }

@@ -20,9 +20,7 @@ import com.dili.ss.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,7 +46,7 @@ public class SettleOrderApi {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/list")
+    @PostMapping(value = "/list")
     public BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query) {
         List<SettleOrder> itemList = settleOrderService.list(query);
         return BaseOutput.success().setData(itemList);
@@ -59,7 +57,7 @@ public class SettleOrderApi {
      * @param settleOrderDto
      * @return
      */
-    @RequestMapping(value = "/submit")
+    @PostMapping(value = "/submit")
     public BaseOutput<SettleOrder> submit(@RequestBody SettleOrderDto settleOrderDto) {
         validateSaveParams(settleOrderDto);
         settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
@@ -147,7 +145,7 @@ public class SettleOrderApi {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/cancelById")
+    @GetMapping(value = "/cancelById")
     public BaseOutput<String> cancelById(Long id) {
         if (id == null) {
             return BaseOutput.failure("结算单ID为空");
@@ -161,7 +159,7 @@ public class SettleOrderApi {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/cancelByCode")
+    @GetMapping(value = "/cancelByCode")
     public BaseOutput<String> cancelByCode(String code) {
         if (StrUtil.isBlank(code)) {
             return BaseOutput.failure("结算单号为空");
@@ -176,7 +174,7 @@ public class SettleOrderApi {
      * @param orderCode 订单号
      * @return
      */
-    @RequestMapping(value = "/cancel")
+    @GetMapping(value = "/cancel")
     public BaseOutput<String> cancel(Long appId, String orderCode) {
         if (appId == null) {
             return BaseOutput.failure("应用ID为空");
@@ -193,7 +191,7 @@ public class SettleOrderApi {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getById")
+    @GetMapping(value = "/getById")
     public BaseOutput<SettleOrder> getById(Long id) {
         if (id == null) {
             return BaseOutput.failure("ID为空");
@@ -206,7 +204,7 @@ public class SettleOrderApi {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/getByCode")
+    @GetMapping(value = "/getByCode")
     public BaseOutput<SettleOrder> getByCode(String code) {
         if (StrUtil.isBlank(code)) {
             return BaseOutput.failure("结算单号为空");
@@ -220,7 +218,7 @@ public class SettleOrderApi {
      * @param orderCode 业务编号
      * @return
      */
-    @RequestMapping(value = "/get")
+    @GetMapping(value = "/get")
     public BaseOutput<SettleOrder> get(Long appId, String orderCode) {
         if (appId == null) {
             return BaseOutput.failure("应用ID为空");
@@ -236,7 +234,7 @@ public class SettleOrderApi {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/invalid")
+    @PostMapping(value = "/invalid")
     public BaseOutput<?> invalid(@RequestBody InvalidRequestDto param) {
         checkInvalidParam(param);
         settleOrderService.invalid(param);

@@ -10,9 +10,7 @@ import com.dili.settlement.service.CustomerAccountService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class CustomerAccountApi {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/list")
+    @PostMapping(value = "/list")
     public BaseOutput<List<CustomerAccount>> list(@RequestBody CustomerAccount query) {
         return BaseOutput.success().setData(customerAccountService.listByExample(query));
     }
@@ -44,7 +42,7 @@ public class CustomerAccountApi {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/listPage")
+    @PostMapping(value = "/listPage")
     public PageOutput<List<CustomerAccount>> listPage(@RequestBody CustomerAccountDto query) {
         return customerAccountService.listPagination(query);
     }
@@ -53,7 +51,7 @@ public class CustomerAccountApi {
      * 定金转移
      * @return
      */
-    @RequestMapping(value = "/transfer")
+    @PostMapping(value = "/transfer")
     public BaseOutput<?> transfer(@RequestBody EarnestTransferDto transferDto) {
         if (transferDto.getAccountId() == null) {
             return BaseOutput.failure("转出账户ID为空");
@@ -88,7 +86,7 @@ public class CustomerAccountApi {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getById")
+    @GetMapping(value = "/getById")
     public BaseOutput<CustomerAccount> getById(Long id) {
         if (id == null) {
             return BaseOutput.failure("客户定金账户ID为空");
@@ -100,7 +98,7 @@ public class CustomerAccountApi {
      * 分页查询账户流水列表
      * @return
      */
-    @RequestMapping(value = "/listSerialPage")
+    @PostMapping(value = "/listSerialPage")
     public PageOutput<List<CustomerAccountSerialDto>> listSerialPage(@RequestBody CustomerAccountSerialDto query) {
         return customerAccountSerialService.listPagination(query);
     }

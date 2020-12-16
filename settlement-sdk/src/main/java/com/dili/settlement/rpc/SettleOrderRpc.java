@@ -6,8 +6,8 @@ import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,15 +23,15 @@ public interface SettleOrderRpc {
      * @param query
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/list")
-    BaseOutput<List<SettleOrder>> list(@RequestBody SettleOrderDto query);
+    @PostMapping(value = "/api/settleOrder/list")
+    BaseOutput<List<SettleOrder>> list(SettleOrderDto query);
 
     /**
      * 提交结算单接口
      * @param settleOrderDto
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/submit")
+    @PostMapping(value = "/api/settleOrder/submit")
     BaseOutput<SettleOrder> submit(SettleOrderDto settleOrderDto);
 
     /**
@@ -39,7 +39,7 @@ public interface SettleOrderRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/cancelById")
+    @GetMapping(value = "/api/settleOrder/cancelById")
     BaseOutput<String> cancelById(@RequestParam Long id);
 
     /**
@@ -47,7 +47,7 @@ public interface SettleOrderRpc {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/cancelByCode")
+    @GetMapping(value = "/api/settleOrder/cancelByCode")
     BaseOutput<String> cancelByCode(@RequestParam String code);
 
     /**
@@ -56,7 +56,7 @@ public interface SettleOrderRpc {
      * @param orderCode 订单号
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/cancel")
+    @GetMapping(value = "/api/settleOrder/cancel")
     BaseOutput<String> cancel(@RequestParam Long appId, @RequestParam String orderCode);
 
     /**
@@ -64,7 +64,7 @@ public interface SettleOrderRpc {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/getById")
+    @GetMapping(value = "/api/settleOrder/getById")
     BaseOutput<SettleOrder> getById(@RequestParam Long id);
 
     /**
@@ -72,7 +72,7 @@ public interface SettleOrderRpc {
      * @param code
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/getByCode")
+    @GetMapping(value = "/api/settleOrder/getByCode")
     BaseOutput<SettleOrder> getByCode(@RequestParam String code);
 
     /**
@@ -81,7 +81,7 @@ public interface SettleOrderRpc {
      * @param orderCode 业务编号
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/get")
+    @GetMapping(value = "/api/settleOrder/get")
     BaseOutput<SettleOrder> get(@RequestParam Long appId, @RequestParam String orderCode);
 
     /**
@@ -89,21 +89,21 @@ public interface SettleOrderRpc {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/invalid")
+    @PostMapping(value = "/api/settleOrder/invalid")
     BaseOutput<?> invalid(InvalidRequestDto param);
 
     /**
      * @param settleOrderCode 根据结算单号查询结算明细列表
      * @return
      */
-    @RequestMapping(value = "/api/settleOrder/listByCode")
+    @GetMapping(value = "/api/settleOrder/listByCode")
     BaseOutput<List<SettleWayDetail>> listByCode(@RequestParam String settleOrderCode);
 
     /**
      * 【查询】结算单结算详情 ---根据结算编号code查询
-     * @param code 结算单code
+     * @param settleOrderCode 结算单code
      * @return
      */
-    @RequestMapping(value = "/api/settleWayDetail/listByCode")
-    BaseOutput<List<SettleWayDetail>> listSettleWayDetailsByCode(@RequestParam String code);
+    @GetMapping(value = "/api/settleWayDetail/listBySettleOrderCode")
+    BaseOutput<List<SettleWayDetail>> listSettleWayDetailsByCode(@RequestParam String settleOrderCode);
 }

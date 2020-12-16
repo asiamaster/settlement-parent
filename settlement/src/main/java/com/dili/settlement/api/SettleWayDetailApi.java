@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.service.SettleWayDetailService;
 import com.dili.ss.domain.BaseOutput;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,8 +25,8 @@ public class SettleWayDetailApi {
      * @param settleOrderCode 根据结算单号查询结算明细列表
      * @return
      */
-    @RequestMapping(value = "/listByCode")
-    public BaseOutput<List<SettleWayDetail>> listByCode(String settleOrderCode) {
+    @GetMapping(value = "/listBySettleOrderCode")
+    public BaseOutput<List<SettleWayDetail>> listBySettleOrderCode(String settleOrderCode) {
         if (StrUtil.isBlank(settleOrderCode)) {
             return BaseOutput.failure("结算单号为空");
         }
