@@ -109,7 +109,7 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
-            feeItemList.add(FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getFeeType(), settleFeeItem.getFeeName()));
+            feeItemList.add(FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getItemId(), settleFeeItem.getItemName()));
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();

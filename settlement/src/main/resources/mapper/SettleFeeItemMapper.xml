@@ -8,6 +8,8 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="settle_order_id" jdbcType="BIGINT" property="settleOrderId" />
     <result column="settle_order_code" jdbcType="VARCHAR" property="settleOrderCode" />
+    <result column="item_id" jdbcType="BIGINT" property="itemId" />
+    <result column="item_name" jdbcType="VARCHAR" property="itemName" />
     <result column="fee_type" jdbcType="INTEGER" property="feeType" />
     <result column="fee_name" jdbcType="VARCHAR" property="feeName" />
     <result column="amount" jdbcType="BIGINT" property="amount" />
@@ -16,7 +18,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `settle_order_id`, `settle_order_code`, `fee_type`, `fee_name`, `amount`
+    `id`, `settle_order_id`, `settle_order_code`, `item_id`, `item_name`, `fee_type`, `fee_name`, `amount`
   </sql>
 
   <!-- 根据结算单ID查询费用项列表 -->

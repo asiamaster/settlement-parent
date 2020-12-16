@@ -35,6 +35,18 @@ public class SettleFeeItem extends BaseDomain {
     private String settleOrderCode;
 
     /**
+     * 费用项ID
+     */
+    @Column(name = "`item_id`")
+    private Long itemId;
+
+    /**
+     * 费用项名称
+     */
+    @Column(name = "`item_name`")
+    private String itemName;
+
+    /**
      * 费用类型
      */
     @Column(name = "`fee_type`")
@@ -106,6 +118,38 @@ public class SettleFeeItem extends BaseDomain {
      */
     public void setSettleOrderCode(String settleOrderCode) {
         this.settleOrderCode = settleOrderCode;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getItemId() {
+        return itemId;
+    }
+
+    /**
+     * setter
+     * @param itemId
+     */
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public String getItemName() {
+        return itemName;
+    }
+
+    /**
+     * setter
+     * @param itemName
+     */
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     /**

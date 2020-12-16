@@ -9,7 +9,7 @@ public class FeeItemDto {
     /** 金额*/
     private Long amount;
     /** 费用类型*/
-    private Integer type;
+    private Long type;
     /** 费用类型名称*/
     private String typeName;
 
@@ -21,11 +21,11 @@ public class FeeItemDto {
         this.amount = amount;
     }
 
-    public Integer getType() {
+    public Long getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(Long type) {
         this.type = type;
     }
 
@@ -41,7 +41,7 @@ public class FeeItemDto {
      * 创建费用参数
      * @return
      */
-    public static FeeItemDto build(Long amount, Integer type, String typeName) {
+    public static FeeItemDto build(Long amount, Long type, String typeName) {
         FeeItemDto feeItem = new FeeItemDto();
         feeItem.setAmount(amount);
         feeItem.setType(type);
