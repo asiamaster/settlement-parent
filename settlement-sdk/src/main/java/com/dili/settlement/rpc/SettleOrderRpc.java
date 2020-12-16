@@ -93,13 +93,6 @@ public interface SettleOrderRpc {
     BaseOutput<?> invalid(InvalidRequestDto param);
 
     /**
-     * @param settleOrderCode 根据结算单号查询结算明细列表
-     * @return
-     */
-    @GetMapping(value = "/api/settleOrder/listByCode")
-    BaseOutput<List<SettleWayDetail>> listByCode(@RequestParam String settleOrderCode);
-
-    /**
      * 【查询】结算单结算详情 ---根据结算编号code查询
      * @param settleOrderCode 结算单code
      * @return
