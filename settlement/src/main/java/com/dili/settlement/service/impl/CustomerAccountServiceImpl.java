@@ -1,5 +1,6 @@
 package com.dili.settlement.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.dto.CustomerAccountDto;
@@ -238,11 +239,11 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
 
         LocalDateTime localDateTime = DateUtil.nowDateTime();
         getActualDao().updateAmount(payAccount);
-        CustomerAccountSerial payAccountSerial = CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.TRANSFER_OUT.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("转出到：%s；转移原因：%s；", receiveAccount.getCustomerName(), transferDto.getNotes()));
+        CustomerAccountSerial payAccountSerial = CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.TRANSFER_OUT.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("转出到：%s；转移原因：%s；", receiveAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
         payAccountSerial.setCustomerAccountId(payAccount.getId());
         customerAccountSerialService.insertSelective(payAccountSerial);
         getActualDao().updateAmount(receiveAccount);
-        CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("来源：%s；转移原因：%s；", payAccount.getCustomerName(), transferDto.getNotes()));
+        CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("来源：%s；转移原因：%s；", payAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
         receiveAccountSerial.setCustomerAccountId(receiveAccount.getId());
         customerAccountSerialService.insertSelective(receiveAccountSerial);
     }
