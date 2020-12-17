@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.pay.FeeItemDto;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.handler.ServiceNameHolder;
@@ -113,5 +114,17 @@ public abstract class SettleServiceImpl implements SettleService {
     @Override
     public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param) {
         return;
+    }
+
+    /**
+     * 用于处理支付费用项添加 为0则不添加
+     * @param feeItemList
+     * @param item
+     */
+    protected void addFeeItem(List<FeeItemDto> feeItemList, FeeItemDto item) {
+        if (item.getAmount() == 0L) {
+            return;
+        }
+        feeItemList.add(item);
     }
 }
