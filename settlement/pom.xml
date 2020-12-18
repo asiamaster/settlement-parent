@@ -208,7 +208,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
+            <artifactId>feign-okhttp</artifactId>
         </dependency>
         <!-- 内部包  -->
         <dependency>
