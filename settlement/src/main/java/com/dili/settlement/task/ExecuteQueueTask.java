@@ -64,8 +64,5 @@ public class ExecuteQueueTask extends QueueTask implements Callable<Boolean> {
         if (!baseOutput.isSuccess()) {
             throw new BusinessException("", baseOutput.getMessage());
         }
-        if (!Boolean.TRUE.equals(baseOutput.getData())) {
-            throw new BusinessException("", "业务系统返回FALSE");
-        }
     }
 }
