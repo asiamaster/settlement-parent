@@ -256,6 +256,9 @@
             if (e.target.type === 'checkbox') {
                 return;
             }
+            if ($(e.target).prop('tagName').toLowerCase() === 'a') {
+                return;
+            }
             let mchId = $(this).closest('table').attr("bind-mchId");
             if (!$('#mchRadio_' + mchId).prop("checked")) {
                 return;
