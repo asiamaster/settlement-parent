@@ -1,5 +1,6 @@
 package com.dili.settlement.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
@@ -76,8 +77,8 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
     @Transactional
     @Override
     public void handle(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
-        if (customerId == null) {
-            throw new BusinessException("", "客户ID为空");
+        if ((amount == 0L && CollUtil.isEmpty(accountSerialList)) || customerId == null) {
+            return;
         }
         CustomerAccount customerAccount = lockGet(mchId, customerId);
         if (customerAccount == null) {
@@ -104,8 +105,8 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
     @Transactional
     @Override
     public void handleRefund(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
-        if (customerId == null) {
-            throw new BusinessException("", "客户ID为空");
+        if ((amount == 0L && CollUtil.isEmpty(accountSerialList)) || customerId == null) {
+            return;
         }
         CustomerAccount customerAccount = lockGet(mchId, customerId);
         if (customerAccount == null) {
