@@ -48,7 +48,7 @@ public interface CustomerAccountRpc {
      * @return
      */
     @GetMapping(value = "/api/customerAccount/getById")
-    BaseOutput<CustomerAccount> getById(@RequestParam Long id);
+    BaseOutput<CustomerAccount> getById(@RequestParam("id") Long id);
 
     /**
      * 分页查询账户流水列表

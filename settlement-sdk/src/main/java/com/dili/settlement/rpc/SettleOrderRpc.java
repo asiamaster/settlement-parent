@@ -40,7 +40,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/cancelById")
-    BaseOutput<String> cancelById(@RequestParam Long id);
+    BaseOutput<String> cancelById(@RequestParam("id") Long id);
 
     /**
      * 根据结算单编号取消
@@ -48,7 +48,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/cancelByCode")
-    BaseOutput<String> cancelByCode(@RequestParam String code);
+    BaseOutput<String> cancelByCode(@RequestParam("code") String code);
 
     /**
      * 根据appId businessCode取消
@@ -57,7 +57,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/cancel")
-    BaseOutput<String> cancel(@RequestParam Long appId, @RequestParam String orderCode);
+    BaseOutput<String> cancel(@RequestParam("appId") Long appId, @RequestParam("orderCode") String orderCode);
 
     /**
      * 根据id查询结算单
@@ -65,7 +65,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/getById")
-    BaseOutput<SettleOrder> getById(@RequestParam Long id);
+    BaseOutput<SettleOrder> getById(@RequestParam("id") Long id);
 
     /**
      * 根据结算单号查询结算单
@@ -73,7 +73,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/getByCode")
-    BaseOutput<SettleOrder> getByCode(@RequestParam String code);
+    BaseOutput<SettleOrder> getByCode(@RequestParam("code") String code);
 
     /**
      * 根据appId businessCode 查询结算单
@@ -82,7 +82,7 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleOrder/get")
-    BaseOutput<SettleOrder> get(@RequestParam Long appId, @RequestParam String orderCode);
+    BaseOutput<SettleOrder> get(@RequestParam("appId") Long appId, @RequestParam("orderCode") String orderCode);
 
     /**
      * 用于作废业务接口
@@ -98,5 +98,5 @@ public interface SettleOrderRpc {
      * @return
      */
     @GetMapping(value = "/api/settleWayDetail/listBySettleOrderCode")
-    BaseOutput<List<SettleWayDetail>> listSettleWayDetailsByCode(@RequestParam String settleOrderCode);
+    BaseOutput<List<SettleWayDetail>> listSettleWayDetailsByCode(@RequestParam("settleOrderCode") String settleOrderCode);
 }
