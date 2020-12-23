@@ -171,11 +171,12 @@ public class SettleOrderController extends AbstractController {
         modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
         modelMap.addAttribute("mchId", settleOrderDto.getMchId());
         modelMap.addAttribute("deductEnable", EnableEnum.NO.getCode());
-        prepareDeductInfo(settleOrderDto, settleAmountDto, modelMap);
         modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
         modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
         modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
         modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
+        //计算抵扣相关并赋值相关数据
+        prepareDeductInfo(settleOrderDto, settleAmountDto, modelMap);
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.payChooseList(userTicket.getFirmId(), settleOrderDto.getIdList().size() > 1);
         modelMap.addAttribute("wayList", wayList);
