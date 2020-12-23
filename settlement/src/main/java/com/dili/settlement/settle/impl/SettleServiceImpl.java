@@ -11,7 +11,6 @@ import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.settlement.rpc.PayRpc;
-import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.CustomerAccountService;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleFeeItemService;
@@ -19,6 +18,7 @@ import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.settle.SettleService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.exception.BusinessException;
+import com.dili.uid.sdk.rpc.feign.UidFeignRpc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -45,7 +45,7 @@ public abstract class SettleServiceImpl implements SettleService {
     protected PayRpc payRpc;
 
     @Autowired
-    protected UidRpc uidRpc;
+    protected UidFeignRpc uidFeignRpc;
 
     @Autowired
     protected AccountQueryRpc accountQueryRpc;
@@ -100,7 +100,7 @@ public abstract class SettleServiceImpl implements SettleService {
         SettleOrder reverseOrder = new SettleOrder();
         BeanUtil.copyProperties(po, reverseOrder);
         reverseOrder.setId(null);
-        reverseOrder.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(param.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
+        reverseOrder.setCode(RpcResultResolver.resolver(uidFeignRpc.getBizNumber(param.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
         reverseOrder.setOrderCode(po.getCode());
         reverseOrder.setOperatorId(param.getOperatorId());
         reverseOrder.setOperatorName(param.getOperatorName());

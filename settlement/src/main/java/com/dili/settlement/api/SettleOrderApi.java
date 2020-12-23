@@ -12,13 +12,11 @@ import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
-import com.dili.settlement.rpc.UidRpc;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.dili.uid.sdk.rpc.feign.UidFeignRpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +28,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/settleOrder")
 public class SettleOrderApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SettleOrderApi.class);
 
     @Autowired
-    private UidRpc uidRpc;
+    private UidFeignRpc uidFeignRpc;
 
     @Autowired
     private SettleOrderService settleOrderService;
@@ -60,7 +57,7 @@ public class SettleOrderApi {
     @PostMapping(value = "/submit")
     public BaseOutput<SettleOrder> submit(@RequestBody SettleOrderDto settleOrderDto) {
         validateSaveParams(settleOrderDto);
-        settleOrderDto.setCode(RpcResultResolver.resolver(uidRpc.bizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
+        settleOrderDto.setCode(RpcResultResolver.resolver(uidFeignRpc.getBizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
         settleOrderDto.setState(SettleStateEnum.WAIT_DEAL.getCode());
         settleOrderDto.setSubmitTime(DateUtil.nowDateTime());
         settleOrderDto.setDeductEnable(settleOrderDto.getDeductEnable() == null ? EnableEnum.NO.getCode() : settleOrderDto.getDeductEnable());
