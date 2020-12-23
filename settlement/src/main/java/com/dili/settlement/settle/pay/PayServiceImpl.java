@@ -68,7 +68,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
                     throw new BusinessException("", "总金额与抵扣金额之差与实际结算金额不相符");
                 }
                 //构建结算相关信息
-                settleDataDto = prepareSettleData(settleOrderList, settleOrderDto, settleOrderDto.getDeductAmount());
+                settleDataDto = prepareSettleData(settleOrderList, settleOrderDto, settleOrderDto.getTotalDeductAmount());
             } else {//不抵扣 结算金额即为应缴总额
                 if (!settleOrderDto.getTotalAmount().equals(settleOrderDto.getSettleAmount())) {
                     throw new BusinessException("", "总金额与实际结算金额不相符");
