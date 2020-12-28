@@ -1,6 +1,9 @@
 <script>
     /** 业务编号格式器 */
     function businessCodeFormatter(value, row, index) {
+        if (!value) {
+            return "-";
+        }
         return '<a href="javascript:;" onclick="showBusinessDetailHandler('+row.id+','+row.reverse+');return false;">'+value+'</a>';
     }
 
