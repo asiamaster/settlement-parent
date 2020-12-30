@@ -58,6 +58,8 @@
     <!-- 查询列表 -->
     <select id="list" parameterType="com.dili.settlement.dto.CustomerAccountSerialDto" resultType="com.dili.settlement.dto.CustomerAccountSerialDto">
         SELECT a.*,
+            b.market_id,
+            b.mch_id,
             b.customer_id,
             b.customer_name,
             b.customer_phone,
