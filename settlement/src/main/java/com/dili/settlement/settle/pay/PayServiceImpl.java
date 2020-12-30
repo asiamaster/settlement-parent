@@ -156,7 +156,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
-            businessCodeMap.put(settleOrder.getId(), settleOrder.getBusinessCode());
+            businessCodeMap.put(settleOrder.getId(), StrUtil.isBlank(settleOrder.getBusinessCode()) ? "" : settleOrder.getBusinessCode());
             if (Integer.valueOf(EnableEnum.NO.getCode()).equals(settleOrderDto.getDeductEnable())) {
                 continue;
             }

@@ -1,5 +1,6 @@
 package com.dili.settlement.settle.refund;
 
+import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
@@ -105,7 +106,7 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
-            businessCodeMap.put(settleOrder.getId(), settleOrder.getBusinessCode());
+            businessCodeMap.put(settleOrder.getId(), StrUtil.isBlank(settleOrder.getBusinessCode()) ? "" : settleOrder.getBusinessCode());
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
