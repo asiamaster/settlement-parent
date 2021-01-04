@@ -21,7 +21,9 @@ import com.dili.settlement.settle.RefundService;
 import com.dili.settlement.settle.impl.SettleServiceImpl;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.exception.BusinessException;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
@@ -54,6 +56,8 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         validParamsSpecial(settleOrderDto);
     }
 
+    @GlobalTransactional
+    @Transactional
     @Override
     public List<SettleOrder> settle(SettleOrderDto settleOrderDto) {
         //验证参数
