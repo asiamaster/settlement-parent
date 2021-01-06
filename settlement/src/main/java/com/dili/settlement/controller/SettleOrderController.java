@@ -111,7 +111,7 @@ public class SettleOrderController extends AbstractController {
     public String listPayOrders(String trailerNumber, ModelMap modelMap) {
         List<SettleOrder> settleOrderList = listSettleOrders(trailerNumber, SettleTypeEnum.PAY.getCode());
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", items);
+        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
         return "pay/table";
     }
 
