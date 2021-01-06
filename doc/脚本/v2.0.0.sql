@@ -173,6 +173,7 @@ ALTER TABLE settle_order ADD COLUMN mch_name VARCHAR(20) COMMENT '商户名称';
 ALTER TABLE settle_order ADD COLUMN customer_certificate VARCHAR(40) COMMENT '客户证件号';
 ALTER TABLE settle_order ADD COLUMN deduct_amount BIGINT DEFAULT 0 COMMENT '抵扣金额';
 ALTER TABLE settle_order MODIFY COLUMN business_type VARCHAR(120);
+ALTER TABLE settle_order MODIFY COLUMN serial_number VARCHAR(100);
 
 CREATE INDEX ix_settle_code ON settle_order(`code`);
 
