@@ -38,11 +38,13 @@
                 $('#btn-swipe-card').parent().addClass("d-none");
                 break;
             case "2":
-                $('#keyword').val("").prop("placeholder", "请输入证件号或刷卡");
+                $('#keyword').val("").prop("placeholder", "请输入证件号或刷身份证");
+                $('#btn-swipe-card').html("刷身份证");
                 $('#btn-swipe-card').parent().removeClass("d-none");
                 break;
             case "3":
                 $('#keyword').val("").prop("placeholder", "请输入园区卡号或刷卡");
+                $('#btn-swipe-card').html("刷卡");
                 $('#btn-swipe-card').parent().removeClass("d-none");
                 break;
             case "4":
