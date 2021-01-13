@@ -135,10 +135,10 @@
       and `operator_name` like concat('%',#{operatorNameMatch},'%')
     </if>
     <if test="chargeDateStart != null and chargeDateStart !=''">
-      and (`charge_date` &gt;= #{chargeDateStart} or id in (select order_id from settle_way_detail where `charge_date` &gt;= #{chargeDateStart}))
+      and (`charge_date` &gt;= #{chargeDateStart} or id in (select settle_order_id from settle_way_detail where `charge_date` &gt;= #{chargeDateStart}))
     </if>
     <if test="chargeDateEnd != null and chargeDateEnd != ''">
-      and (`charge_date` &lt;= #{chargeDateEnd} or id in (select order_id from settle_way_detail where `charge_date` &lt;= #{chargeDateEnd}))
+      and (`charge_date` &lt;= #{chargeDateEnd} or id in (select settle_order_id from settle_way_detail where `charge_date` &lt;= #{chargeDateEnd}))
     </if>
   </sql>
 
