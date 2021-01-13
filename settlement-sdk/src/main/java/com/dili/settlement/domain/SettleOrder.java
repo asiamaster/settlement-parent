@@ -141,6 +141,10 @@ public class SettleOrder extends BaseDomain {
 
     /** 交易卡客户姓名 */
     private String tradeCustomerName;
+    /**
+     * 交易客户编号
+     */
+    private String tradeCustomerCode;
 
     /** 交易卡号 */
     private String tradeCardNo;
@@ -156,6 +160,13 @@ public class SettleOrder extends BaseDomain {
 
     /** 挂号(沈阳特有)*/
     private String trailerNumber;
+
+    /** 持卡人姓名 */
+    private String holdName;
+    /** 持卡人证件号 */
+    private String holdCertificateNumber;
+    /** 持卡人联系电话 */
+    private String holdContactsPhone;
 
     /**
      * @return id
@@ -693,6 +704,14 @@ public class SettleOrder extends BaseDomain {
         this.tradeCustomerName = tradeCustomerName;
     }
 
+    public String getTradeCustomerCode() {
+        return tradeCustomerCode;
+    }
+
+    public void setTradeCustomerCode(String tradeCustomerCode) {
+        this.tradeCustomerCode = tradeCustomerCode;
+    }
+
     public String getTradeCardNo() {
         return tradeCardNo;
     }
@@ -731,5 +750,29 @@ public class SettleOrder extends BaseDomain {
 
     public void setTrailerNumber(String trailerNumber) {
         this.trailerNumber = trailerNumber;
+    }
+
+    public String getHoldName() {
+        return holdName;
+    }
+
+    public void setHoldName(String holdName) {
+        this.holdName = holdName;
+    }
+
+    public String getHoldCertificateNumber() {
+        return holdCertificateNumber;
+    }
+
+    public void setHoldCertificateNumber(String holdCertificateNumber) {
+        this.holdCertificateNumber = holdCertificateNumber;
+    }
+
+    public String getHoldContactsPhone() {
+        return holdContactsPhone;
+    }
+
+    public void setHoldContactsPhone(String holdContactsPhone) {
+        this.holdContactsPhone = holdContactsPhone;
     }
 }

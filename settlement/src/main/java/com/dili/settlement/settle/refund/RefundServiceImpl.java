@@ -1,6 +1,5 @@
 package com.dili.settlement.settle.refund;
 
-import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
@@ -8,10 +7,7 @@ import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.dto.pay.CreateTradeRequestDto;
-import com.dili.settlement.dto.pay.CreateTradeResponseDto;
-import com.dili.settlement.dto.pay.FeeItemDto;
-import com.dili.settlement.dto.pay.TradeRequestDto;
+import com.dili.settlement.dto.pay.*;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
@@ -90,9 +86,12 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
             settleSpecial(settleOrderList, settleOrderDto);
             //提交交易
             TradeRequestDto tradeRequest = TradeRequestDto.build(createTradeResponseDto.getTradeId(), getTradeFundAccountId(settleOrderDto), getTradeChannel(), settleOrderDto.getTradePassword(), settleDataDto.getFeeItemList());
-            RpcResultResolver.resolver(payRpc.commitTrade(tradeRequest), ServiceNameHolder.PAY_SERVICE_NAME);
+            TradeResponseDto tradeResponseDto = RpcResultResolver.resolver(payRpc.commitTrade(tradeRequest), ServiceNameHolder.PAY_SERVICE_NAME);
 
             MchIdHolder.clear();
+
+            //保存流水
+            createAccountSerial(settleOrderDto, tradeResponseDto);
         }
         return settleOrderList;
     }
@@ -106,19 +105,19 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         List<RetryRecord> retryRecordList = new ArrayList<>(settleOrderList.size());
         List<FeeItemDto> feeItemList = new ArrayList<>();
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
-        Map<Long, String> businessCodeMap = new ConcurrentHashMap<>();
+        Map<Long, SettleOrder> settleOrderMap = new ConcurrentHashMap<>();
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
-            businessCodeMap.put(settleOrder.getId(), StrUtil.isBlank(settleOrder.getBusinessCode()) ? "" : settleOrder.getBusinessCode());
+            settleOrderMap.put(settleOrder.getId(), settleOrder);
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
-            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName()));
+            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|退款，退款单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getOrderCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
-                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.REFUND.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), businessCodeMap.get(settleFeeItem.getSettleOrderId())));
+                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.REFUND.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }
         }
         //设置值

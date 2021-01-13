@@ -17,6 +17,8 @@ public class InvalidRequestDto {
     private Long operatorId;
     /** 操作员姓名 */
     private String operatorName;
+    /** 操作员工号 */
+    private String operatorNo;
     /** 支付单号或退款单号列表 */
     private List<String> orderCodeList;
 
@@ -98,6 +100,22 @@ public class InvalidRequestDto {
      */
     public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public String getOperatorNo() {
+        return operatorNo;
+    }
+
+    /**
+     * setter
+     * @param operatorNo
+     */
+    public void setOperatorNo(String operatorNo) {
+        this.operatorNo = operatorNo;
     }
 
     /**

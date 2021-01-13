@@ -15,4 +15,6 @@ public interface ServiceNameHolder {
     String CUSTOMER_SERVICE_NAME = "customer-service";
     //账户
     String ACCOUNT_SERVICE_NAME = "account-service";
+    //资产服务
+    String ASSETS_SERVICE_NAME = "assets-service";
 }

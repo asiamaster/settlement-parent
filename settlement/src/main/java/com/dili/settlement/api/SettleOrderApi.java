@@ -83,7 +83,7 @@ public class SettleOrderApi {
         if (settleOrderDto.getAppId() == null) {
             throw new BusinessException("", "应用ID为空");
         }
-        if (settleOrderDto.getBusinessType() == null) {
+        if (StrUtil.isBlank(settleOrderDto.getBusinessType())) {
             throw new BusinessException("", "业务类型为空");
         }
         if (StrUtil.isBlank(settleOrderDto.getOrderCode())) {
@@ -257,6 +257,9 @@ public class SettleOrderApi {
         }
         if (StrUtil.isBlank(param.getOperatorName())) {
             throw new BusinessException("", "操作员姓名为空");
+        }
+        if (StrUtil.isBlank(param.getOperatorNo())) {
+            throw new BusinessException("", "操作员工号为空");
         }
         if (CollUtil.isEmpty(param.getOrderCodeList())) {
             throw new BusinessException("", "订单号列表为空");

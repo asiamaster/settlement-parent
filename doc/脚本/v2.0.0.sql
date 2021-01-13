@@ -172,6 +172,10 @@ ALTER TABLE settle_order ADD COLUMN mch_id bigint COMMENT '商户ID';
 ALTER TABLE settle_order ADD COLUMN mch_name VARCHAR(20) COMMENT '商户名称';
 ALTER TABLE settle_order ADD COLUMN customer_certificate VARCHAR(40) COMMENT '客户证件号';
 ALTER TABLE settle_order ADD COLUMN deduct_amount BIGINT DEFAULT 0 COMMENT '抵扣金额';
+ALTER TABLE settle_order ADD COLUMN hold_name VARCHAR(40) COMMENT '持卡人';
+ALTER TABLE settle_order ADD COLUMN hold_certificate_number VARCHAR(40) COMMENT '持卡人证件号';
+ALTER TABLE settle_order ADD COLUMN hold_contacts_phone VARCHAR(40) COMMENT '持卡人电话';
+ALTER TABLE settle_order ADD COLUMN trade_customer_code VARCHAR(20) COMMENT '交易客户编号';
 ALTER TABLE settle_order MODIFY COLUMN business_type VARCHAR(120);
 ALTER TABLE settle_order MODIFY COLUMN serial_number VARCHAR(100);
 

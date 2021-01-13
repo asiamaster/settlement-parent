@@ -14,6 +14,8 @@ public class FeeItemDto {
     private String typeName;
     /** 期初余额*/
     private Long balance;
+    /** 描述格式 业务类型,流水备注*/
+    private String description;
 
     public Long getAmount() {
         return amount;
@@ -47,15 +49,24 @@ public class FeeItemDto {
         this.balance = balance;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * 创建费用参数
      * @return
      */
-    public static FeeItemDto build(Long amount, Long type, String typeName) {
+    public static FeeItemDto build(Long amount, Long type, String typeName, String description) {
         FeeItemDto feeItem = new FeeItemDto();
         feeItem.setAmount(amount);
         feeItem.setType(type);
         feeItem.setTypeName(typeName);
+        feeItem.setDescription(description);
         return feeItem;
     }
 }

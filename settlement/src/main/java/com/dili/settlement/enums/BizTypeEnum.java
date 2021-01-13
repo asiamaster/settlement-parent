@@ -47,6 +47,15 @@ public enum BizTypeEnum {
         return null;
     }
 
+    public static String getNameByCode(String code) {
+        for (BizTypeEnum anEnum : BizTypeEnum.values()) {
+            if (anEnum.getCode().equals(code)) {
+                return anEnum.getName();
+            }
+        }
+        return "";
+    }
+
     public String getCode() {
         return code;
     }

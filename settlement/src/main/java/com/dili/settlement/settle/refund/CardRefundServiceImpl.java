@@ -46,6 +46,10 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         settleOrderDto.setTradeFundAccountId(cardResponseDto.getFundAccountId());
         settleOrderDto.setTradeCustomerId(cardResponseDto.getCustomerId());
         settleOrderDto.setTradeCustomerName(cardResponseDto.getCustomerName());
+        settleOrderDto.setTradeCustomerCode(cardResponseDto.getCustomerCode());
+        settleOrderDto.setHoldName(cardResponseDto.getHoldName());
+        settleOrderDto.setHoldCertificateNumber(cardResponseDto.getHoldCertificateNumber());
+        settleOrderDto.setHoldContactsPhone(cardResponseDto.getHoldContactsPhone());
     }
 
     /**
@@ -69,6 +73,9 @@ public class CardRefundServiceImpl extends RefundServiceImpl implements RefundSe
         settleOrder.setTradeCustomerId(settleOrderDto.getTradeCustomerId());
         settleOrder.setTradeCustomerName(settleOrderDto.getTradeCustomerName());
         settleOrder.setSerialNumber(settleOrderDto.getTradeCardNo() + "(" + settleOrderDto.getTradeCustomerName() + ")");
+        settleOrder.setHoldName(settleOrderDto.getHoldName());
+        settleOrder.setHoldCertificateNumber(settleOrderDto.getHoldCertificateNumber());
+        settleOrder.setHoldContactsPhone(settleOrderDto.getHoldContactsPhone());
     }
 
     @Override

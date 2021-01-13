@@ -82,6 +82,9 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         settleOrder.setTradeCustomerId(settleOrderDto.getTradeCustomerId());
         settleOrder.setTradeCustomerName(settleOrderDto.getTradeCustomerName());
         settleOrder.setSerialNumber(settleOrderDto.getTradeCardNo() + "(" + settleOrderDto.getTradeCustomerName() + ")");
+        settleOrder.setHoldName(settleOrderDto.getHoldName());
+        settleOrder.setHoldCertificateNumber(settleOrderDto.getHoldCertificateNumber());
+        settleOrder.setHoldContactsPhone(settleOrderDto.getHoldContactsPhone());
     }
 
     @Override

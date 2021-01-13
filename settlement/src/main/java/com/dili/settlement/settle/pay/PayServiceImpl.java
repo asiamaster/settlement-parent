@@ -1,6 +1,7 @@
 package com.dili.settlement.settle.pay;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.bean.BeanUtil;
+import com.dili.assets.sdk.dto.BusinessChargeItemDto;
 import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
@@ -91,15 +92,20 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             settleSpecial(settleOrderList, settleOrderDto);
             //提交交易
             TradeRequestDto tradeRequest = TradeRequestDto.build(createTradeResponseDto.getTradeId(), getTradeFundAccountId(settleOrderDto), getTradeChannel(), settleOrderDto.getTradePassword(), settleDataDto.getFeeItemList(), settleDataDto.getDeductFeeItemList());
-            RpcResultResolver.resolver(payRpc.commitTrade(tradeRequest), ServiceNameHolder.PAY_SERVICE_NAME);
+            TradeResponseDto tradeResponseDto = RpcResultResolver.resolver(payRpc.commitTrade(tradeRequest), ServiceNameHolder.PAY_SERVICE_NAME);
 
             MchIdHolder.clear();
+
+            //保存流水
+            createAccountSerial(settleOrderDto, tradeResponseDto);
+
         }
         return settleOrderList;
     }
 
     /**
      * 准备结算数据
+     *
      * @param settleOrderList
      * @param settleOrderDto
      * @return
@@ -113,19 +119,19 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         List<RetryRecord> retryRecordList = new ArrayList<>(settleOrderList.size());
         List<FeeItemDto> feeItemList = new ArrayList<>();
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
-        Map<Long, String> businessCodeMap = new ConcurrentHashMap<>();
+        Map<Long, SettleOrder> settleOrderMap = new ConcurrentHashMap<>();
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
-            businessCodeMap.put(settleOrder.getId(), StrUtil.isBlank(settleOrder.getBusinessCode()) ? "" : settleOrder.getBusinessCode());
+            settleOrderMap.put(settleOrder.getId(), settleOrder);
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
-            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName()));
+            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
-                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), businessCodeMap.get(settleFeeItem.getSettleOrderId())));
+                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }
         }
         //设置值
@@ -138,6 +144,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
 
     /**
      * 准备结算数据
+     *
      * @param settleOrderList
      * @param settleOrderDto
      * @return
@@ -152,11 +159,11 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         List<FeeItemDto> feeItemList = new ArrayList<>();
         List<FeeItemDto> deductFeeItemList = new ArrayList<>();
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
-        Map<Long, String> businessCodeMap = new ConcurrentHashMap<>();
+        Map<Long, SettleOrder> settleOrderMap = new ConcurrentHashMap<>();
         for (SettleOrder settleOrder : settleOrderList) {//构建结算单信息以及回调记录列表
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
-            businessCodeMap.put(settleOrder.getId(), StrUtil.isBlank(settleOrder.getBusinessCode()) ? "" : settleOrder.getBusinessCode());
+            settleOrderMap.put(settleOrder.getId(), settleOrder);
             if (Integer.valueOf(EnableEnum.NO.getCode()).equals(settleOrderDto.getDeductEnable())) {
                 continue;
             }
@@ -167,16 +174,20 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             long deductAmount = settleOrder.getAmount() >= totalDeductAmount ? totalDeductAmount : settleOrder.getAmount();
             totalDeductAmount -= deductAmount;
             settleOrder.setDeductAmount(deductAmount);
-            addFeeItem(deductFeeItemList, FeeItemDto.build(deductAmount, ChargeItemEnum.定金.getId(), ChargeItemEnum.定金.getName()));
+            BusinessChargeItemDto businessChargeItem = findOneChargeItem(settleOrder.getMarketId(), settleOrder.getBusinessType(), EARNEST_CHARGE_ITEM_CODE);
+            if (businessChargeItem == null) {
+                throw new BusinessException("", "未查询到定金费用项");
+            }
+            addFeeItem(deductFeeItemList, FeeItemDto.build(deductAmount, businessChargeItem.getId(), businessChargeItem.getChargeItem(), String.format("%s|定金抵扣充值，关联%s单号%s", settleOrder.getBusinessType(), BizTypeEnum.getNameByCode(settleOrder.getBusinessType()), settleOrder.getBusinessCode())));
             accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.DEDUCT.getCode(), deductAmount, localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleOrder.getCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrder.getBusinessCode()));
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
-            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName()));
+            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
-                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), businessCodeMap.get(settleFeeItem.getSettleOrderId())));
+                accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }
         }
         //设置值
@@ -207,12 +218,16 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
         if (po.getDeductAmount() != null && po.getDeductAmount() > 0L) {
             earnestAmount = po.getDeductAmount();
-            addFeeItem(deductFeeItemList, FeeItemDto.build(po.getDeductAmount(), ChargeItemEnum.定金.getId(), ChargeItemEnum.定金.getName()));
+            BusinessChargeItemDto businessChargeItem = findOneChargeItem(po.getMarketId(), po.getBusinessType(), EARNEST_CHARGE_ITEM_CODE);
+            if (businessChargeItem == null) {
+                throw new BusinessException("", "未查询到定金费用项");
+            }
+            addFeeItem(deductFeeItemList, FeeItemDto.build(po.getDeductAmount(), businessChargeItem.getId(), businessChargeItem.getChargeItem(), String.format("%s|作废，%s单号%s", po.getBusinessType(), BizTypeEnum.getNameByCode(po.getBusinessType()), po.getBusinessCode())));
             accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.INVALID_IN.getCode(), po.getDeductAmount(), reverseOrder.getOperateTime(), reverseOrder.getOperatorId(), reverseOrder.getOperatorName(), reverseOrder.getCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), po.getBusinessCode()));
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(po.getId());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//构建流水、退款费用项列表
-            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName()));
+            addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|作废，%s单号%s", po.getBusinessType(), BizTypeEnum.getNameByCode(po.getBusinessType()), po.getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
                 earnestAmount -= settleFeeItem.getAmount();
@@ -225,8 +240,14 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         MchIdHolder.set(po.getMchId());
         //提交交易
         RefundRequestDto refundRequestDto = RefundRequestDto.build(po.getTradeNo(), po.getAmount(), feeItemList, deductFeeItemList);
-        RpcResultResolver.resolver(payRpc.refundTrade(refundRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
+        TradeResponseDto tradeResponseDto = RpcResultResolver.resolver(payRpc.refundTrade(refundRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
 
         MchIdHolder.clear();
+
+        //保存流水
+        SettleOrderDto settleOrderDto = new SettleOrderDto();
+        BeanUtil.copyProperties(po, settleOrderDto);
+        settleOrderDto.setOperatorNo(param.getOperatorNo());
+        createAccountSerial(settleOrderDto, tradeResponseDto);
     }
 }
