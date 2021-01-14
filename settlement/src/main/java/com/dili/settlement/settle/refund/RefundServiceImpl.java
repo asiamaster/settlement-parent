@@ -1,5 +1,6 @@
 package com.dili.settlement.settle.refund;
 
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
@@ -8,7 +9,10 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.pay.*;
-import com.dili.settlement.enums.*;
+import com.dili.settlement.enums.ActionEnum;
+import com.dili.settlement.enums.RelationTypeEnum;
+import com.dili.settlement.enums.SceneEnum;
+import com.dili.settlement.enums.TradeTypeEnum;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.service.RetryRecordService;
@@ -115,7 +119,7 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|退款，退款单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getOrderCode())));
             //如果有定金,则计算定金总额以及构建流水
-            if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
+            if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
                 accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.REFUND.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }

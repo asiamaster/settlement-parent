@@ -2,6 +2,7 @@ package com.dili.settlement.settle.pay;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.dili.assets.sdk.dto.BusinessChargeItemDto;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.settlement.component.MchIdHolder;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.domain.RetryRecord;
@@ -129,7 +130,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
-            if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
+            if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
                 accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }
@@ -185,7 +186,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
-            if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
+            if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
                 earnestAmount += settleFeeItem.getAmount();
                 accountSerialList.add(CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.PAYMENT.getCode(), settleFeeItem.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), settleFeeItem.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode()));
             }
@@ -229,7 +230,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//构建流水、退款费用项列表
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|作废，%s单号%s", po.getBusinessType(), BizTypeEnum.getNameByCode(po.getBusinessType()), po.getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
-            if (Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(settleFeeItem.getFeeType())) {
+            if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
                 earnestAmount -= settleFeeItem.getAmount();
                 accountSerialList.add(CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.INVALID_OUT.getCode(), settleFeeItem.getAmount(), reverseOrder.getOperateTime(), reverseOrder.getOperatorId(), reverseOrder.getOperatorName(), reverseOrder.getCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), po.getBusinessCode()));
             }

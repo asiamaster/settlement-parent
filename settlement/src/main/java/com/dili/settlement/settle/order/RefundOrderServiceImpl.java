@@ -1,9 +1,9 @@
 package com.dili.settlement.settle.order;
 
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.FeeTypeEnum;
 import com.dili.settlement.enums.SettleTypeEnum;
 import com.dili.settlement.settle.OrderService;
 import com.dili.settlement.settle.impl.OrderServiceImpl;
@@ -21,7 +21,7 @@ public class RefundOrderServiceImpl extends OrderServiceImpl implements OrderSer
     public void saveSpecial(SettleOrder settleOrder, SettleOrderDto settleOrderDto) {
         long earnestAmount = 0L;
         for (SettleFeeItem item : settleOrderDto.getSettleFeeItemList()) {
-            if (!Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(item.getFeeType())) {
+            if (!BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(item.getFeeType())) {
                 continue;
             }
             earnestAmount += item.getAmount();
@@ -34,7 +34,7 @@ public class RefundOrderServiceImpl extends OrderServiceImpl implements OrderSer
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(settleOrder.getId());
         long earnestAmount = 0L;
         for (SettleFeeItem item : settleFeeItemList) {
-            if (!Integer.valueOf(FeeTypeEnum.定金.getCode()).equals(item.getFeeType())) {
+            if (!BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(item.getFeeType())) {
                 continue;
             }
             earnestAmount += item.getAmount();
