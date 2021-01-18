@@ -3,6 +3,7 @@ package com.dili.settlement.settle.refund;
 import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.pay.TradeResponseDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.enums.TradeChannelEnum;
 import com.dili.settlement.settle.RefundService;
@@ -41,6 +42,11 @@ public class BankRefundServiceImpl extends RefundServiceImpl implements RefundSe
     @Override
     public Integer getTradeChannel() {
         return TradeChannelEnum.E_BANK.getCode();
+    }
+
+    @Override
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+        return;
     }
 
     @Override

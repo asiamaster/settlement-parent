@@ -4,6 +4,10 @@
     <input type="hidden" name="tradeAvailableAmount" id="tradeAvailableAmount"/>
     <input type="hidden" name="tradeCustomerId" id="tradeCustomerId"/>
     <input type="hidden" name="tradeCardNo" id="tradeCardNo"/>
+    <input type="hidden" name="tradeCustomerCode" id="tradeCustomerCode"/>
+    <input type="hidden" name="holdName" id="holdName"/>
+    <input type="hidden" name="holdCertificateNumber" id="holdCertificateNumber"/>
+    <input type="hidden" name="holdContactsPhone" id="holdContactsPhone"/>
     <div class="col-2 text-right">
         卡号:
     </div>
@@ -86,6 +90,10 @@
         $('#tradeCustomerName').val('');
         $('#tradeBalance').val('');
         $('#tradeCardNo').val('');
+        $('#tradeCustomerCode').val('');
+        $('#holdName').val('');
+        $('#holdCertificateNumber').val('');
+        $('#holdContactsPhone').val('');
     }
 
     //日期范围
@@ -112,6 +120,10 @@
             $('#tradeCustomerName').val(data.accountInfo.customerName);
             $('#tradeBalance').val(data.accountFund.availableAmountView);
             $('#tradeCardNo').val(data.accountInfo.cardNo);
+            $('#tradeCustomerCode').val(data.accountInfo.customerCode);
+            $('#holdName').val(data.accountInfo.holdName);
+            $('#holdCertificateNumber').val(data.accountInfo.holdCertificateNumber);
+            $('#holdContactsPhone').val(data.accountInfo.holdContactsPhone);
         });
     }
 

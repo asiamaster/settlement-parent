@@ -70,8 +70,14 @@ public class UserAccountCardResponseDto implements Serializable {
     private String creator;
     /** 建卡人id */
     private Long creatorId;
-
+    /** */
     private Boolean master;
+    /** 持卡人姓名 */
+    private String holdName;
+    /** 持卡人证件号 */
+    private String holdCertificateNumber;
+    /** 持卡人联系电话 */
+    private String holdContactsPhone;
 
     public Long getAccountPkId() {
         return accountPkId;
@@ -281,4 +287,27 @@ public class UserAccountCardResponseDto implements Serializable {
 		this.master = master;
 	}
 
+    public String getHoldName() {
+        return holdName;
+    }
+
+    public void setHoldName(String holdName) {
+        this.holdName = holdName;
+    }
+
+    public String getHoldCertificateNumber() {
+        return holdCertificateNumber;
+    }
+
+    public void setHoldCertificateNumber(String holdCertificateNumber) {
+        this.holdCertificateNumber = holdCertificateNumber;
+    }
+
+    public String getHoldContactsPhone() {
+        return holdContactsPhone;
+    }
+
+    public void setHoldContactsPhone(String holdContactsPhone) {
+        this.holdContactsPhone = holdContactsPhone;
+    }
 }

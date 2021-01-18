@@ -4,6 +4,7 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.pay.TradeResponseDto;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public interface SettleService {
     //调用支付传递业务编号前缀
     String PAY_BUSINESS_PREFIX = "ZL_";
 
+    String EARNEST_CHARGE_ITEM_CODE = "earnest";
     /**
      * 跳转到结算方式个性化页面
      * @param settleOrderDto
@@ -119,8 +121,43 @@ public interface SettleService {
     void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param);
 
     /**
+     * 构建流水 屏蔽异常，以防止影响正常结算
+     * @param settleOrderDto
+     * @param tradeResponse
+     */
+    void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse);
+
+    /**
      * 支持的结算方式
      * @return
      */
     Integer supportWay();
+
+
+    /**
+     * 根据期初总余额、总冻结金额计算期初可用余额
+     * @param balance 总余额（包含冻结）
+     * @param totalFrozenAmount 冻结金额
+     * @return
+     */
+    default Long countStartBalance(Long balance, Long totalFrozenAmount) {
+        if (balance == null || totalFrozenAmount == null) {
+            return null;
+        }
+        return balance - totalFrozenAmount;
+    }
+
+
+    /**
+     * 根据期初可用余额、操作金额计算期末可用余额
+     * @param startBalance 期初可用余额（不含冻结）
+     * @param amount 操作金额
+     * @return
+     */
+    default Long countEndBalance(Long startBalance, Long amount) {
+        if (startBalance == null || amount == null) {
+            return null;
+        }
+        return startBalance + amount;
+    }
 }

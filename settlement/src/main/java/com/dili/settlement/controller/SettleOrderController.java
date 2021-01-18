@@ -258,6 +258,7 @@ public class SettleOrderController extends AbstractController {
         settleOrderDto.setMarketId(userTicket.getFirmId());
         settleOrderDto.setOperatorId(userTicket.getId());
         settleOrderDto.setOperatorName(userTicket.getRealName());
+        settleOrderDto.setOperatorNo(userTicket.getUserName());
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
         settleOrderDto.setTotalAmount(settleAmountDto.getTotalAmount());

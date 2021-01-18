@@ -195,6 +195,12 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`trade_customer_name`")
     private String tradeCustomerName;
 
+    /**
+     * 交易客户编号
+     */
+    @Column(name = "`trade_customer_code`")
+    private String tradeCustomerCode;
+
     /** 交易卡号 */
     @Column(name = "`trade_card_no`")
     private String tradeCardNo;
@@ -215,6 +221,16 @@ public class SettleOrder extends BaseDomain {
     /** 挂号(沈阳特有)*/
     @Column(name = "`trailer_number`")
     private String trailerNumber;
+
+    /** 持卡人姓名 */
+    @Column(name = "`hold_name`")
+    private String holdName;
+    /** 持卡人证件号 */
+    @Column(name = "`hold_certificate_number`")
+    private String holdCertificateNumber;
+    /** 持卡人联系电话 */
+    @Column(name = "`hold_contacts_phone`")
+    private String holdContactsPhone;
 
     /**
      * @return id
@@ -808,6 +824,14 @@ public class SettleOrder extends BaseDomain {
         this.tradeCustomerName = tradeCustomerName;
     }
 
+    public String getTradeCustomerCode() {
+        return tradeCustomerCode;
+    }
+
+    public void setTradeCustomerCode(String tradeCustomerCode) {
+        this.tradeCustomerCode = tradeCustomerCode;
+    }
+
     public String getTradeCardNo() {
         return tradeCardNo;
     }
@@ -846,5 +870,29 @@ public class SettleOrder extends BaseDomain {
 
     public void setTrailerNumber(String trailerNumber) {
         this.trailerNumber = trailerNumber;
+    }
+
+    public String getHoldName() {
+        return holdName;
+    }
+
+    public void setHoldName(String holdName) {
+        this.holdName = holdName;
+    }
+
+    public String getHoldCertificateNumber() {
+        return holdCertificateNumber;
+    }
+
+    public void setHoldCertificateNumber(String holdCertificateNumber) {
+        this.holdCertificateNumber = holdCertificateNumber;
+    }
+
+    public String getHoldContactsPhone() {
+        return holdContactsPhone;
+    }
+
+    public void setHoldContactsPhone(String holdContactsPhone) {
+        this.holdContactsPhone = holdContactsPhone;
     }
 }

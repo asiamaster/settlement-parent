@@ -46,10 +46,14 @@
     <result column="trade_account_id" jdbcType="BIGINT" property="tradeAccountId" />
     <result column="trade_customer_id" jdbcType="BIGINT" property="tradeCustomerId" />
     <result column="trade_customer_name" jdbcType="VARCHAR" property="tradeCustomerName" />
+    <result column="trade_customer_code" jdbcType="VARCHAR" property="tradeCustomerCode" />
     <result column="trade_card_no" jdbcType="VARCHAR" property="tradeCardNo" />
     <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
     <result column="reverse" jdbcType="TINYINT" property="reverse"/>
     <result column="deduct_enable" jdbcType="TINYINT" property="deductEnable"/>
+    <result column="hold_name" jdbcType="VARCHAR" property="holdName"/>
+    <result column="hold_certificate_number" jdbcType="VARCHAR" property="holdCertificateNumber"/>
+    <result column="hold_contacts_phone" jdbcType="VARCHAR" property="holdContactsPhone"/>
   </resultMap>
   <sql id="Base_Column_List">
     `id`, `market_id`, `market_code`,`mch_id`, `mch_name`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
@@ -57,7 +61,7 @@
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
     `notes` ,`version`,`charge_date`, `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,
-    `trade_customer_name`,`trade_card_no`,`trade_no`,`reverse`, `deduct_enable`
+    `trade_customer_name`, `trade_customer_code`,`trade_card_no`,`trade_no`,`reverse`, `deduct_enable`, `hold_name`, `hold_certificate_number`, `hold_contacts_phone`
   </sql>
 
   <!-- 用于单表的条件判断 -->
@@ -184,7 +188,11 @@
         trade_account_id = #{tradeAccountId},
         trade_customer_id = #{tradeCustomerId},
         trade_customer_name = #{tradeCustomerName},
+        trade_customer_code = #{tradeCustomerCode},
         trade_card_no = #{tradeCardNo},
+        hold_name = #{holdName},
+        hold_certificate_number = #{holdCertificateNumber},
+        hold_contacts_phone = #{holdContactsPhone},
         trade_no = #{tradeNo},
         version = version + 1
     where id = #{id} and version = #{version}
@@ -210,7 +218,11 @@
         trade_account_id = #{item.tradeAccountId},
         trade_customer_id = #{item.tradeCustomerId},
         trade_customer_name = #{item.tradeCustomerName},
+        trade_customer_code = #{item.tradeCustomerCode},
         trade_card_no = #{item.tradeCardNo},
+        hold_name = #{item.holdName},
+        hold_certificate_number = #{item.holdCertificateNumber},
+        hold_contacts_phone = #{item.holdContactsPhone},
         trade_no = #{tradeNo},
         version = version + 1
       where id = #{item.id}

@@ -57,6 +57,10 @@ public class SettleOrderDto extends SettleOrder {
     private String tradePassword;
     //建议校验token
     private String token;
+    //操作员工号
+    private String operatorNo;
+    //交易客户类型
+    private String tradeCustomerType;
     /** 结算 end */
 
     public List<SettleFeeItem> getSettleFeeItemList() {
@@ -209,5 +213,21 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getOperatorNo() {
+        return operatorNo;
+    }
+
+    public void setOperatorNo(String operatorNo) {
+        this.operatorNo = operatorNo;
+    }
+
+    public String getTradeCustomerType() {
+        return tradeCustomerType;
+    }
+
+    public void setTradeCustomerType(String tradeCustomerType) {
+        this.tradeCustomerType = tradeCustomerType;
     }
 }

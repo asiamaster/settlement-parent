@@ -5,6 +5,7 @@ import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.pay.TradeResponseDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.enums.TradeChannelEnum;
 import com.dili.settlement.service.SettleWayDetailService;
@@ -60,6 +61,11 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
     @Override
     public Integer getTradeChannel() {
         return TradeChannelEnum.MIXED.getCode();
+    }
+
+    @Override
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+        return;
     }
 
     @Override

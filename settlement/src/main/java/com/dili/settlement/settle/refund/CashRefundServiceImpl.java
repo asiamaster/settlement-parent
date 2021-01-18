@@ -1,6 +1,7 @@
 package com.dili.settlement.settle.refund;
 
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.pay.TradeResponseDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.enums.TradeChannelEnum;
 import com.dili.settlement.settle.RefundService;
@@ -21,6 +22,11 @@ public class CashRefundServiceImpl extends RefundServiceImpl implements RefundSe
     @Override
     public Integer getTradeChannel() {
         return TradeChannelEnum.CASH.getCode();
+    }
+
+    @Override
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+        return;
     }
 
     @Override

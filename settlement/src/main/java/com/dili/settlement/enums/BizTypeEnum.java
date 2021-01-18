@@ -20,8 +20,8 @@ public enum BizTypeEnum {
     STOCKOUT("9", "冷库出库", "stockout"),
     OTHER_FEE("10", "其它收费", "otherFee"),
     LABOR_VEST("11", "劳务马甲", "laborVest"),
-    LABOR_VEST_RENAME("12", "劳务马甲更名费", "laborVestRename"),
-    LABOR_VEST_REMODEL("13", "劳务马甲更型费", "laborVestRemodel"),
+    //LABOR_VEST_RENAME("12", "劳务马甲更名费", "laborVestRename"),
+    //LABOR_VEST_REMODEL("13", "劳务马甲更型费", "laborVestRemodel"),
     MESSAGEFEE("14", "信息费", "messageFee"),
     WATER("15", "水费", "water"),
     ELECTRICITY("16", "电费", "electricity"),
@@ -45,6 +45,15 @@ public enum BizTypeEnum {
             }
         }
         return null;
+    }
+
+    public static String getNameByCode(String code) {
+        for (BizTypeEnum anEnum : BizTypeEnum.values()) {
+            if (anEnum.getCode().equals(code)) {
+                return anEnum.getName();
+            }
+        }
+        return "";
     }
 
     public String getCode() {
