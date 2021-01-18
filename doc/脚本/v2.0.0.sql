@@ -194,4 +194,54 @@ UPDATE settle_order SET market_code = 'sg' WHERE market_id = 8;
 UPDATE settle_order SET market_code = 'hzsc' WHERE market_id = 11;
 
 UPDATE settle_config SET `state` = 2 WHERE `group_code` = 101 AND `code` = 6;
+
+-- 定金数据，处理已结算的单子
+UPDATE dili_settlement.settle_order se INNER JOIN (
+   SELECT
+	po.settlement_code,
+	alo.earnest_deduction
+FROM
+	dili_ia.`assets_lease_order` alo
+	LEFT JOIN dili_ia.payment_order po ON alo.id = po.business_id
+WHERE
+	po.id IN (
+	SELECT
+		MIN( po.id )
+	FROM
+		dili_ia.`assets_lease_order` alo
+		LEFT JOIN dili_ia.payment_order po ON alo.id = po.business_id
+	WHERE
+		alo.assets_type = 1
+		AND po.state != 3
+		AND ( alo.earnest_deduction > 0 OR alo.transfer_deduction > 0 )
+	GROUP BY
+	alo.id
+	)
+) temp ON se.code = temp.settlement_code AND se.state = 2
+  SET se.amount = se.amount + temp.earnest_deduction, se.deduct_amount = temp.earnest_deduction,se.deduct_enable = 1;
+
+-- 定金数据，处理待处理的单子
+UPDATE dili_settlement.settle_order se INNER JOIN (
+   SELECT
+	po.settlement_code,
+	alo.earnest_deduction
+FROM
+	dili_ia.`assets_lease_order` alo
+	LEFT JOIN dili_ia.payment_order po ON alo.id = po.business_id
+WHERE
+	po.id IN (
+	SELECT
+		MIN( po.id )
+	FROM
+		dili_ia.`assets_lease_order` alo
+		LEFT JOIN dili_ia.payment_order po ON alo.id = po.business_id
+	WHERE
+		alo.assets_type = 1
+		AND po.state != 3
+		AND ( alo.earnest_deduction > 0 OR alo.transfer_deduction > 0 )
+	GROUP BY
+	alo.id
+	)
+) temp ON se.code = temp.settlement_code AND se.state = 1
+  SET se.amount = se.amount + temp.earnest_deduction, se.deduct_enable = 1;
 /* 调整 end*/
