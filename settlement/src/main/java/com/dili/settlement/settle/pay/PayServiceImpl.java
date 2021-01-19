@@ -98,6 +98,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             MchIdHolder.clear();
 
             //保存流水
+            tradeResponseDto.setTradeId(createTradeResponseDto.getTradeId());
             createAccountSerial(settleOrderDto, tradeResponseDto);
 
         }
@@ -249,6 +250,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         SettleOrderDto settleOrderDto = new SettleOrderDto();
         BeanUtil.copyProperties(po, settleOrderDto);
         settleOrderDto.setOperatorNo(param.getOperatorNo());
+        tradeResponseDto.setTradeId(po.getTradeNo());
         createAccountSerial(settleOrderDto, tradeResponseDto);
     }
 }
