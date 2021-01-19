@@ -176,7 +176,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             long deductAmount = settleOrder.getAmount() >= totalDeductAmount ? totalDeductAmount : settleOrder.getAmount();
             totalDeductAmount -= deductAmount;
             settleOrder.setDeductAmount(deductAmount);
-            BusinessChargeItemDto businessChargeItem = findOneChargeItem(settleOrder.getMarketId(), settleOrder.getBusinessType(), EARNEST_CHARGE_ITEM_CODE);
+            BusinessChargeItemDto businessChargeItem = findOneChargeItem(settleOrder.getMarketId(), BizTypeEnum.EARNEST.getCode(), EARNEST_CHARGE_ITEM_CODE);
             if (businessChargeItem == null) {
                 throw new BusinessException("", "未查询到定金费用项");
             }
@@ -220,7 +220,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         List<CustomerAccountSerial> accountSerialList = new ArrayList<>();
         if (po.getDeductAmount() != null && po.getDeductAmount() > 0L) {
             earnestAmount = po.getDeductAmount();
-            BusinessChargeItemDto businessChargeItem = findOneChargeItem(po.getMarketId(), po.getBusinessType(), EARNEST_CHARGE_ITEM_CODE);
+            BusinessChargeItemDto businessChargeItem = findOneChargeItem(po.getMarketId(), BizTypeEnum.EARNEST.getCode(), EARNEST_CHARGE_ITEM_CODE);
             if (businessChargeItem == null) {
                 throw new BusinessException("", "未查询到定金费用项");
             }
