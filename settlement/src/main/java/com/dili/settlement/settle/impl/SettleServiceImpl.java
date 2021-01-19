@@ -15,6 +15,7 @@ import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.pay.FeeItemDto;
 import com.dili.settlement.dto.pay.TradeResponseDto;
 import com.dili.settlement.enums.ActionEnum;
+import com.dili.settlement.enums.BizTypeEnum;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.handler.ServiceNameHolder;
@@ -150,6 +151,7 @@ public abstract class SettleServiceImpl implements SettleService {
                 String[] arr = StrUtil.isBlank(feeItem.getDescription()) ? new String[2] : feeItem.getDescription().split("\\|");
                 SerialRecordDto serialRecord = new SerialRecordDto();
                 serialRecord.setType(arr[0]);
+                serialRecord.setTypeName(BizTypeEnum.getNameByCode(arr[0]));
                 serialRecord.setAccountId(settleOrderDto.getTradeAccountId());
                 serialRecord.setCardNo(settleOrderDto.getTradeCardNo());
                 serialRecord.setCustomerId(settleOrderDto.getTradeCustomerId());
