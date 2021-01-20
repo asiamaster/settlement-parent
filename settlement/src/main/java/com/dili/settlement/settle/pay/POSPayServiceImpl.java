@@ -19,7 +19,7 @@ public class POSPayServiceImpl extends PayServiceImpl implements PayService {
     }
 
     @Override
-    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse, String tradeId) {
         return;
     }
 

@@ -141,7 +141,7 @@ public abstract class SettleServiceImpl implements SettleService {
     }
 
     @Override
-    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse, String tradeId) {
         try {
             List<Long> idList = tradeResponse.getStreams().stream().map(FeeItemDto::getType).collect(Collectors.toList());
             Map<Long, BusinessChargeItemDto> businessChargeItemMap = findChargeItemByIdList(idList);
@@ -163,7 +163,7 @@ public abstract class SettleServiceImpl implements SettleService {
                 serialRecord.setEndBalance(countEndBalance(serialRecord.getStartBalance(), feeItem.getAmount()));
                 //serialRecord.setTradeType();
                 serialRecord.setTradeChannel(getTradeChannel());
-                serialRecord.setTradeNo(tradeResponse.getTradeId());
+                serialRecord.setTradeNo(tradeId);
                 BusinessChargeItemDto businessChargeItem = businessChargeItemMap.get(feeItem.getType());
                 serialRecord.setFundItem(businessChargeItem != null ? businessChargeItem.getFundItem() : null);
                 serialRecord.setFundItemName(businessChargeItem != null ? businessChargeItem.getFundItemValue() : null);

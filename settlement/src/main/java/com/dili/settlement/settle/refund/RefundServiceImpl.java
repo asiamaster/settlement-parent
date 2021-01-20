@@ -95,8 +95,7 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
             MchIdHolder.clear();
 
             //保存流水
-            tradeResponseDto.setTradeId(createTradeResponseDto.getTradeId());
-            createAccountSerial(settleOrderDto, tradeResponseDto);
+            createAccountSerial(settleOrderDto, tradeResponseDto, createTradeResponseDto.getTradeId());
         }
         return settleOrderList;
     }

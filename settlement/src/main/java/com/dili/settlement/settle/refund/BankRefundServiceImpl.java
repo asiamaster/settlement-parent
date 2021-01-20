@@ -45,7 +45,7 @@ public class BankRefundServiceImpl extends RefundServiceImpl implements RefundSe
     }
 
     @Override
-    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse) {
+    public void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse, String tradeId) {
         return;
     }
 

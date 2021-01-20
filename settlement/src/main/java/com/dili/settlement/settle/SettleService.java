@@ -124,8 +124,9 @@ public interface SettleService {
      * 构建流水 屏蔽异常，以防止影响正常结算
      * @param settleOrderDto
      * @param tradeResponse
+     * @param tradeId
      */
-    void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse);
+    void createAccountSerial(SettleOrderDto settleOrderDto, TradeResponseDto tradeResponse, String tradeId);
 
     /**
      * 支持的结算方式
