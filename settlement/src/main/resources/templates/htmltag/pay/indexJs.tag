@@ -6,7 +6,9 @@
     /** 支付页面确定按钮点击事件处理器 */
     function payCertainClickHandler() {
         let mchId = $('[name="mchRadio"]:checked').val();
+        mchId = mchId ? mchId : "";
         let customerId = $('#settle-customer-id').val();
+        customerId = customerId ? customerId : "";
         let rows = $('#table_' + mchId).find('[name="chk"]:checked');
         if (null == rows || rows.length === 0) {
             showWarning('请至少选中一条数据');

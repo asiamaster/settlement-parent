@@ -4,6 +4,8 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.commons.bstable.TableResult;
+import com.dili.logger.sdk.domain.BusinessLog;
+import com.dili.logger.sdk.rpc.BusinessLogRpc;
 import com.dili.settlement.component.CallbackHolder;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
@@ -14,6 +16,7 @@ import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.*;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.TokenHandler;
+import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.BusinessRpc;
 import com.dili.settlement.serializer.DisplayTextAfterFilter;
 import com.dili.settlement.service.*;
@@ -26,6 +29,7 @@ import com.dili.uap.sdk.domain.UserTicket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +81,12 @@ public class SettleOrderController extends AbstractController {
 
     @Autowired
     private SettleWayDetailService settleWayDetailService;
+
+    @Autowired
+    private BusinessLogRpc businessLogRpc;
+
+    @Value("${project.serverPath}")
+    private String serverPath;
 
     /**
      * 跳转到支付页面
@@ -455,12 +465,39 @@ public class SettleOrderController extends AbstractController {
         if (settleOrder == null) {
             throw new BusinessException("", "该记录不存在");
         }
+        StringBuilder content = new StringBuilder("");
         if (Integer.valueOf(SettleWayEnum.MIXED_PAY.getCode()).equals(settleOrder.getWay())) {
+            List<SettleWayDetail> detailList = settleWayDetailService.listBySettleOrderId(settleOrder.getId());
+            for (SettleWayDetail temp : detailList) {
+                content.append("结算明细ID：").append(temp.getId()).append("， ");
+                content.append("结算方式：").append(SettleWayEnum.getNameByCode(temp.getWay())).append("， ");
+                SettleWayDetail settleWayDetail = chargeDateDto.getSettleWayDetailList().stream().filter(t -> temp.getId().equals(t.getId())).findFirst().orElse(null);
+                if (settleWayDetail == null) {
+                    continue;
+                }
+                content.append("收款日期：从").append(temp.getChargeDate() != null ? DateUtil.formatDate(temp.getChargeDate(), "yyyy-MM-dd") : "").append("改为").append(settleWayDetail.getChargeDate() != null ? DateUtil.formatDate(settleWayDetail.getChargeDate(), "yyyy-MM-dd") : "").append("； ");
+            }
             settleWayDetailService.batchUpdateChargeDate(chargeDateDto.getSettleWayDetailList());
         } else {
+            content.append("收款日期：从").append(settleOrder.getChargeDate() != null ? DateUtil.formatDate(settleOrder.getChargeDate(), "yyyy-MM-dd") : "").append("改为").append(chargeDateDto.getChargeDate() != null ? DateUtil.formatDate(chargeDateDto.getChargeDate(), "yyyy-MM-dd") : "").append("； ");
             settleOrderService.updateChargeDate(chargeDateDto);
         }
-        //TODO 存储日志
+        try {
+            UserTicket userTicket = getUserTicket();
+            BusinessLog businessLog = new BusinessLog();
+            businessLog.setOperationType("edit");
+            businessLog.setBusinessId(settleOrder.getId());
+            businessLog.setBusinessCode(settleOrder.getCode());
+            businessLog.setBusinessType("settlement");
+            businessLog.setMarketId(userTicket.getFirmId());
+            businessLog.setOperatorId(userTicket.getId());
+            businessLog.setOperatorName(userTicket.getRealName());
+            businessLog.setSystemCode("IA");
+            businessLog.setContent(content.toString());
+            RpcResultResolver.resolver(businessLogRpc.save(businessLog, serverPath), "LOGGER-SERVICE");
+        } catch (Exception e) {
+            LOGGER.error("change log error", e);
+        }
         return BaseOutput.success();
     }
 

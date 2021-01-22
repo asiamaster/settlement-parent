@@ -4,10 +4,6 @@
         <input type="text" style="display: none"/>
         <input type="hidden" name="id" value="${settleOrder.id!}"/>
         <input type="hidden" name="way" value="${settleOrder.way!}"/>
-        <% if (isNotEmpty(settleWayList) && settleWayList.~size > 0) {
-            for (way in wayList) {
-        %>
-        <input type="hidden" name="settleWayDetailList[${wayLP.index}].id" value="${way.id!}"/>
         <table id="table-way-list" class="table table-bordered table-hover" >
             <thead>
                 <tr>
@@ -17,6 +13,10 @@
                 </tr>
             </thead>
             <tbody>
+            <% if (isNotEmpty(settleWayList) && settleWayList.~size > 0) {
+                for (way in settleWayList) {
+            %>
+            <input type="hidden" name="settleWayDetailList[${wayLP.index}].id" value="${way.id!}"/>
                 <tr>
                     <td class="text-center align-middle">${way.wayText!}</td>
                     <td class="text-center align-middle">${way.amountText!}</td>
@@ -29,9 +29,9 @@
                         </div>
                     </td>
                 </tr>
+            <% }} %>
             </tbody>
         </table>
-        <% }} %>
     </form>
 </div>
 </#bs4Body>
