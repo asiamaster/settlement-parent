@@ -34,4 +34,11 @@
        <include refid="Base_Column_List"/>
     from settle_way_detail where settle_order_code = #{settleOrderCode}
   </select>
+
+  <!-- 批量修改收款日期 -->
+  <update id="batchUpdateChargeDate">
+    <foreach collection="settleWayDetailList" item="item" open="" close="" separator=";">
+      update settle_way_detail set charge_date = #{item.chargeDate} where id = #{item.id}
+    </foreach>
+  </update>
 </mapper>

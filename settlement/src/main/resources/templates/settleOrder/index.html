@@ -66,7 +66,7 @@
                 <#bcomboProvider _id='settle-reverse' _provider='reverseProvider' _queryParams='{emptyText:"全部"}'/>
             </div>
             <div class="form-group col-auto">
-                <label class="justify-content-end">结算时间</label>
+                <label class="justify-content-end">操作时间</label>
                 <div class="form-inline">
                     <div class="input-group">
                         <input type="text" name="operateTimeStart" id="operateTimeStart" value="${operateTimeStart!}" class="form-control laydatetime"/>
@@ -114,6 +114,11 @@
                     单据补打
                 </button>
                 </#resource>
+                <#resource code="settlement-information-change">
+                <button id="btn-change" type="button" class="btn btn-primary" onclick=""><i class="fa fa-print"></i>
+                    信息更改
+                </button>
+                </#resource>
             </div>
             <table id="grid" data-toggle="table" data-title="结算单" class="table" data-toolbar="#toolbar"
                    data-pagination="true" data-page-number="1" data-page-size="10"
@@ -159,13 +164,19 @@
                         结算员
                     </th>
                     <th data-field="operateTime" data-align="center" data-sortable="true" data-sort-name="operate_time">
-                        结算时间
+                        操作时间
                     </th>
                     <th data-field="stateText" data-align="center" data-sortable="true" data-sort-name="state">
                         结算状态
                     </th>
                     <th data-field="wayText" data-align="center" data-sortable="true" data-sort-name="way" data-formatter="settleWayFormatter">
                         结算方式
+                    </th>
+                    <th data-field="chargeDate" data-align="center" data-sortable="true" data-sort-name="charge_date">
+                        收款日期
+                    </th>
+                    <th data-field="notes" data-align="center" data-sortable="true" data-sort-name="notes">
+                        备注
                     </th>
                     <th data-field="serialNumber" data-align="center" data-sortable="false" data-sort-name="serial_number">
                         流水号/卡号

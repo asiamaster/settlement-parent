@@ -5,6 +5,7 @@ import com.dili.settlement.mapper.SettleWayDetailMapper;
 import com.dili.settlement.service.SettleWayDetailService;
 import com.dili.ss.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,5 +28,11 @@ public class SettleWayDetailServiceImpl extends BaseServiceImpl<SettleWayDetail,
     @Override
     public List<SettleWayDetail> listBySettleOrderCode(String settleOrderCode) {
         return getActualDao().listBySettleOrderCode(settleOrderCode);
+    }
+
+    @Transactional
+    @Override
+    public int batchUpdateChargeDate(List<SettleWayDetail> settleWayDetailList) {
+        return getActualDao().batchUpdateChargeDate(settleWayDetailList);
     }
 }

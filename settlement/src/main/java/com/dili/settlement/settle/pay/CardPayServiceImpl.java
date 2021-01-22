@@ -86,6 +86,7 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         settleOrder.setHoldName(settleOrderDto.getHoldName());
         settleOrder.setHoldCertificateNumber(settleOrderDto.getHoldCertificateNumber());
         settleOrder.setHoldContactsPhone(settleOrderDto.getHoldContactsPhone());
+        settleOrder.setChargeDate(localDateTime.toLocalDate());
     }
 
     @Override

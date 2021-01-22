@@ -254,4 +254,9 @@
   <update id="deleteById">
     delete from settle_order where id = #{id} and version = #{version}
   </update>
+
+  <!-- 根据id修改收款日期 -->
+  <update id="updateChargeDate" parameterType="com.dili.settlement.dto.ChargeDateDto">
+    update settle_order set charge_date = #{chargeDate} where id = #{id}
+  </update>
 </mapper>

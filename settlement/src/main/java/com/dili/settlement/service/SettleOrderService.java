@@ -1,6 +1,7 @@
 package com.dili.settlement.service;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.ChargeDateDto;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
@@ -115,4 +116,11 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @return
      */
     int deleteById(Long id, Integer version);
+
+    /**
+     * 修改收款日期
+     * @param chargeDateDto
+     * @return
+     */
+    int updateChargeDate(ChargeDateDto chargeDateDto);
 }

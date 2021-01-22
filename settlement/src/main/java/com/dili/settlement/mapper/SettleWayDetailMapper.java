@@ -21,4 +21,11 @@ public interface SettleWayDetailMapper extends MyMapper<SettleWayDetail> {
      * @return
      */
     List<SettleWayDetail> listBySettleOrderCode(@Param("settleOrderCode") String settleOrderCode);
+
+    /**
+     * 批量修改收款日期
+     * @param settleWayDetailList
+     * @return
+     */
+    int batchUpdateChargeDate(@Param("settleWayDetailList") List<SettleWayDetail> settleWayDetailList);
 }

@@ -5,6 +5,7 @@ import com.dili.settlement.dispatcher.OrderDispatcher;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.ChargeDateDto;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
@@ -186,5 +187,11 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Override
     public int deleteById(Long id, Integer version) {
         return getActualDao().deleteById(id, version);
+    }
+
+    @Transactional
+    @Override
+    public int updateChargeDate(ChargeDateDto chargeDateDto) {
+        return getActualDao().updateChargeDate(chargeDateDto);
     }
 }

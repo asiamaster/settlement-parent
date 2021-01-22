@@ -32,12 +32,39 @@
         });
 
         $('#btn-reprint').click(reprintClickHandler);
+        
+        $('#btn-change').click(changeClickHandler);
 
         $(window).resize(function () {
             $('#grid').bootstrapTable('resetView')
         });
         //初始化表格
         $('#grid').bootstrapTable('refreshOptions', {url: '/settleOrder/listPage.action'});
+
+        //行选中事件处理
+        $('#grid').on("check.bs.table", function(e, row, $element) {
+            //非缴费单不允许信息修改
+            if (row.type !== ${@com.dili.settlement.enums.SettleTypeEnum.PAY.getCode()}) {
+                $('#btn-change').prop("disabled", true);
+                return;
+            }
+            //非已处理状态不循序信息修改
+            if (row.state !== ${@com.dili.settlement.enums.SettleStateEnum.DEAL.getCode()}) {
+                $('#btn-change').prop("disabled", true);
+                return;
+            }
+            //园区卡支付不允许信息修改
+            if (row.way === ${@com.dili.settlement.enums.SettleWayEnum.CARD.getCode()}) {
+                $('#btn-change').prop("disabled", true);
+                return;
+            }
+            //冲正单不允许信息修改
+            if (row.reverse !== ${@com.dili.settlement.enums.ReverseEnum.NO.getCode()}) {
+                $('#btn-change').prop("disabled", true);
+                return;
+            }
+            $('#btn-change').prop("disabled", false);
+        });
     });
 
     /**
@@ -122,6 +149,49 @@
             }
         }
         return {};
+    }
+    
+    /** 信息修改按钮点击事件处理器*/
+    function changeClickHandler() {
+        let rows = $('#grid').bootstrapTable('getSelections');
+        if (null == rows || rows.length === 0) {
+            showWarning('请至少选中一条数据');
+            return;
+        }
+        let row = rows[0];
+        let url = "/settleOrder/forwardChange.action?id="+row.id;
+        bs4pop.dialog({
+            id:'dialog-change',
+            content:url,
+            title:'信息更改',
+            isIframe:true,
+            width: '60%',
+            height: 500,
+            btns:[
+                {label: '取消',className: 'btn-secondary'},
+                {label: '确定',className: 'btn-primary',onClick:dialogCertainClickHandler}
+            ]
+        });
+    }
+
+    /** 信息修改确定按钮点击处理器 */
+    function dialogCertainClickHandler(e, $iframe) {
+        $.ajax({
+            type:"POST",
+            url:"/settleOrder/change.action",
+            dataType:"json",
+            data:$iframe.contents().find('#form-change').serialize(),
+            success:function(result) {
+                if (result.code === '200') {
+                    $('#grid').bootstrapTable('refresh');
+                } else {
+                    showError(result.message);
+                }
+            },
+            error:function(){
+                showError("系统异常,请稍后重试");
+            }
+        });
     }
 </script>
 

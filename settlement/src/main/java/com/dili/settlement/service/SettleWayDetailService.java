@@ -23,4 +23,11 @@ public interface SettleWayDetailService extends BaseService<SettleWayDetail, Lon
      * @return
      */
     List<SettleWayDetail> listBySettleOrderCode(String settleOrderCode);
+
+    /**
+     * 批量修改收款日期
+     * @param settleWayDetailList
+     * @return
+     */
+    int batchUpdateChargeDate(List<SettleWayDetail> settleWayDetailList);
 }

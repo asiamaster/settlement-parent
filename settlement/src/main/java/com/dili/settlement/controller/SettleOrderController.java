@@ -10,18 +10,13 @@ import com.dili.settlement.dispatcher.RefundDispatcher;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.SettleConfig;
 import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.dto.PrintDto;
-import com.dili.settlement.dto.SettleAmountDto;
-import com.dili.settlement.dto.SettleGroupDto;
-import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.dto.*;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.TokenHandler;
 import com.dili.settlement.rpc.BusinessRpc;
 import com.dili.settlement.serializer.DisplayTextAfterFilter;
-import com.dili.settlement.service.CustomerAccountService;
-import com.dili.settlement.service.SettleOrderLinkService;
-import com.dili.settlement.service.SettleOrderService;
-import com.dili.settlement.service.SettleWayService;
+import com.dili.settlement.service.*;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
@@ -79,6 +74,9 @@ public class SettleOrderController extends AbstractController {
 
     @Autowired
     private CustomerAccountService customerAccountService;
+
+    @Autowired
+    private SettleWayDetailService settleWayDetailService;
 
     /**
      * 跳转到支付页面
@@ -221,6 +219,7 @@ public class SettleOrderController extends AbstractController {
     @RequestMapping(value = "/forwardPaySpecial.html")
     public String forwardPaySpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
         settleOrderDto.setMarketId(getUserTicket().getFirmId());
+        modelMap.addAttribute("chargeDate", DateUtil.nowDate());
         return payDispatcher.forwardSpecial(settleOrderDto, modelMap);
     }
 
@@ -414,6 +413,55 @@ public class SettleOrderController extends AbstractController {
             return new TableResult<>(settleOrderDto.getPage(), pageOutput.getTotal(), pageOutput.getData());
         }
         return new TableResult<SettleOrder>(1, 0L, new ArrayList(0));
+    }
+
+    /**
+     * 跳转到信息修改页面
+     * @param id
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/forwardChange.action")
+    public String forwardChange(Long id, ModelMap modelMap) {
+        if (id == null) {
+            throw new BusinessException("", "ID为空");
+        }
+        SettleOrder settleOrder = settleOrderService.get(id);
+        if (settleOrder == null) {
+            throw new BusinessException("", "该记录不存在");
+        }
+        modelMap.addAttribute("settleOrder", settleOrder);
+        //组合支付
+        if (Integer.valueOf(SettleWayEnum.MIXED_PAY.getCode()).equals(settleOrder.getWay())) {
+            List<SettleWayDetail> detailList = settleWayDetailService.listBySettleOrderId(settleOrder.getId());
+            modelMap.addAttribute("settleWayList", JSON.parseArray(JSON.toJSONString(detailList, new DisplayTextAfterFilter())));
+            return "settleOrder/change_mixed";
+        }
+        return "settleOrder/change";
+    }
+
+    /**
+     * 修改
+     * @param chargeDateDto
+     * @return
+     */
+    @RequestMapping(value = "/change.action")
+    @ResponseBody
+    public BaseOutput<?> change(ChargeDateDto chargeDateDto) {
+        if (chargeDateDto.getId() == null) {
+            throw new BusinessException("", "ID为空");
+        }
+        SettleOrder settleOrder = settleOrderService.get(chargeDateDto.getId());
+        if (settleOrder == null) {
+            throw new BusinessException("", "该记录不存在");
+        }
+        if (Integer.valueOf(SettleWayEnum.MIXED_PAY.getCode()).equals(settleOrder.getWay())) {
+            settleWayDetailService.batchUpdateChargeDate(chargeDateDto.getSettleWayDetailList());
+        } else {
+            settleOrderService.updateChargeDate(chargeDateDto);
+        }
+        //TODO 存储日志
+        return BaseOutput.success();
     }
 
     /**

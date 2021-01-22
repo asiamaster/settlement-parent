@@ -1,6 +1,7 @@
 package com.dili.settlement.mapper;
 
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.dto.ChargeDateDto;
 import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.ss.base.MyMapper;
@@ -64,4 +65,11 @@ public interface SettleOrderMapper extends MyMapper<SettleOrder> {
      * @return
      */
     int deleteById(@Param("id") Long id, @Param("version") Integer version);
+
+    /**
+     * 修改收款日期
+     * @param chargeDateDto
+     * @return
+     */
+    int updateChargeDate(ChargeDateDto chargeDateDto);
 }

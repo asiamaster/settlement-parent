@@ -1,0 +1,34 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form id="form-change" action="">
+        <input type="text" style="display: none"/>
+        <input type="hidden" name="id" value="${settleOrder.id!}"/>
+        <input type="hidden" name="way" value="${settleOrder.way!}"/>
+        <div class="row mt-2">
+            <div class="col-2 text-right">
+                收款日期:
+            </div>
+            <div class="col-4">
+                <div class="input-group">
+                    <input type="text" name="chargeDate" id="chargeDate" class="form-control laydate" value="${settleOrder.chargeDate!}" />
+                    <div class="input-group-append">
+                        <label for="chargeDate"  class="input-group-text fa fa-calendar"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</#bs4Body>
+<#common_commonJs/>
+<script type="text/javascript">
+    //日期范围
+    lay('.laydate').each(function () {
+        laydate.render({
+            theme: '#007bff',
+            elem: this
+            , trigger: 'click'
+            , type: 'date'
+        });
+    });
+</script>

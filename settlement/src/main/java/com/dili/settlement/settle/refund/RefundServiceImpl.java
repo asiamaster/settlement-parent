@@ -133,6 +133,11 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
     }
 
     @Override
+    public void buildSettleInfoSpecial(SettleOrder settleOrder, SettleOrderDto settleOrderDto, LocalDateTime localDateTime) {
+        settleOrder.setChargeDate(localDateTime.toLocalDate());
+    }
+
+    @Override
     public SettleDataDto prepareSettleData(List<SettleOrder> settleOrderList, SettleOrderDto settleOrderDto, Long totalDeductAmount) {
         return null;
     }
