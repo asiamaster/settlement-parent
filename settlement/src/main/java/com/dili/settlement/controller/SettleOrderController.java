@@ -15,6 +15,7 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.domain.SettleWayDetail;
 import com.dili.settlement.dto.*;
 import com.dili.settlement.enums.*;
+import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.handler.TokenHandler;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.BusinessRpc;
@@ -494,7 +495,7 @@ public class SettleOrderController extends AbstractController {
             businessLog.setOperatorName(userTicket.getRealName());
             businessLog.setSystemCode("IA");
             businessLog.setContent(content.toString());
-            RpcResultResolver.resolver(businessLogRpc.save(businessLog, serverPath), "LOGGER-SERVICE");
+            RpcResultResolver.resolver(businessLogRpc.save(businessLog, serverPath), ServiceNameHolder.LOGGER_SERVICE_NAME);
         } catch (Exception e) {
             LOGGER.error("change log error", e);
         }
