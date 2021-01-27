@@ -102,11 +102,11 @@ INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
 	1,
 	case temp.business_type
 		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/leaseOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/leaseOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/earnestOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/earnestOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/depositOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		   CONCAT('https://ia.diligrp.com:8381/depositOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		end
     FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
 
@@ -117,11 +117,11 @@ INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
 	1,
 	case temp.business_type
 		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		   CONCAT('https://ia.diligrp.com:8381/refundOrder/view.action?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		end
     FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
 
@@ -132,11 +132,11 @@ INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
 	2,
 	case temp.business_type
 		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/api/leaseOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/api/leaseOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/api/earnestOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/api/earnestOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/api/depositOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		   CONCAT('https://ia.diligrp.com:8381/api/depositOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		end
     FROM  settle_order temp WHERE temp.`type` = 1 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
 
@@ -147,11 +147,11 @@ INSERT INTO settle_order_link(`settle_order_id`, `type`, `url`)
 	2,
 	case temp.business_type
 		when 1 then
-			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 2 then
-			CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+			CONCAT('https://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		when 3 then
-		   CONCAT('http://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
+		   CONCAT('https://ia.diligrp.com:8381/api/refundOrder/queryPrintData?orderCode=', temp.order_code, '&businessType=', temp.business_type)
 		end
     FROM  settle_order temp WHERE temp.`type` = 2 AND temp.business_type IN (1,2,3) AND temp.reverse = 0;
 

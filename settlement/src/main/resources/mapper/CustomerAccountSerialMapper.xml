@@ -14,7 +14,7 @@
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
     <result column="relation_code" jdbcType="VARCHAR" property="relationCode" />
-    <result column="relation_type" jdbcType="INTEGER" property="relationType" />
+    <result column="relation_type" jdbcType="TINYINT" property="relationType" />
     <result column="notes" jdbcType="VARCHAR" property="notes" />
   </resultMap>
   <sql id="Base_Column_List">
