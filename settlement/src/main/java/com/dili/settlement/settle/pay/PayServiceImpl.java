@@ -165,7 +165,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             buildSettleInfo(settleOrder, settleOrderDto, localDateTime);
             retryRecordList.add(RetryRecord.build(settleOrder.getId()));
             settleOrderMap.put(settleOrder.getId(), settleOrder);
-            if (Integer.valueOf(EnableEnum.NO.getCode()).equals(settleOrderDto.getDeductEnable())) {
+            if (Integer.valueOf(EnableEnum.NO.getCode()).equals(settleOrder.getDeductEnable())) {
                 continue;
             }
             if (totalDeductAmount == 0L) {//总抵扣额用完时不再处理
