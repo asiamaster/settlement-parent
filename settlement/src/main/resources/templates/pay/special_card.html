@@ -113,7 +113,7 @@
             return;
         }
         queryAccountHandler($.trim(cardNo), function(data) {
-            $('#tradeFundAccountId').val(data.accountFund.accountId);
+            $('#tradeFundAccountId').val(data.accountInfo.fundAccountId);
             $('#tradeAccountId').val(data.accountInfo.accountId);
             $('#tradeAvailableAmount').val(data.accountFund.availableAmount);
             $('#tradeCustomerId').val(data.accountInfo.customerId);
