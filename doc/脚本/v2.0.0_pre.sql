@@ -188,10 +188,9 @@ drop table retry_error;
 drop table application_config;
 drop table market_application;
 
-UPDATE settle_order SET mch_id = 8,mch_name = '寿光' WHERE market_id = 8;
-UPDATE settle_order SET mch_id = 11,mch_name = '杭州水产' WHERE market_id = 11;
-UPDATE settle_order SET market_code = 'sg' WHERE market_id = 8;
-UPDATE settle_order SET market_code = 'hzsc' WHERE market_id = 11;
+UPDATE settle_order SET mch_id = 8,mch_name = '寿光',market_code = 'sg' WHERE market_id = 8;
+UPDATE settle_order SET mch_id = 11,mch_name = '杭州水产',market_code = 'hzsc' WHERE market_id = 11;
+UPDATE settle_order SET mch_id = 17,mch_name = '革新',market_code = 'gx' WHERE market_id = 17;
 
 UPDATE settle_config SET `state` = 2 WHERE `group_code` = 101 AND `code` = 6;
 
