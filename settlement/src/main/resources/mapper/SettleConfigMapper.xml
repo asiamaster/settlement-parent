@@ -35,4 +35,14 @@
     </if>
     order by sort_field
   </select>
+
+  <!-- 根据市场ID、组编码、编码获取唯一值 -->
+  <select id="get" resultMap="BaseResultMap">
+    select * from settle_config where `market_id` = #{marketId} and `group_code` = #{groupCode} and `code` = #{code} limit 1
+  </select>
+
+  <!-- 根据ID修改 -->
+  <update id="updateById" parameterType="com.dili.settlement.domain.SettleConfig">
+    update settle_config set `market_id` = #{marketId}, `group_code` = #{groupCode}, `code` = #{code}, `val` = #{val}, `state` = #{state}, `notes` = #{notes}, `sort_field` = #{sortField} where id = #{id}
+  </update>
 </mapper>
