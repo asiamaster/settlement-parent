@@ -34,7 +34,7 @@
         let queryType = $('input[name="queryType"]:checked').val();
         switch (queryType) {
             case "1":
-                $('#keyword').val("").prop("placeholder", "请输入客户姓名");
+                $('#keyword').val("").prop("placeholder", "请输入客户名称");
                 $('#btn-swipe-card').parent().addClass("d-none");
                 break;
             case "2":
@@ -52,7 +52,7 @@
                 $('#btn-swipe-card').parent().addClass("d-none");
                 break;
             default:
-                $('#keyword').val("").prop("placeholder", "请输入客户姓名");
+                $('#keyword').val("").prop("placeholder", "请输入客户名称");
                 $('#btn-swipe-card').parent().addClass("d-none");
                 break;
         }
