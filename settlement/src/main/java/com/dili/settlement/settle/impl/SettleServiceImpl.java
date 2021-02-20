@@ -7,6 +7,10 @@ import com.alibaba.fastjson.JSON;
 import com.dili.assets.sdk.dto.BusinessChargeItemDto;
 import com.dili.assets.sdk.rpc.BusinessChargeItemRpc;
 import com.dili.commons.rabbitmq.RabbitMQMessageService;
+import com.dili.customer.sdk.domain.CharacterType;
+import com.dili.customer.sdk.domain.Customer;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.settlement.config.SerialMQConfig;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.InvalidRequestDto;
@@ -28,6 +32,7 @@ import com.dili.settlement.service.SettleFeeItemService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.settle.SettleService;
 import com.dili.settlement.util.DateUtil;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
 import com.dili.uid.sdk.rpc.feign.UidFeignRpc;
 import org.slf4j.Logger;
@@ -73,6 +78,9 @@ public abstract class SettleServiceImpl implements SettleService {
 
     @Autowired
     protected RabbitMQMessageService rabbitMQMessageService;
+
+    @Autowired
+    protected CustomerRpc customerRpc;
 
     @Override
     public List<SettleOrder> canSettle(List<Long> ids) {
@@ -157,6 +165,7 @@ public abstract class SettleServiceImpl implements SettleService {
                 serialRecord.setCustomerId(settleOrderDto.getTradeCustomerId());
                 serialRecord.setCustomerNo(settleOrderDto.getTradeCustomerCode());
                 serialRecord.setCustomerName(settleOrderDto.getTradeCustomerName());
+                serialRecord.setCustomerType(buildCustomerCharacterType(settleOrderDto.getTradeCustomerId(), settleOrderDto.getMarketId()));
                 serialRecord.setAction(feeItem.getAmount() == null ? null : feeItem.getAmount() < 0L ? ActionEnum.EXPENSE.getCode() : ActionEnum.INCOME.getCode());
                 serialRecord.setStartBalance(countStartBalance(feeItem.getBalance(), totalFrozenBalance));
                 serialRecord.setAmount(feeItem.getAmount() == null ? null : Math.abs(feeItem.getAmount()));
@@ -236,5 +245,21 @@ public abstract class SettleServiceImpl implements SettleService {
      */
     protected BusinessChargeItemDto getChargeItemById(Long id) {
         return RpcResultResolver.resolver(businessChargeItemRpc.getById(id), ServiceNameHolder.ASSETS_SERVICE_NAME);
+    }
+
+    /**
+     *
+     * @param customerId
+     * @return
+     */
+    protected String buildCustomerCharacterType(Long customerId, Long marketId) {
+        try {
+            CustomerExtendDto customerExtendDto = RpcResultResolver.resolver(customerRpc.get(customerId, marketId), ServiceNameHolder.CUSTOMER_SERVICE_NAME);
+            String type = customerExtendDto.getCharacterTypeList().stream().map(CharacterType::getSubType).collect(Collectors.joining(","));
+            return type;
+        } catch (Exception e) {
+            LOGGER.error("query customer info", e);
+        }
+        return "";
     }
 }
