@@ -1,5 +1,6 @@
 package com.dili.settlement.config;
 
+import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.filter.FilterManager;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.wall.WallConfig;
@@ -45,16 +46,18 @@ public class DruidDataSourceWrapper extends DruidDataSource implements Initializ
         }
         String[] filterArray = filters.split("\\,");
         for (String item : filterArray) {
-            if ("wall".equalsIgnoreCase(item.trim())) {
-                WallConfig wallConfig = new WallConfig();
-                wallConfig.setMultiStatementAllow(true);
-                wallConfig.setNoneBaseStatementAllow(true);
-                WallFilter wallFilter = new WallFilter();
-                wallFilter.setConfig(wallConfig);
-                this.filters.add(wallFilter);
+            FilterManager.loadFilter(this.filters, item.trim());
+        }
+        for (Filter filter : this.filters) {
+            if (!(filter instanceof WallFilter)) {
                 continue;
             }
-            FilterManager.loadFilter(this.filters, item.trim());
+            WallFilter wallFilter = (WallFilter) filter;
+            WallConfig config = wallFilter.getConfig();
+            config = config == null ? new WallConfig() : config;
+            config.setMultiStatementAllow(true);
+            config.setNoneBaseStatementAllow(true);
+            wallFilter.setConfig(config);
         }
     }
 

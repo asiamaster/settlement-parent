@@ -119,6 +119,11 @@
                     信息更改
                 </button>
                 </#resource>
+                <#resource code="settlement-export">
+                <button id="btn-export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm');"><i class="fa fa-print"></i>
+                    导出
+                </button>
+                </#resource>
             </div>
             <table id="grid" data-toggle="table" data-title="结算单" class="table" data-toolbar="#toolbar"
                    data-pagination="true" data-page-number="1" data-page-size="10"
