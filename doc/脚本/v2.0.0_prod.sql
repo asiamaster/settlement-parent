@@ -244,3 +244,6 @@ WHERE
 ) temp ON se.code = temp.settlement_code AND se.state = 1
   SET se.amount = se.amount + temp.earnest_deduction, se.deduct_enable = 1;
 /* 调整 end*/
+
+-- 增加结算日志业务类型
+INSERT INTO `uap`.`data_dictionary_value`(`dd_code`, `order_number`, `name`, `code`, `description`, `state`) VALUES ('log_business_type', 12, '结算', 'settlement', NULL, 1);
