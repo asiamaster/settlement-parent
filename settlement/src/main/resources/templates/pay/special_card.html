@@ -41,12 +41,21 @@
         密码:
     </div>
     <div class="col-4">
+        <% if (isNotEmpty(allowInput) && allowInput == "1") { %>
+        <div class="input-group">
+            <input type="password" name="tradePassword" id="tradePassword" class="form-control digits" maxlength="6" required/>
+            <div class="input-group-append">
+                <span class="input-group-text"><a id="passwordReader" href="javascript:;">输入密码</a></span>
+            </div>
+        </div>
+        <% } else { %>
         <div class="input-group">
             <input type="password" name="tradePassword" id="tradePassword" class="form-control" maxlength="6" readonly required/>
             <div class="input-group-append">
                 <span class="input-group-text"><a id="passwordReader" href="javascript:;">输入密码</a></span>
             </div>
         </div>
+        <% } %>
     </div>
 </div>
 <script type="text/javascript">

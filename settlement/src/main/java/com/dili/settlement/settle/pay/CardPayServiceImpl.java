@@ -9,10 +9,12 @@ import com.dili.settlement.dto.pay.CreateTradeRequestDto;
 import com.dili.settlement.dto.pay.PasswordRequestDto;
 import com.dili.settlement.enums.SettleWayEnum;
 import com.dili.settlement.enums.TradeChannelEnum;
+import com.dili.settlement.handler.DdCodeHolder;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.AccountQueryRpc;
 import com.dili.settlement.rpc.resolver.PayRpcResolver;
+import com.dili.settlement.service.DictionaryService;
 import com.dili.settlement.settle.PayService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
@@ -32,9 +34,13 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
     private PayRpcResolver payRpcResolver;
     @Autowired
     private AccountQueryRpc accountQueryRpc;
+    @Autowired
+    private DictionaryService dictionaryService;
 
     @Override
     public String forwardSpecial(SettleOrderDto settleOrderDto, ModelMap modelMap) {
+        String val = dictionaryService.getSingleDictVal(DdCodeHolder.PWD_BOX_ALLOW_INPUT, settleOrderDto.getMarketId(), "1");
+        modelMap.addAttribute("allowInput", val);
         return "pay/special_card";
     }
 
