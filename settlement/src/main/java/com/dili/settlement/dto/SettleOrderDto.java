@@ -26,6 +26,8 @@ public class SettleOrderDto extends SettleOrder {
     private List<Long> appIdList;
     //客户名称模糊匹配
     private String customerNameMatch;
+    //提交人模糊查询
+    private String submitterNameMatch;
     //结算员模糊匹配
     private String operatorNameMatch;
     //结算开始时间
@@ -101,6 +103,14 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setCustomerNameMatch(String customerNameMatch) {
         this.customerNameMatch = customerNameMatch;
+    }
+
+    public String getSubmitterNameMatch() {
+        return submitterNameMatch;
+    }
+
+    public void setSubmitterNameMatch(String submitterNameMatch) {
+        this.submitterNameMatch = submitterNameMatch;
     }
 
     public String getOperatorNameMatch() {

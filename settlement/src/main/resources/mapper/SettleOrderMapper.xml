@@ -135,6 +135,9 @@
     <if test="customerNameMatch != null and customerNameMatch !=''">
       and `customer_name` like concat('%',#{customerNameMatch},'%')
     </if>
+    <if test="submitterNameMatch != null and submitterNameMatch !=''">
+      and `submitter_name` like concat('%',#{submitterNameMatch},'%')
+    </if>
     <if test="operatorNameMatch != null and operatorNameMatch !=''">
       and `operator_name` like concat('%',#{operatorNameMatch},'%')
     </if>

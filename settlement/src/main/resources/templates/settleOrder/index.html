@@ -34,6 +34,10 @@
                 <input type="text" class="form-control" name="customerNameMatch" id="customerNameMatch" maxlength="50"/>
             </div>
             <div class="form-group col">
+                <label for="operatorNameMatch" class="">提交人</label>
+                <input type="text" class="form-control" name="submitterNameMatch" id="submitterNameMatch" maxlength="50"/>
+            </div>
+            <div class="form-group col">
                 <label for="operatorNameMatch" class="">结算员</label>
                 <input type="text" class="form-control" name="operatorNameMatch" id="operatorNameMatch" maxlength="50"/>
             </div>
@@ -164,6 +168,9 @@
                     </th>
                     <th data-field="amountText" data-align="center" data-sortable="true" data-sort-name="amount">
                         金额
+                    </th>
+                    <th data-field="submitterName" data-align="center" data-sortable="true" data-sort-name="submitter_name">
+                        提交人
                     </th>
                     <th data-field="operatorName" data-align="center" data-sortable="true" data-sort-name="operator_name">
                         结算员
