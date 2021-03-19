@@ -1,7 +1,7 @@
 package com.dili.settlement.controller;
 
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
+import com.dili.customer.sdk.domain.query.CustomerQueryInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.settlement.dto.CustomerDto;
 import com.dili.settlement.dto.UserAccountCardResponseDto;
