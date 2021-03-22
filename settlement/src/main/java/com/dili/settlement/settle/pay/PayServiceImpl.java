@@ -254,7 +254,7 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         customerAccountService.handle(po.getMchId(), po.getCustomerId(), earnestAmount, accountSerialList);
 
         MchIdHolder.set(po.getMchId());
-        //提交交易
+        //提交交易 由于支付是批量操作，作废可能只针对单条，所以无法走支付作废接口，走支付提供的综合退费的接口
         RefundRequestDto refundRequestDto = RefundRequestDto.build(po.getTradeNo(), po.getAmount(), feeItemList, deductFeeItemList);
         TradeResponseDto tradeResponseDto = RpcResultResolver.resolver(payRpc.refundTrade(refundRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
 
