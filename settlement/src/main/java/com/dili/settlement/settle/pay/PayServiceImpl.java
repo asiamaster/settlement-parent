@@ -128,6 +128,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
+            if (settleFeeItem.getAmount() == 0L) {//金额为0不提交到支付、不构建流水、不累计定金
+                continue;
+            }
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
@@ -168,6 +171,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             if (Integer.valueOf(EnableEnum.NO.getCode()).equals(settleOrder.getDeductEnable())) {
                 continue;
             }
+            if (settleOrder.getAmount() == 0L) {//金额为0不提交到支付、不构建流水、不累计定金
+                continue;
+            }
             if (totalDeductAmount == 0L) {//总抵扣额用完时不再处理
                 continue;
             }
@@ -184,6 +190,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderIdList(settleOrderDto.getIdList());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//计算定金总额、构建流水、支付费用项列表
+            if (settleFeeItem.getAmount() == 0L) {
+                continue;
+            }
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|%s单号%s", settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType(), BizTypeEnum.getNameByCode(settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessType()), settleOrderMap.get(settleFeeItem.getSettleOrderId()).getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
@@ -213,6 +222,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
 
     @Override
     public void invalidSpecial(SettleOrder po, SettleOrder reverseOrder, InvalidRequestDto param) {
+        if (po.getAmount() == 0L) {
+            return;
+        }
         long earnestAmount = 0L;
         List<FeeItemDto> feeItemList = new ArrayList<>();
         List<FeeItemDto> deductFeeItemList = new ArrayList<>();
@@ -228,6 +240,9 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         }
         List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(po.getId());
         for (SettleFeeItem settleFeeItem : settleFeeItemList) {//构建流水、退款费用项列表
+            if (settleFeeItem.getAmount() == 0L) {//金额为0不提交到支付、不构建流水、不累计定金
+                continue;
+            }
             addFeeItem(feeItemList, FeeItemDto.build(settleFeeItem.getAmount(), settleFeeItem.getChargeItemId(), settleFeeItem.getChargeItemName(), String.format("%s|作废，%s单号%s", po.getBusinessType(), BizTypeEnum.getNameByCode(po.getBusinessType()), po.getBusinessCode())));
             //如果有定金,则计算定金总额以及构建流水
             if (BusinessChargeItemEnum.SystemSubjectType.定金.getCode().equals(settleFeeItem.getFeeType())) {
