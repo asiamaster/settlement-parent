@@ -210,7 +210,7 @@ public class SettleOrderController extends AbstractController {
             return;
         }
         long balance = customerAccount.getAmount() - customerAccount.getFrozenAmount();
-        if (balance == 0) {
+        if (balance == 0L) {
             return;
         }
         long totalDeductAmount = balance > settleAmountDto.getTotalDeductAmount() ? settleAmountDto.getTotalDeductAmount() : balance;
