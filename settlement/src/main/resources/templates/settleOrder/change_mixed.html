@@ -16,15 +16,15 @@
             <% if (isNotEmpty(settleWayList) && settleWayList.~size > 0) {
                 for (way in settleWayList) {
             %>
-            <input type="hidden" name="settleWayDetailList[${wayLP.index}].id" value="${way.id!}"/>
+            <input type="hidden" name="settleWayDetailList[${wayLP.dataIndex}].id" value="${way.id!}"/>
                 <tr>
                     <td class="text-center align-middle">${way.wayText!}</td>
                     <td class="text-center align-middle">${way.amountText!}</td>
                     <td class="text-center align-middle">
                         <div class="input-group">
-                            <input type="text" name="settleWayDetailList[${wayLP.index}].chargeDate" id="settleWayDetailList[${wayLP.index}].chargeDate" class="form-control laydate" value="${way.chargeDate!}" />
+                            <input type="text" name="settleWayDetailList[${wayLP.dataIndex}].chargeDate" id="settleWayDetailList[${wayLP.dataIndex}].chargeDate" class="form-control laydate" value="${way.chargeDate!}" />
                             <div class="input-group-append">
-                                <label for="settleWayDetailList[${wayLP.index}].chargeDate"  class="input-group-text fa fa-calendar"></label>
+                                <label for="settleWayDetailList[${wayLP.dataIndex}].chargeDate"  class="input-group-text fa fa-calendar"></label>
                             </div>
                         </div>
                     </td>
