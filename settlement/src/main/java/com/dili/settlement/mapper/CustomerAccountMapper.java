@@ -1,5 +1,6 @@
 package com.dili.settlement.mapper;
 
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.dto.CustomerAccountDto;
 import com.dili.ss.base.MyMapper;
@@ -52,4 +53,11 @@ public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
      * @return
      */
     List<CustomerAccount> list(CustomerAccountDto query);
+
+    /**
+     * 根据客户id修改定金账户客户信息
+     * @param customer
+     * @return
+     */
+    int updateCustomerInfo(CustomerExtendDto customer);
 }

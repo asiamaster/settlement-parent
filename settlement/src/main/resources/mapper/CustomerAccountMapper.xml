@@ -112,4 +112,9 @@
             ORDER BY ${sort} ${order}
         </if>
     </select>
+
+    <!-- 根据客户ID修改客户相关信息 -->
+    <update id="updateCustomerInfo" parameterType="com.dili.customer.sdk.domain.dto.CustomerExtendDto">
+        update customer_account set customer_name = #{customer.name}, customer_phone = #{customer.contactsPhone}, customer_certificate = #{customer.certificateNumber} where customer_id = #{customer.id}
+    </update>
 </mapper>

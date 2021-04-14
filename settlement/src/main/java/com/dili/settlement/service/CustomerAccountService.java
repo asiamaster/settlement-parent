@@ -1,5 +1,6 @@
 package com.dili.settlement.service;
 
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.dto.CustomerAccountDto;
@@ -103,4 +104,10 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param transferDto
      */
     void transfer(EarnestTransferDto transferDto);
+
+    /**
+     * 修改定金账户客户信息
+     * @param customer
+     */
+    void updateCustomerInfo(CustomerExtendDto customer);
 }

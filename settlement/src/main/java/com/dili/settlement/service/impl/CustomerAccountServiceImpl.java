@@ -2,6 +2,7 @@ package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
 import com.dili.settlement.dto.CustomerAccountDto;
@@ -247,6 +248,12 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("来源：%s；转移原因：%s；", payAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
         receiveAccountSerial.setCustomerAccountId(receiveAccount.getId());
         customerAccountSerialService.insertSelective(receiveAccountSerial);
+    }
+
+    @Transactional
+    @Override
+    public void updateCustomerInfo(CustomerExtendDto customer) {
+        getActualDao().updateCustomerInfo(customer);
     }
 
     /**
