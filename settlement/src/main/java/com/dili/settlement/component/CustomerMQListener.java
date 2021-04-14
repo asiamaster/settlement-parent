@@ -33,7 +33,7 @@ public class CustomerMQListener {
      * 客户信息修改后，更新账户冗余信息
      */
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(value = "customer.info", autoDelete = "false"),
+            value = @Queue(value = "settlement.customer.info", autoDelete = "false"),
             exchange = @Exchange(value = MqConstant.CUSTOMER_MQ_FANOUT_EXCHANGE, type = ExchangeTypes.FANOUT)
     ))
     public void processCustomerInfo(Channel channel, Message message) {
