@@ -23,7 +23,6 @@ public class CallbackRetryTask extends AbstractRetryTask<Boolean> {
 
     @Override
     public Boolean call() {
-        System.out.println(Thread.currentThread().getName() + " " + this.getCurrentTimes());
         try {
             if (this.hasNext() && !settleOrderService.callback(settleOrder)) {
                 AsyncTaskExecutor.putRetryTask(this);
