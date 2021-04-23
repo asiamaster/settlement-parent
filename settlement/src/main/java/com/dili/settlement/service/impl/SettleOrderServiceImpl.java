@@ -1,6 +1,12 @@
 package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.dispatcher.OrderDispatcher;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
@@ -9,22 +15,33 @@ import com.dili.settlement.dto.ChargeDateDto;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleAmountDto;
 import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.enums.LinkTypeEnum;
 import com.dili.settlement.enums.ReverseEnum;
 import com.dili.settlement.enums.SettleStateEnum;
 import com.dili.settlement.enums.SettleTypeEnum;
 import com.dili.settlement.mapper.SettleOrderMapper;
+import com.dili.settlement.service.RetryRecordService;
+import com.dili.settlement.service.SettleOrderLinkService;
 import com.dili.settlement.service.SettleOrderService;
+import com.dili.settlement.util.DateUtil;
+import com.dili.settlement.util.GeneralUtil;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.exception.BusinessException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -32,6 +49,8 @@ import java.util.List;
  */
 @Service
 public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> implements SettleOrderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettleOrderServiceImpl.class);
+
     @Autowired
     private PayDispatcher payDispatcher;
 
@@ -40,6 +59,15 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
 
     @Autowired
     private OrderDispatcher orderDispatcher;
+
+    @Autowired
+    private RetryRecordService retryRecordService;
+
+    @Autowired
+    private SettleOrderLinkService settleOrderLinkService;
+
+    @Autowired
+    private CallbackConfiguration callbackConfiguration;
 
     public SettleOrderMapper getActualDao() {
         return (SettleOrderMapper)getDao();
@@ -193,5 +221,93 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
     @Override
     public int updateChargeDate(ChargeDateDto chargeDateDto) {
         return getActualDao().updateChargeDate(chargeDateDto);
+    }
+
+    @Override
+    public boolean callback(SettleOrder settleOrder) {
+        try {
+            SortedMap<String, String> map = getMapData(settleOrder);
+            if (callbackConfiguration.getSign()) {
+                sign(map, callbackConfiguration.getSignKey());
+            }
+            String url = settleOrderLinkService.getUrl(settleOrder.getId(), LinkTypeEnum.CALLBACK.getCode());
+            doCallback(url, map);
+            retryRecordService.delete(settleOrder.getId());
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Settle callback error", e);
+        }
+        return false;
+    }
+
+    /**
+     * 发起http回调
+     * @param url
+     * @param map
+     */
+    private void doCallback(String url, Map<String, String> map) {
+        HttpRequest request = HttpUtil.createPost(url);
+        request.header("Content-Type", "application/json;charset=UTF-8");
+        String responseBody = request.body(JSON.toJSONString(map)).execute().body();
+        if (StrUtil.isBlank(responseBody)) {
+            throw new BusinessException("", "回调返回内容为空");
+        }
+        BaseOutput<Boolean> baseOutput = JSON.parseObject(responseBody, new TypeReference<BaseOutput<Boolean>>(){}.getType());
+        if (!baseOutput.isSuccess()) {
+            throw new BusinessException("", baseOutput.getMessage());
+        }
+    }
+
+    /**
+     * 用于处理返回字段
+     * @param settleOrder
+     * @return
+     */
+    private SortedMap<String, String> getMapData(SettleOrder settleOrder) {
+        SortedMap<String, String> map = new TreeMap<>();
+        map.put("marketId", String.valueOf(settleOrder.getMarketId()));
+        map.put("mchId", String.valueOf(settleOrder.getMchId()));
+        map.put("appId", String.valueOf(settleOrder.getAppId()));
+        map.put("code", settleOrder.getCode());
+        map.put("orderCode", settleOrder.getOrderCode());
+        map.put("businessCode", settleOrder.getBusinessCode());
+        map.put("amount", String.valueOf(settleOrder.getAmount()));
+        map.put("deductAmount", String.valueOf(settleOrder.getDeductAmount()));
+        map.put("way", String.valueOf(settleOrder.getWay()));
+        map.put("state", String.valueOf(settleOrder.getState()));
+        map.put("operatorId", String.valueOf(settleOrder.getOperatorId()));
+        map.put("operatorName", settleOrder.getOperatorName());
+        map.put("operateTime", DateUtil.formatDateTime(settleOrder.getOperateTime(), "yyyy-MM-dd HH:mm:ss"));
+        map.put("accountNumber", settleOrder.getAccountNumber());
+        map.put("bankName", settleOrder.getBankName());
+        map.put("bankCardHolder", settleOrder.getBankCardHolder());
+        map.put("serialNumber", settleOrder.getSerialNumber());
+        map.put("randomStr", GeneralUtil.uuid());
+        map.put("notes", settleOrder.getNotes());
+        map.put("tradeCardNo", settleOrder.getTradeCardNo());
+        map.put("tradeCustomerId", String.valueOf(settleOrder.getTradeCustomerId()));
+        map.put("tradeCustomerName", settleOrder.getTradeCustomerName());
+        return map;
+    }
+
+    /**
+     * 简单的数据签名
+     * @param map
+     * @param signKey
+     */
+    private void sign(SortedMap<String, String> map, String signKey) {
+        StringBuilder builder = new StringBuilder();
+        for (String key : map.keySet()) {
+            //空值不参与签名
+            if (StrUtil.isBlank(map.get(key))) {
+                continue;
+            }
+            builder.append(key).append("=").append(map.get(key)).append("&");
+        }
+        if (!StrUtil.isBlank(signKey)) {
+            builder.append("signKey=").append(signKey);
+        }
+        String signResult = GeneralUtil.md5(builder.toString());
+        map.put("sign", signResult);
     }
 }

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.commons.bstable.TableResult;
 import com.dili.logger.sdk.domain.BusinessLog;
 import com.dili.logger.sdk.rpc.BusinessLogRpc;
-import com.dili.settlement.component.CallbackHolder;
+import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
 import com.dili.settlement.domain.CustomerAccount;
@@ -21,6 +21,8 @@ import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.rpc.BusinessRpc;
 import com.dili.settlement.serializer.DisplayTextAfterFilter;
 import com.dili.settlement.service.*;
+import com.dili.settlement.task.AsyncTaskExecutor;
+import com.dili.settlement.task.CallbackRetryTask;
 import com.dili.settlement.util.DateUtil;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
@@ -85,6 +87,9 @@ public class SettleOrderController extends AbstractController {
 
     @Autowired
     private BusinessLogRpc businessLogRpc;
+
+    @Autowired
+    private CallbackConfiguration callbackConfiguration;
 
     @Value("${project.serverPath}")
     private String serverPath;
@@ -245,7 +250,7 @@ public class SettleOrderController extends AbstractController {
         prepareSettle(settleOrderDto);
         List<SettleOrder> settleOrderList = payDispatcher.settle(settleOrderDto);
         for (SettleOrder po : settleOrderList) {
-            CallbackHolder.offerSource(po);
+            AsyncTaskExecutor.submit(new CallbackRetryTask(callbackConfiguration.getTimes(), callbackConfiguration.getIntervalMills(), settleOrderService, po));
         }
         return BaseOutput.success().setData(settleOrderList);
     }
@@ -347,7 +352,7 @@ public class SettleOrderController extends AbstractController {
         prepareSettle(settleOrderDto);
         List<SettleOrder> settleOrderList = refundDispatcher.settle(settleOrderDto);
         for (SettleOrder po : settleOrderList) {
-            CallbackHolder.offerSource(po);
+            AsyncTaskExecutor.submit(new CallbackRetryTask(callbackConfiguration.getTimes(), callbackConfiguration.getIntervalMills(), settleOrderService, po));
         }
         return BaseOutput.success().setData(settleOrderList);
     }

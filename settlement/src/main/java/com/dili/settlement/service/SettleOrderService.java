@@ -123,4 +123,11 @@ public interface SettleOrderService extends BaseService<SettleOrder, Long> {
      * @return
      */
     int updateChargeDate(ChargeDateDto chargeDateDto);
+
+    /**
+     * 结算回调处理
+     * @param settleOrder
+     * @return
+     */
+    boolean callback(SettleOrder settleOrder);
 }

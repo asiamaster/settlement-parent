@@ -1,17 +1,19 @@
 package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.dili.settlement.component.CallbackHolder;
+import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.mapper.RetryRecordMapper;
 import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleOrderService;
+import com.dili.settlement.task.AsyncTaskExecutor;
+import com.dili.settlement.task.CallbackRetryTask;
 import com.dili.ss.base.BaseServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -25,8 +27,11 @@ public class RetryRecordServiceImpl extends BaseServiceImpl<RetryRecord, Long> i
         return (RetryRecordMapper)getDao();
     }
 
-    @Resource
+    @Autowired
     private SettleOrderService settleOrderService;
+
+    @Autowired
+    private CallbackConfiguration callbackConfiguration;
 
     @Override
     public void executeCallback() {
@@ -41,7 +46,7 @@ public class RetryRecordServiceImpl extends BaseServiceImpl<RetryRecord, Long> i
                 delete(retryRecord.getId());
                 continue;
             }
-            CallbackHolder.offerSource(settleOrder);
+            AsyncTaskExecutor.submit(new CallbackRetryTask(callbackConfiguration.getTimes(), callbackConfiguration.getIntervalMills(), settleOrderService, settleOrder));
         }
     }
 
