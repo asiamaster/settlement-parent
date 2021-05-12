@@ -78,6 +78,13 @@
         $('#table-settle-order-list').load(url);
     }
 
+    /** 根据提交人ID查询单据 */
+    function loadSubmitterOrdersHandler(submitterId) {
+        $('#settle-order-list').removeClass("d-none");
+        url = "/settleOrder/listPayOrdersBySubmitterId.action?submitterId=" + submitterId;
+        $('#table-settle-order-list').load(url);
+    }
+
     /** 刷新表格处理器 */
     function refreshTableHandler() {
         if (url === '') {

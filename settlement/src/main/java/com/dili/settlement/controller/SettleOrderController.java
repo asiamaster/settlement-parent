@@ -109,8 +109,10 @@ public class SettleOrderController extends AbstractController {
      * @return
      */
     @RequestMapping(value = "/listPayOrders.action")
-    public String listPayOrders(Long customerId, ModelMap modelMap) {
-        List<SettleOrder> settleOrderList = listSettleOrders(customerId, SettleTypeEnum.PAY.getCode());
+    public String listPayOrdersByCustomerId(Long customerId, ModelMap modelMap) {
+        SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.PAY.getCode());
+        query.setCustomerId(customerId);
+        List<SettleOrder> settleOrderList = customerId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
         modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
         return "pay/table";
@@ -122,51 +124,45 @@ public class SettleOrderController extends AbstractController {
      * @return
      */
     @RequestMapping(value = "/listPayOrdersByTrailerNumber.action")
-    public String listPayOrders(String trailerNumber, ModelMap modelMap) {
-        List<SettleOrder> settleOrderList = listSettleOrders(trailerNumber, SettleTypeEnum.PAY.getCode());
+    public String listPayOrdersByTrailerNumber(String trailerNumber, ModelMap modelMap) {
+        SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.PAY.getCode());
+        query.setTrailerNumber(trailerNumber);
+        query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
+        List<SettleOrder> settleOrderList = StrUtil.isBlank(trailerNumber) ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
         modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
         return "pay/table";
     }
 
     /**
-     * 提取公共查询结算单方法
-     * @param customerId
-     * @param type
+     * 根据提交人ID查询缴费单
+     * @param submitterId
      * @return
      */
-    private List<SettleOrder> listSettleOrders(Long customerId, Integer type) {
-        if (customerId == null) {
-            return new ArrayList<>(0);
-        }
-        UserTicket userTicket = getUserTicket();
-        SettleOrderDto query = new SettleOrderDto();
-        query.setType(type);
-        query.setState(SettleStateEnum.WAIT_DEAL.getCode());
-        query.setCustomerId(customerId);
-        query.setMarketId(userTicket.getFirmId());
-        query.setReverse(ReverseEnum.NO.getCode());
-        return settleOrderService.list(query);
+    @RequestMapping(value = "/listPayOrdersBySubmitterId.action")
+    public String listPayOrdersBySubmitterId(Long submitterId, ModelMap modelMap) {
+        SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.PAY.getCode());
+        query.setSubmitterId(submitterId);
+        query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
+        List<SettleOrder> settleOrderList = submitterId == null ? new ArrayList<>(0) : settleOrderService.list(query);
+        List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
+        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        return "pay/table";
     }
 
     /**
-     * 提取公共查询结算单方法
-     * @param trailerNumber
+     * 构建待结算查询条件
      * @param type
      * @return
      */
-    private List<SettleOrder> listSettleOrders(String trailerNumber, Integer type) {
-        if (StrUtil.isBlank(trailerNumber)) {
-            return new ArrayList<>(0);
-        }
+    private SettleOrderDto buildSettleListQuery(Integer type) {
         UserTicket userTicket = getUserTicket();
         SettleOrderDto query = new SettleOrderDto();
         query.setType(type);
         query.setState(SettleStateEnum.WAIT_DEAL.getCode());
-        query.setTrailerNumber(trailerNumber);
         query.setMarketId(userTicket.getFirmId());
         query.setReverse(ReverseEnum.NO.getCode());
-        return settleOrderService.list(query);
+        return query;
     }
 
     /**
@@ -295,7 +291,9 @@ public class SettleOrderController extends AbstractController {
      */
     @RequestMapping(value = "/listRefundOrders.action")
     public String listRefundOrders(Long customerId, ModelMap modelMap) {
-        List<SettleOrder> settleOrderList = listSettleOrders(customerId, SettleTypeEnum.REFUND.getCode());
+        SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.REFUND.getCode());
+        query.setCustomerId(customerId);
+        List<SettleOrder> settleOrderList = customerId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
         modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
         return "refund/table";

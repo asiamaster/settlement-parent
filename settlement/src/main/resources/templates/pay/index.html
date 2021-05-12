@@ -39,6 +39,16 @@
                 </div>
             </div>
             <% } %>
+            <% if (@com.dili.settlement.handler.SupportHandler.submitterQuerySupport()) { %>
+            <div class="col-1">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="queryType" id="queryType5" value="5">
+                    <label class="form-check-label" for="queryType5">
+                        提交人
+                    </label>
+                </div>
+            </div>
+            <% } %>
         </div>
         <div class="row">
             <div class="col-2">
@@ -74,6 +84,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary px-5" data-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary px-5" id="btn-choose-customer">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" role="dialog" id="dialog-submitter-list">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择提交人</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow: auto;">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-5" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary px-5" id="btn-choose-submitter">确定</button>
                 </div>
             </div>
         </div>

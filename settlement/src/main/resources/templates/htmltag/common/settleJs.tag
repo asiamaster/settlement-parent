@@ -25,6 +25,20 @@
         $('#dialog-customer-list').on("dblclick", 'table tr', function() {
             chooseCustomerCompleteHandler($(this));
         });
+
+        //选择提交人列表 确定按钮事件
+        $('#btn-choose-submitter').click(function () {
+            let arr = $('input[name="submitterRadio"]:checked');
+            if (arr.length === 0) {
+                showInfo("请先选择提交人");
+                return;
+            }
+            let row = $(arr[0]).closest('tr');
+            chooseSubmitterCompleteHandler(row);
+        });
+        $('#dialog-submitter-list').on("dblclick", 'table tr', function() {
+            chooseSubmitterCompleteHandler($(this));
+        });
     });
 
     /** 查询单选框change事件处理器 */
@@ -49,6 +63,10 @@
                 break;
             case "4":
                 $('#keyword').val("").prop("placeholder", "请输入挂号");
+                $('#btn-swipe-card').parent().addClass("d-none");
+                break;
+            case "5":
+                $('#keyword').val("").prop("placeholder", "请输入姓名/用户名/手机号");
                 $('#btn-swipe-card').parent().addClass("d-none");
                 break;
             default:
@@ -77,6 +95,9 @@
                 $('#middle-block').removeClass("d-none");
                 $('#middle-block').html(template('template-trailer-number-info', {trailerNumber: keyword}));
                 loadTrailerNumberOrdersHandler(keyword);
+                break;
+            case "5":
+                requestSubmitterHandler(keyword);
                 break;
         }
     }
@@ -135,6 +156,60 @@
         loadCustomerOrdersHandler(cus.id);
     }
 
+    /** 请求提交人处理器 */
+    function requestSubmitterHandler(keyword) {
+        $.ajax({
+            url:"/user/list.action",
+            type:"POST",
+            dataType:"json",
+            data:{
+                keyword:keyword
+            },
+            success:function(result) {
+                if (result.code === '200') {
+                    requestSubmitterCompleteHandler(result.data);
+                } else {
+                    showError(result.message);
+                }
+            },
+            error:function() {
+                showError("系统异常,请稍后重试");
+            }
+        });
+    }
+
+    /** 请求提交人完成处理器 */
+    function requestSubmitterCompleteHandler(arr) {
+        if (arr.length === 0) {
+            showInfo("未查询到提交人记录");
+            return;
+        }
+        if (arr.length === 1) {
+            certainSubmitterHandler(arr[0]);
+            return;
+        }
+        $('#dialog-submitter-list .modal-body').html(template('template-submitter-list', {submitters : arr}));
+        $('#dialog-submitter-list').modal('show');
+    }
+
+    /** 选择提交人完成处理器 */
+    function chooseSubmitterCompleteHandler(row) {
+        let submitter = {};
+        submitter.id = row.attr("bind-id");
+        submitter.realName = row.attr("bind-real-name");
+        submitter.userName = row.attr("bind-user-name");
+        submitter.cellphone = row.attr("bind-cellphone");
+        $('#dialog-submitter-list').modal('hide');
+        certainSubmitterHandler(submitter);
+    }
+
+    /** 确定唯一提交人处理器 */
+    function certainSubmitterHandler(submitter) {
+        $('#middle-block').removeClass("d-none");
+        $('#middle-block').html(template('template-submitter-info', submitter));
+        loadSubmitterOrdersHandler(submitter.id);
+    }
+
     /** 清除按钮点击事件处理器 */
     function clearClickHandler() {
         $('#middle-block').addClass("d-none");
@@ -190,6 +265,14 @@
         <div class="col-1">{{contactsPhone}}</div>
     </div>
 </script>
+<script id="template-submitter-info" type="text/html">
+    <hr>
+    <div class="row">
+        <div class="col-2">{{realName}}</div>
+        <div class="col-2">{{userName}}</div>
+        <div class="col-1">{{cellphone}}</div>
+    </div>
+</script>
 <script id="template-trailer-number-info" type="text/html">
     <hr>
     <div class="row">
@@ -215,6 +298,29 @@
                     <td class="text-center align-middle">{{cus.contactsPhone}}</td>
                 </tr>
             {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<script id="template-submitter-list" type="text/html">
+    <table id="table-submitter-list" class="table table-bordered table-hover" >
+        <thead>
+        <tr>
+            <th class="text-center align-middle"></th>
+            <th class="text-center align-middle">姓名</th>
+            <th class="text-center align-middle">用户名</th>
+            <th class="text-center align-middle">手机号</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{each submitters sub index}}
+        <tr bind-id="{{sub.id}}" bind-real-name="{{sub.realName}}" bind-user-name="{{sub.userName}}" bind-cellphone="{{sub.cellphone}}">
+            <td class="text-center align-middle"><input type="radio" name="submitterRadio" value="{{sub.id}}"/></td>
+            <td class="text-center align-middle">{{sub.realName}}</td>
+            <td class="text-center align-middle">{{sub.userName}}</td>
+            <td class="text-center align-middle">{{sub.cellphone}}</td>
+        </tr>
+        {{/each}}
         </tbody>
     </table>
 </script>

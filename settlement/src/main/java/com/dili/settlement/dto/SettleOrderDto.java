@@ -42,6 +42,8 @@ public class SettleOrderDto extends SettleOrder {
     private List<String> orderCodeList;
     //业务类型查询列表
     private String[] businessTypeArray;
+    //是否可能存在多客户
+    private Boolean multiCustomer;
     /** 查询 end */
 
     /** 结算 start */
@@ -239,5 +241,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setTradeCustomerType(String tradeCustomerType) {
         this.tradeCustomerType = tradeCustomerType;
+    }
+
+    public Boolean getMultiCustomer() {
+        return multiCustomer;
+    }
+
+    public void setMultiCustomer(Boolean multiCustomer) {
+        this.multiCustomer = multiCustomer;
     }
 }

@@ -34,6 +34,18 @@ public class SupportHandler {
     }
 
     /**
+     * 是否支持提交人查询
+     * @return
+     */
+    public static boolean submitterQuerySupport() {
+        UserTicket userTicket = getUserTicket();
+        if ("sy".equalsIgnoreCase(userTicket.getFirmCode()) || "qqhe".equals(userTicket.getFirmCode())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 获取登录用户信息 如为null则new一个，以免空指针
      * @return
      */
