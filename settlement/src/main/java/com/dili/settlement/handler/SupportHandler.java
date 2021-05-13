@@ -39,7 +39,7 @@ public class SupportHandler {
      */
     public static boolean submitterQuerySupport() {
         UserTicket userTicket = getUserTicket();
-        if ("sy".equalsIgnoreCase(userTicket.getFirmCode()) || "qqhe".equals(userTicket.getFirmCode())) {
+        if ("sy".equalsIgnoreCase(userTicket.getFirmCode()) || "qqhe".equalsIgnoreCase(userTicket.getFirmCode())) {
             return true;
         }
         return false;
