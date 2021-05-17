@@ -36,7 +36,12 @@
     function dialogCertainClickHandler(e, $iframe) {
         bui.loading.show('数据验证中，请稍候。。。');
         let win = $iframe[0].contentWindow;
-        if (!win.validateRefundForm()) {
+        try {//由于网络原因，点击确认按钮时子页面还未加载完成，遂增加异常处理机制以关闭遮罩
+            if (!win.validateRefundForm()) {
+                bui.loading.hide();
+                return false;
+            }
+        } catch (e) {
             bui.loading.hide();
             return false;
         }
