@@ -260,9 +260,9 @@
   </select>
 
   <!-- 根据id、version删除记录 -->
-  <update id="deleteById">
+  <delete id="deleteById">
     delete from settle_order where id = #{id} and version = #{version}
-  </update>
+  </delete>
 
   <!-- 根据id修改收款日期 -->
   <update id="updateChargeDate" parameterType="com.dili.settlement.dto.ChargeDateDto">
