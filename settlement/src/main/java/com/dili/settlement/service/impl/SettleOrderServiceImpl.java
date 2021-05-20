@@ -273,6 +273,7 @@ public class SettleOrderServiceImpl extends BaseServiceImpl<SettleOrder, Long> i
         map.put("businessCode", settleOrder.getBusinessCode());
         map.put("amount", String.valueOf(settleOrder.getAmount()));
         map.put("deductAmount", String.valueOf(settleOrder.getDeductAmount()));
+        map.put("transferAmount", String.valueOf(settleOrder.getTransferAmount()));
         map.put("way", String.valueOf(settleOrder.getWay()));
         map.put("state", String.valueOf(settleOrder.getState()));
         map.put("operatorId", String.valueOf(settleOrder.getOperatorId()));
