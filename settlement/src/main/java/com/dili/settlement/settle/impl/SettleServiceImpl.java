@@ -95,7 +95,6 @@ public abstract class SettleServiceImpl implements SettleService {
 
     @Override
     public void buildSettleInfo(SettleOrder settleOrder, SettleOrderDto settleOrderDto, LocalDateTime localDateTime) {
-        settleOrder.setDeductAmount(0L);
         settleOrder.setState(SettleStateEnum.DEAL.getCode());
         settleOrder.setWay(settleOrderDto.getWay());
         settleOrder.setOperatorId(settleOrderDto.getOperatorId());

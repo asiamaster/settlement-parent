@@ -35,6 +35,12 @@ public class SettleFeeItem extends BaseDomain {
     private String settleOrderCode;
 
     /**
+     * 收费项类型 1-费用项 2-抵扣项
+     */
+    @Column(name = "`charge_item_type`")
+    private Integer chargeItemType;
+
+    /**
      * 费用项ID
      */
     @Column(name = "`charge_item_id`")
@@ -118,6 +124,22 @@ public class SettleFeeItem extends BaseDomain {
      */
     public void setSettleOrderCode(String settleOrderCode) {
         this.settleOrderCode = settleOrderCode;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Integer getChargeItemType() {
+        return chargeItemType;
+    }
+
+    /**
+     * setter
+     * @param chargeItemType
+     */
+    public void setChargeItemType(Integer chargeItemType) {
+        this.chargeItemType = chargeItemType;
     }
 
     /**

@@ -59,6 +59,19 @@ public class CustomerAccount extends BaseDomain {
      */
     private Long frozenAmount;
 
+    /**
+     * 转抵金额
+     */
+    private Long transferAmount;
+
+    /**
+     * 转抵冻结金额
+     */
+    private Long frozenTransferAmount;
+
+    /**
+     * 版本号
+     */
     private Integer version;
 
     /**
@@ -251,6 +264,38 @@ public class CustomerAccount extends BaseDomain {
      */
     public void setFrozenAmount(Long frozenAmount) {
         this.frozenAmount = frozenAmount;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getTransferAmount() {
+        return transferAmount;
+    }
+
+    /**
+     * setter
+     * @param transferAmount
+     */
+    public void setTransferAmount(Long transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getFrozenTransferAmount() {
+        return frozenTransferAmount;
+    }
+
+    /**
+     * setter
+     * @param frozenTransferAmount
+     */
+    public void setFrozenTransferAmount(Long frozenTransferAmount) {
+        this.frozenTransferAmount = frozenTransferAmount;
     }
 
     /**

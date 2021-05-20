@@ -1,0 +1,26 @@
+<#bs4Body>
+<div class="container-fluid">
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="text-center align-middle">客户姓名</th>
+            <th class="text-center align-middle">客户电话</th>
+            <th class="text-center align-middle">客户证件</th>
+            <th class="text-center align-middle">金额</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% if (isNotEmpty(transferDetailList) && transferDetailList.~size > 0) {
+        for (item in transferDetailList) {
+        %>
+        <tr>
+            <td class="text-center align-middle">${item.customerName!}</td>
+            <td class="text-center align-middle">${item.customerPhone!}</td>
+            <td class="text-center align-middle">${item.customerCertificate!}</td>
+            <td class="text-center align-middle">${@com.dili.ss.util.MoneyUtils.centToYuan(item.amount)}</td>
+        </tr>
+        <% }} %>
+        </tbody>
+    </table>
+</div>
+</#bs4Body>

@@ -1,9 +1,6 @@
 package com.dili.settlement.dto;
 
-import com.dili.settlement.domain.SettleFeeItem;
-import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.domain.SettleOrderLink;
-import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.domain.*;
 
 import java.util.List;
 
@@ -17,6 +14,10 @@ public class SettleOrderDto extends SettleOrder {
     private List<SettleFeeItem> settleFeeItemList;
     //结算单链接列表
     private List<SettleOrderLink> settleOrderLinkList;
+    //抵扣项列表
+    private List<SettleFeeItem> deductFeeItemList;
+    //转抵明细列表
+    private List<TransferDetail> transferDetailList;
     //结算方式明细
     private List<SettleWayDetail> settleWayDetailList;
     /** 提交 end */
@@ -51,12 +52,6 @@ public class SettleOrderDto extends SettleOrder {
     private String ids;
     //id列表
     private List<Long> idList;
-    //收款总额
-    private Long totalAmount;
-    //总抵扣金额
-    private Long totalDeductAmount;
-    //实际结算金额
-    private Long settleAmount;
     //交易密码
     private String tradePassword;
     //建议校验token
@@ -65,6 +60,8 @@ public class SettleOrderDto extends SettleOrder {
     private String operatorNo;
     //交易客户类型
     private String tradeCustomerType;
+    //结算金额信息
+    private SettleAmountDto settleAmountDto;
     /** 结算 end */
 
     public List<SettleFeeItem> getSettleFeeItemList() {
@@ -85,6 +82,22 @@ public class SettleOrderDto extends SettleOrder {
 
     public List<SettleWayDetail> getSettleWayDetailList() {
         return settleWayDetailList;
+    }
+
+    public List<SettleFeeItem> getDeductFeeItemList() {
+        return deductFeeItemList;
+    }
+
+    public void setDeductFeeItemList(List<SettleFeeItem> deductFeeItemList) {
+        this.deductFeeItemList = deductFeeItemList;
+    }
+
+    public List<TransferDetail> getTransferDetailList() {
+        return transferDetailList;
+    }
+
+    public void setTransferDetailList(List<TransferDetail> transferDetailList) {
+        this.transferDetailList = transferDetailList;
     }
 
     public void setSettleWayDetailList(List<SettleWayDetail> settleWayDetailList) {
@@ -187,30 +200,6 @@ public class SettleOrderDto extends SettleOrder {
         this.idList = idList;
     }
 
-    public Long getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(Long totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public Long getTotalDeductAmount() {
-        return totalDeductAmount;
-    }
-
-    public void setTotalDeductAmount(Long totalDeductAmount) {
-        this.totalDeductAmount = totalDeductAmount;
-    }
-
-    public Long getSettleAmount() {
-        return settleAmount;
-    }
-
-    public void setSettleAmount(Long settleAmount) {
-        this.settleAmount = settleAmount;
-    }
-
     public String getTradePassword() {
         return tradePassword;
     }
@@ -249,5 +238,13 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setMultiCustomer(Boolean multiCustomer) {
         this.multiCustomer = multiCustomer;
+    }
+
+    public SettleAmountDto getSettleAmountDto() {
+        return settleAmountDto;
+    }
+
+    public void setSettleAmountDto(SettleAmountDto settleAmountDto) {
+        this.settleAmountDto = settleAmountDto;
     }
 }

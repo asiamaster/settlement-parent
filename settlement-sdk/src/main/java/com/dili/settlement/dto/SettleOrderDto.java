@@ -1,9 +1,6 @@
 package com.dili.settlement.dto;
 
-import com.dili.settlement.domain.SettleFeeItem;
-import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.domain.SettleOrderLink;
-import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.domain.*;
 
 import java.util.List;
 
@@ -17,6 +14,10 @@ public class SettleOrderDto extends SettleOrder {
     private List<SettleFeeItem> settleFeeItemList;
     //结算单链接列表
     private List<SettleOrderLink> settleOrderLinkList;
+    //抵扣项列表
+    private List<SettleFeeItem> deductFeeItemList;
+    //转抵明细列表
+    private List<TransferDetail> transferDetailList;
     //结算方式明细
     private List<SettleWayDetail> settleWayDetailList;
     /** 提交 end */
@@ -73,6 +74,22 @@ public class SettleOrderDto extends SettleOrder {
 
     public void setSettleOrderLinkList(List<SettleOrderLink> settleOrderLinkList) {
         this.settleOrderLinkList = settleOrderLinkList;
+    }
+
+    public List<SettleFeeItem> getDeductFeeItemList() {
+        return deductFeeItemList;
+    }
+
+    public void setDeductFeeItemList(List<SettleFeeItem> deductFeeItemList) {
+        this.deductFeeItemList = deductFeeItemList;
+    }
+
+    public List<TransferDetail> getTransferDetailList() {
+        return transferDetailList;
+    }
+
+    public void setTransferDetailList(List<TransferDetail> transferDetailList) {
+        this.transferDetailList = transferDetailList;
     }
 
     public List<SettleWayDetail> getSettleWayDetailList() {

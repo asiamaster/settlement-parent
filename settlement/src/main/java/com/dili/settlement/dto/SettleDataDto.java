@@ -5,6 +5,7 @@ import com.dili.settlement.domain.RetryRecord;
 import com.dili.settlement.dto.pay.FeeItemDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 结算数据准备dto
@@ -17,10 +18,10 @@ public class SettleDataDto {
     private List<FeeItemDto> feeItemList;
     //抵扣项费用项列表
     private List<FeeItemDto> deductFeeItemList;
-    //定金金额
-    private Long earnestAmount;
-    //定金账户流水
-    private List<CustomerAccountSerial> accountSerialList;
+    //定金账户变动
+    private Map<Long, AccountMergeDto> earnestMap;
+    //转抵账户变动
+    private Map<Long, AccountMergeDto> transferMap;
 
     public List<RetryRecord> getRetryRecordList() {
         return retryRecordList;
@@ -46,19 +47,19 @@ public class SettleDataDto {
         this.deductFeeItemList = deductFeeItemList;
     }
 
-    public Long getEarnestAmount() {
-        return earnestAmount;
+    public Map<Long, AccountMergeDto> getEarnestMap() {
+        return earnestMap;
     }
 
-    public void setEarnestAmount(Long earnestAmount) {
-        this.earnestAmount = earnestAmount;
+    public void setEarnestMap(Map<Long, AccountMergeDto> earnestMap) {
+        this.earnestMap = earnestMap;
     }
 
-    public List<CustomerAccountSerial> getAccountSerialList() {
-        return accountSerialList;
+    public Map<Long, AccountMergeDto> getTransferMap() {
+        return transferMap;
     }
 
-    public void setAccountSerialList(List<CustomerAccountSerial> accountSerialList) {
-        this.accountSerialList = accountSerialList;
+    public void setTransferMap(Map<Long, AccountMergeDto> transferMap) {
+        this.transferMap = transferMap;
     }
 }

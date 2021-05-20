@@ -16,6 +16,13 @@ public interface OrderService {
     SettleOrder save(SettleOrderDto settleOrderDto);
 
     /**
+     * 创建或者冻结客户定金、转抵账户
+     * @param settleOrder
+     * @param settleOrderDto
+     */
+    void createAccountOrFreeze(SettleOrder settleOrder, SettleOrderDto settleOrderDto);
+
+    /**
      * 保存 个性化处理
      * @param settleOrder
      * @param settleOrderDto

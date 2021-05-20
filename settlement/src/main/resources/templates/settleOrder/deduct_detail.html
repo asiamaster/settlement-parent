@@ -1,0 +1,22 @@
+<#bs4Body>
+<div class="container-fluid">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="text-center align-middle">费用项</th>
+                <th class="text-center align-middle">金额</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (isNotEmpty(deductItemList) && deductItemList.~size > 0) {
+                    for (item in deductItemList) {
+            %>
+            <tr>
+                <td class="text-center align-middle">${item.chargeItemName!}</td>
+                <td class="text-center align-middle">${@com.dili.ss.util.MoneyUtils.centToYuan(item.amount)}</td>
+            </tr>
+            <% }} %>
+        </tbody>
+    </table>
+</div>
+</#bs4Body>

@@ -68,15 +68,6 @@ public interface SettleService {
     SettleDataDto prepareSettleData(List<SettleOrder> settleOrderList, SettleOrderDto settleOrderDto);
 
     /**
-     * 准备结算数据
-     * @param settleOrderList
-     * @param settleOrderDto
-     * @param totalDeductAmount
-     * @return
-     */
-    SettleDataDto prepareSettleData(List<SettleOrder> settleOrderList, SettleOrderDto settleOrderDto, Long totalDeductAmount);
-
-    /**
      * 构建结算信息
      * @param settleOrder
      * @param settleOrderDto

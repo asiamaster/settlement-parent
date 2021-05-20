@@ -22,6 +22,11 @@ public class CustomerAccountSerial extends BaseDomain {
      * 客户资金ID
      */
     private Long customerAccountId;
+
+    /**
+     * 费用类型 201-定金 203-转抵
+     */
+    private Integer feeType;
     /**
      * 资金动作 ActionEnum
      */
@@ -104,6 +109,22 @@ public class CustomerAccountSerial extends BaseDomain {
      */
     public void setCustomerAccountId(Long customerAccountId) {
         this.customerAccountId = customerAccountId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Integer getFeeType() {
+        return feeType;
+    }
+
+    /**
+     * setter
+     * @param feeType
+     */
+    public void setFeeType(Integer feeType) {
+        this.feeType = feeType;
     }
 
     /**

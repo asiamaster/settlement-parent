@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="customer_account_id" jdbcType="BIGINT" property="customerAccountId" />
+    <result column="fee_type" jdbcType="INTEGER" property="feeType" />
     <result column="action" jdbcType="TINYINT" property="action" />
     <result column="scene" jdbcType="TINYINT" property="scene" />
     <result column="amount" jdbcType="BIGINT" property="amount" />
@@ -21,7 +22,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `customer_account_id`, `action`, `scene`, `amount`, `operate_time`,
+    `id`, `customer_account_id`, `fee_type`, `action`, `scene`, `amount`, `operate_time`,
     `operator_id`, `operator_name`, `relation_code`, `relation_type`, `notes`
   </sql>
 
@@ -29,6 +30,7 @@
   <insert id="batchInsert">
     insert into customer_account_serial(
         `customer_account_id`,
+        `fee_type`,
         `action`,
         `scene`,
         `amount`,
@@ -42,6 +44,7 @@
     <foreach collection="accountSerialList" item="item" separator=",">
     (
         #{customerAccountId},
+        #{item.feeType},
         #{item.action},
         #{item.scene},
         #{item.amount},
@@ -84,6 +87,9 @@
         </if>
         <if test="customerCertificate != null and customerCertificate != ''">
             and b.`customer_certificate` = #{customerCertificate}
+        </if>
+        <if test="feeType != null">
+            and a.`fee_type` = #{feeType}
         </if>
         <if test="action != null">
             and a.`action` = #{action}

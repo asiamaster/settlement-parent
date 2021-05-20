@@ -7,14 +7,37 @@
         <input type="hidden" name="mchId" value="${mchId!}"/>
         <input type="hidden" name="token" value="${token!}"/>
         <input type="hidden" name="ids" value="${ids!}"/>
-        <input type="hidden" name="totalAmount" id="totalAmount" value="${totalAmount!}"/>
-        <input type="hidden" name="settleAmount" id="settleAmount" value="${settleAmount!}"/>
+        <input type="hidden" id="settleAmount" value="${@settleAmountDto.countRefundSettleAmount()}"/>
         <div class="row">
             <div class="col-2 text-right">
-                退款金额:
+                待退金额:
             </div>
             <div class="col-4 text-left">
-                <input type="text" class="form-control" value="${totalAmountText!}" readonly/>
+                <input type="text" class="form-control" value="${@com.dili.ss.util.MoneyUtils.centToYuan(settleAmountDto.totalAmount)}" readonly/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2 text-right">
+                扣减金额:
+            </div>
+            <div class="col-4 text-left">
+                <input type="text" class="form-control" value="${@com.dili.ss.util.MoneyUtils.centToYuan(settleAmountDto.totalDeductAmount)}" readonly/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2 text-right">
+                转抵金额:
+            </div>
+            <div class="col-4 text-left">
+                <input type="text" class="form-control" value="${@com.dili.ss.util.MoneyUtils.centToYuan(settleAmountDto.totalTransferAmount)}" readonly/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2 text-right">
+                实退金额:
+            </div>
+            <div class="col-4 text-left">
+                <input type="text" class="form-control" value="${@com.dili.ss.util.MoneyUtils.centToYuan(@settleAmountDto.countRefundSettleAmount())}" readonly/>
             </div>
         </div>
         <div class="row mt-2">

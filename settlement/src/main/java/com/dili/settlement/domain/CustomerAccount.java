@@ -77,6 +77,21 @@ public class CustomerAccount extends BaseDomain {
     @Column(name = "`frozen_amount`")
     private Long frozenAmount;
 
+    /**
+     * 转抵金额
+     */
+    @Column(name = "`transfer_amount`")
+    private Long transferAmount;
+
+    /**
+     * 转抵冻结金额
+     */
+    @Column(name = "`frozen_transfer_amount`")
+    private Long frozenTransferAmount;
+
+    /**
+     * 版本号
+     */
     @Column(name = "`version`")
     private Integer version;
 
@@ -289,6 +304,38 @@ public class CustomerAccount extends BaseDomain {
     }
 
     /**
+     * getter
+     * @return
+     */
+    public Long getTransferAmount() {
+        return transferAmount;
+    }
+
+    /**
+     * setter
+     * @param transferAmount
+     */
+    public void setTransferAmount(Long transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Long getFrozenTransferAmount() {
+        return frozenTransferAmount;
+    }
+
+    /**
+     * setter
+     * @param frozenTransferAmount
+     */
+    public void setFrozenTransferAmount(Long frozenTransferAmount) {
+        this.frozenTransferAmount = frozenTransferAmount;
+    }
+
+    /**
      * @return version
      */
     @FieldDef(label="version")
@@ -316,6 +363,8 @@ public class CustomerAccount extends BaseDomain {
         account.setCustomerCertificate(customerCertificate);
         account.setAmount(0L);
         account.setFrozenAmount(0L);
+        account.setTransferAmount(0L);
+        account.setFrozenTransferAmount(0L);
         return account;
     }
 }

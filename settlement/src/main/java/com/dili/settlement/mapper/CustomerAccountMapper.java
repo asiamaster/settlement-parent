@@ -34,7 +34,7 @@ public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
     int save(CustomerAccount customerAccount) throws SQLIntegrityConstraintViolationException;
 
     /**
-     * 修改金额
+     * 修改定金账户金额
      * @param customerAccount
      * @return
      */
@@ -60,4 +60,10 @@ public interface CustomerAccountMapper extends MyMapper<CustomerAccount> {
      * @return
      */
     int updateCustomerInfo(CustomerExtendDto customer);
+
+    /**
+     * 修改转抵账户金额
+     * @param customerAccount
+     */
+    void updateTransferAmount(CustomerAccount customerAccount);
 }

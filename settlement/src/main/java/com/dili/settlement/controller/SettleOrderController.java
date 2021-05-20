@@ -3,16 +3,14 @@ package com.dili.settlement.controller;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.commons.bstable.TableResult;
 import com.dili.logger.sdk.domain.BusinessLog;
 import com.dili.logger.sdk.rpc.BusinessLogRpc;
 import com.dili.settlement.config.CallbackConfiguration;
 import com.dili.settlement.dispatcher.PayDispatcher;
 import com.dili.settlement.dispatcher.RefundDispatcher;
-import com.dili.settlement.domain.CustomerAccount;
-import com.dili.settlement.domain.SettleConfig;
-import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.domain.SettleWayDetail;
+import com.dili.settlement.domain.*;
 import com.dili.settlement.dto.*;
 import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
@@ -86,6 +84,12 @@ public class SettleOrderController extends AbstractController {
     private SettleWayDetailService settleWayDetailService;
 
     @Autowired
+    private SettleFeeItemService settleFeeItemService;
+
+    @Autowired
+    private TransferDetailService transferDetailService;
+
+    @Autowired
     private BusinessLogRpc businessLogRpc;
 
     @Autowired
@@ -114,7 +118,7 @@ public class SettleOrderController extends AbstractController {
         query.setCustomerId(customerId);
         List<SettleOrder> settleOrderList = customerId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        modelMap.addAttribute("groupOrderList", items);
         return "pay/table";
     }
 
@@ -130,7 +134,7 @@ public class SettleOrderController extends AbstractController {
         query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
         List<SettleOrder> settleOrderList = StrUtil.isBlank(trailerNumber) ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        modelMap.addAttribute("groupOrderList", items);
         return "pay/table";
     }
 
@@ -146,7 +150,7 @@ public class SettleOrderController extends AbstractController {
         query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
         List<SettleOrder> settleOrderList = submitterId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        modelMap.addAttribute("groupOrderList", items);
         return "pay/table";
     }
 
@@ -178,49 +182,14 @@ public class SettleOrderController extends AbstractController {
         }
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
-        modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
         modelMap.addAttribute("mchId", settleOrderDto.getMchId());
-        modelMap.addAttribute("deductEnable", EnableEnum.NO.getCode());
-        modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
-        modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
-        modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
-        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
-        //计算抵扣相关并赋值相关数据
-        prepareDeductInfo(settleOrderDto, settleAmountDto, modelMap);
+        modelMap.addAttribute("settleAmountDto", settleAmountDto);
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.payChooseList(userTicket.getFirmId(), settleOrderDto.getIdList().size() > 1);
         modelMap.addAttribute("wayList", wayList);
         modelMap.addAttribute("token", tokenHandler.generate(createTokenStr(userTicket, settleOrderDto)));
         modelMap.addAttribute("ids", settleOrderDto.getIds());
         return "pay/pay";
-    }
-
-    /**
-     * 准备抵扣相关数据
-     * @param settleOrderDto
-     * @param settleAmountDto
-     * @param modelMap
-     */
-    private void prepareDeductInfo(SettleOrderDto settleOrderDto, SettleAmountDto settleAmountDto, ModelMap modelMap) {
-        //当可抵扣金额大于0且客户、商户ID不为空则标记为可抵扣，并计算最大可抵扣金额
-        if (settleOrderDto.getMchId() == null || settleOrderDto.getCustomerId() == null || settleAmountDto.getTotalDeductAmount() == 0L) {
-            return;
-        }
-        CustomerAccount customerAccount = customerAccountService.getBy(settleOrderDto.getMchId(), settleOrderDto.getCustomerId());
-        if (customerAccount == null) {
-            return;
-        }
-        long balance = customerAccount.getAmount() - customerAccount.getFrozenAmount();
-        if (balance == 0L) {
-            return;
-        }
-        long totalDeductAmount = balance > settleAmountDto.getTotalDeductAmount() ? settleAmountDto.getTotalDeductAmount() : balance;
-        modelMap.addAttribute("deductEnable", EnableEnum.YES.getCode());
-        modelMap.addAttribute("totalDeductAmount", totalDeductAmount);
-        modelMap.addAttribute("totalDeductAmountText", MoneyUtils.centToYuan(totalDeductAmount));
-        long settleAmount = settleAmountDto.getTotalAmount() - totalDeductAmount;
-        modelMap.addAttribute("settleAmount", settleAmount);
-        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmount));
     }
 
     /**
@@ -259,9 +228,6 @@ public class SettleOrderController extends AbstractController {
         if (settleOrderDto.getMchId() == null) {
             throw new BusinessException("", "商户ID为空");
         }
-        if (settleOrderDto.getSettleAmount() == null || settleOrderDto.getSettleAmount() < 0L) {
-            throw new BusinessException("", "实际结算金额不合法");
-        }
         UserTicket userTicket = getUserTicket();
         if (!tokenHandler.valid(createTokenStr(userTicket, settleOrderDto), settleOrderDto.getToken())) {
             throw new BusinessException("", "非法请求");
@@ -272,7 +238,7 @@ public class SettleOrderController extends AbstractController {
         settleOrderDto.setOperatorNo(userTicket.getUserName());
         settleOrderDto.setIdList(Stream.of(settleOrderDto.getIds().split(",")).map(Long::parseLong).collect(Collectors.toList()));
         SettleAmountDto settleAmountDto = settleOrderService.queryAmount(settleOrderDto);
-        settleOrderDto.setTotalAmount(settleAmountDto.getTotalAmount());
+        settleOrderDto.setSettleAmountDto(settleAmountDto);
     }
 
     /**
@@ -295,7 +261,7 @@ public class SettleOrderController extends AbstractController {
         query.setCustomerId(customerId);
         List<SettleOrder> settleOrderList = customerId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
-        modelMap.addAttribute("groupOrderList", JSON.parseArray(JSON.toJSONString(items, new DisplayTextAfterFilter())));
+        modelMap.addAttribute("groupOrderList", items);
         return "refund/table";
     }
 
@@ -315,10 +281,7 @@ public class SettleOrderController extends AbstractController {
         modelMap.addAttribute("customerId", settleOrderDto.getCustomerId());
         modelMap.addAttribute("customerName", settleOrderDto.getCustomerName());
         modelMap.addAttribute("mchId", settleOrderDto.getMchId());
-        modelMap.addAttribute("totalAmount", settleAmountDto.getTotalAmount());
-        modelMap.addAttribute("totalAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
-        modelMap.addAttribute("settleAmount", settleAmountDto.getTotalAmount());
-        modelMap.addAttribute("settleAmountText", MoneyUtils.centToYuan(settleAmountDto.getTotalAmount()));
+        modelMap.addAttribute("settleAmountDto", settleAmountDto);
         UserTicket userTicket = getUserTicket();
         List<SettleConfig> wayList = settleWayService.refundChooseList(userTicket.getFirmId());
         modelMap.addAttribute("wayList", wayList);
@@ -371,6 +334,42 @@ public class SettleOrderController extends AbstractController {
         String url = settleOrderLinkService.getUrl(id, LinkTypeEnum.DETAIL.getCode());
         response.setStatus(302);
         response.setHeader("Location", url);
+    }
+
+    /**
+     * 跳转到抵扣详情页面
+     * @param
+     */
+    @RequestMapping(value = "/showDeductDetail.action")
+    public String showDeductDetail(Long id, Integer reverse, ModelMap modelMap) {
+        if (id == null || reverse == null) {
+            throw new BusinessException("", "查询抵扣详情参数错误");
+        }
+        //按照作废业务逻辑，如果是冲正单，则转换为原单ID，从而查看详情
+        if (Integer.valueOf(ReverseEnum.YES.getCode()).equals(reverse)) {
+            id = settleOrderService.convertReverseOrderId(id);
+        }
+        List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(id);
+        modelMap.addAttribute("deductItemList", settleFeeItemList.stream().filter(temp -> temp.getChargeItemType().equals(ChargeItemTypeEnum.DEDUCT.getCode())).collect(Collectors.toList()));
+        return "settleOrder/deduct_detail";
+    }
+
+    /**
+     * 跳转到转抵详情页面
+     * @param
+     */
+    @RequestMapping(value = "/showTransferDetail.action")
+    public String showTransferDetail(Long id, Integer reverse, ModelMap modelMap) {
+        if (id == null || reverse == null) {
+            throw new BusinessException("", "查询转抵详情参数错误");
+        }
+        //按照作废业务逻辑，如果是冲正单，则转换为原单ID，从而查看详情
+        if (Integer.valueOf(ReverseEnum.YES.getCode()).equals(reverse)) {
+            id = settleOrderService.convertReverseOrderId(id);
+        }
+        List<TransferDetail> transferDetailList = transferDetailService.listBySettleOrderId(id);
+        modelMap.addAttribute("transferDetailList", transferDetailList);
+        return "settleOrder/transfer_detail";
     }
 
     /**
@@ -514,6 +513,7 @@ public class SettleOrderController extends AbstractController {
     private String createTokenStr(UserTicket userTicket, SettleOrderDto settleOrderDto) {
         StringBuilder builder = new StringBuilder();
         builder.append(settleOrderDto.getIds());
+        builder.append(settleOrderDto.getMchId());
         builder.append(userTicket.getId());
         builder.append(userTicket.getFirmId());
         return builder.toString();

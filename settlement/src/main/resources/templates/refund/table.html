@@ -16,7 +16,16 @@
                             业务类型
                         </th>
                         <th class="text-center align-middle">
-                            退款金额
+                            待退金额
+                        </th>
+                        <th class="text-center align-middle">
+                            扣减金额
+                        </th>
+                        <th class="text-center align-middle">
+                            转抵金额
+                        </th>
+                        <th class="text-center align-middle">
+                            实退金额
                         </th>
                         <th class="text-center align-middle">
                             提交人
@@ -45,10 +54,31 @@
                         </td>
                         <% } %>
                         <td class="text-center align-middle">
-                            ${settleOrder.businessTypeText!}
+                            ${@com.dili.settlement.enums.BizTypeEnum.getNameByCode(settleOrder.businessType)}
                         </td>
                         <td class="text-center align-middle">
-                            ${settleOrder.amountText!}
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}
+                        </td>
+                        <% if (settleOrder.deductAmount == 0) { %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showDeductDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}</a>
+                        </td>
+                        <% } %>
+                        <% if (settleOrder.transferAmount == 0) { %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.transferAmount)}
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showTransferDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.transferAmount)}</a>
+                        </td>
+                        <% } %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount - settleOrder.deductAmount - settleOrder.transferAmount)}
                         </td>
                         <td class="text-center align-middle">
                             ${settleOrder.submitterName!}
@@ -57,7 +87,7 @@
                             ${settleOrder.submitterDepName!}
                         </td>
                         <td class="text-center align-middle">
-                            ${settleOrder.submitTime!}
+                            ${@com.dili.settlement.util.DateUtil.formatDateTime(settleOrder.submitTime, "yyyy-MM-dd HH:mm:ss")}
                         </td>
                     </tr>
                 <% } %>
@@ -79,7 +109,16 @@
                             业务类型
                         </th>
                         <th class="text-center align-middle">
-                            退款金额
+                            待退金额
+                        </th>
+                        <th class="text-center align-middle">
+                            扣减金额
+                        </th>
+                        <th class="text-center align-middle">
+                            转抵金额
+                        </th>
+                        <th class="text-center align-middle">
+                            实退金额
                         </th>
                         <th class="text-center align-middle">
                             提交人
@@ -108,10 +147,31 @@
                         </td>
                         <% } %>
                         <td class="text-center align-middle">
-                            ${settleOrder.businessTypeText!}
+                            ${@com.dili.settlement.enums.BizTypeEnum.getNameByCode(settleOrder.businessType)}
                         </td>
                         <td class="text-center align-middle">
-                            ${settleOrder.amountText!}
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}
+                        </td>
+                        <% if (settleOrder.deductAmount == 0) { %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showDeductDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}</a>
+                        </td>
+                        <% } %>
+                        <% if (settleOrder.transferAmount == 0) { %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.transferAmount)}
+                        </td>
+                        <% } else { %>
+                        <td class="text-center align-middle">
+                            <a href="javascript:;" onclick="showTransferDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.transferAmount)}</a>
+                        </td>
+                        <% } %>
+                        <td class="text-center align-middle">
+                            ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount - settleOrder.deductAmount - settleOrder.transferAmount)}
                         </td>
                         <td class="text-center align-middle">
                             ${settleOrder.submitterName!}
@@ -120,7 +180,7 @@
                             ${settleOrder.submitterDepName!}
                         </td>
                         <td class="text-center align-middle">
-                            ${settleOrder.submitTime!}
+                            ${@com.dili.settlement.util.DateUtil.formatDateTime(settleOrder.submitTime, "yyyy-MM-dd HH:mm:ss")}
                         </td>
                     </tr>
                 <% } %>

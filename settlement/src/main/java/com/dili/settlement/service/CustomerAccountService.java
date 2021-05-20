@@ -32,42 +32,10 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
     CustomerAccount lockGetById(Long id);
 
     /**
-     * 查询
-     * @param mchId
-     * @param customerId
-     * @return
-     */
-    CustomerAccount getBy(Long mchId, Long customerId);
-    /**
      * 创建定金账户
      * @param customerAccount
      */
     void create(CustomerAccount customerAccount);
-
-    /**
-     * 操作账户及流水 支付
-     * @param mchId
-     * @param customerId
-     * @param amount 有正负值
-     * @param accountSerialList
-     */
-    void handle(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList);
-
-    /**
-     * 操作账户及流水 退款
-     * @param mchId
-     * @param customerId
-     * @param amount 负值
-     * @param accountSerialList
-     */
-    void handleRefund(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList);
-
-    /**
-     * 冻结
-     * @param id
-     * @param amount
-     */
-    void freeze(Long id, Long amount);
 
     /**
      * 冻结
@@ -76,13 +44,6 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param amount
      */
     void freeze(Long mchId, Long customerId, Long amount);
-
-    /**
-     * 解冻
-     * @param id
-     * @param amount
-     */
-    void unfreeze(Long id, Long amount);
 
     /**
      * 解冻
@@ -110,4 +71,40 @@ public interface CustomerAccountService extends BaseService<CustomerAccount, Lon
      * @param customer
      */
     void updateCustomerInfo(CustomerExtendDto customer);
+
+    /**
+     * 冻结转抵金额
+     * @param mchId
+     * @param customerId
+     * @param amount
+     */
+    void freezeTransfer(Long mchId, Long customerId, Long amount);
+
+    /**
+     * 解冻转抵金额
+     * @param mchId
+     * @param customerId
+     * @param amount
+     */
+    void unfreezeTransfer(Long mchId, Long customerId, long amount);
+
+    /**
+     * 操作转抵账户及流水
+     * @param mchId
+     * @param customerId
+     * @param amount 正负值
+     * @param frozenAmount 正负值
+     * @param serialList
+     */
+    void handleTransfer(Long mchId, Long customerId, Long amount, Long frozenAmount, List<CustomerAccountSerial> serialList);
+
+    /**
+     * 操作定金账户及流水
+     * @param mchId
+     * @param customerId
+     * @param amount 正负值
+     * @param frozenAmount 正负值
+     * @param serialList
+     */
+    void handleEarnest(Long mchId, Long customerId, Long amount, Long frozenAmount, List<CustomerAccountSerial> serialList);
 }

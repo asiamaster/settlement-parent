@@ -15,7 +15,8 @@ public enum SceneEnum {
     TRANSFER_OUT(4, "定金转出"),
     REFUND(5, "退款"),
     INVALID_IN(6, "业务交费作废转入"),
-    INVALID_OUT(7, "业务交费作废转出")
+    INVALID_OUT(7, "业务交费作废转出"),
+    REFUND_TRANSFER_IN(8, "转抵转入")
     ;
 
     private int code;

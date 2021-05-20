@@ -3,10 +3,12 @@ package com.dili.settlement.domain;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.settlement.annotation.DisplayConvert;
 import com.dili.settlement.annotation.DisplayText;
+import com.dili.settlement.enums.SettleTypeEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.ss.util.MoneyUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -92,10 +94,6 @@ public class SettleOrder extends BaseDomain {
     @Column(name = "`amount`")
     @DisplayText(provider = "moneyProvider")
     private Long amount;
-
-    //抵扣金额
-    @Column(name = "`deduct_amount`")
-    private Long deductAmount;
 
     //提交人ID
     @Column(name = "`submitter_id`")
@@ -214,10 +212,6 @@ public class SettleOrder extends BaseDomain {
     @DisplayText(provider = "reverseProvider")
     private Integer reverse;
 
-    /** 是否可抵扣 0-否 1-是*/
-    @Column(name = "`deduct_enable`")
-    private Integer deductEnable;
-
     /** 挂号(沈阳特有)*/
     @Column(name = "`trailer_number`")
     private String trailerNumber;
@@ -231,6 +225,16 @@ public class SettleOrder extends BaseDomain {
     /** 持卡人联系电话 */
     @Column(name = "`hold_contacts_phone`")
     private String holdContactsPhone;
+
+    /** 扣减总额 */
+    @Column(name = "`deduct_amount`")
+    @DisplayText(provider = "moneyProvider")
+    private Long deductAmount;
+
+    /** 转抵总额 */
+    @Column(name = "`transfer_amount`")
+    @DisplayText(provider = "moneyProvider")
+    private Long transferAmount;
 
     /**
      * @return id
@@ -502,22 +506,6 @@ public class SettleOrder extends BaseDomain {
      */
     public void setAmount(Long amount) {
         this.amount = amount;
-    }
-
-    /**
-     * getter
-     * @return
-     */
-    public Long getDeductAmount() {
-        return deductAmount;
-    }
-
-    /**
-     * setter
-     * @param deductAmount
-     */
-    public void setDeductAmount(Long deductAmount) {
-        this.deductAmount = deductAmount;
     }
 
     /**
@@ -856,14 +844,6 @@ public class SettleOrder extends BaseDomain {
         this.reverse = reverse;
     }
 
-    public Integer getDeductEnable() {
-        return deductEnable;
-    }
-
-    public void setDeductEnable(Integer deductEnable) {
-        this.deductEnable = deductEnable;
-    }
-
     public String getTrailerNumber() {
         return trailerNumber;
     }
@@ -894,5 +874,32 @@ public class SettleOrder extends BaseDomain {
 
     public void setHoldContactsPhone(String holdContactsPhone) {
         this.holdContactsPhone = holdContactsPhone;
+    }
+
+    public Long getDeductAmount() {
+        return deductAmount;
+    }
+
+    public void setDeductAmount(Long deductAmount) {
+        this.deductAmount = deductAmount;
+    }
+
+    public Long getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(Long transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * 获取实付/实退金额
+     * @return
+     */
+    public String getActualAmountText() {
+        if (this.type == null || this.amount == null || this.deductAmount == null || this.transferAmount == null) {
+            return null;
+        }
+        return this.type.equals(SettleTypeEnum.PAY.getCode()) ? MoneyUtils.centToYuan(this.amount - this.deductAmount) : MoneyUtils.centToYuan(this.amount - this.deductAmount - this.transferAmount);
     }
 }

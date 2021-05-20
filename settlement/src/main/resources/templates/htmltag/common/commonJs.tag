@@ -9,8 +9,54 @@
 
     /** 查看业务详情处理器 */
     function showBusinessDetailHandler(id, reverse) {
-        let url = "/settleOrder/showDetail.html?id="+id+"&reverse="+reverse;
+        let url = "/settleOrder/showDetail.html?id=" + id + "&reverse=" + reverse;
         bs4pop.dialog({content:url, title:'业务详情',isIframe:true,width:'80%',height:'95%',btns:[{label: '取消',className: 'btn-secondary'}]});
+    }
+
+    /** 扣减金额格式器 */
+    function deductAmountFormatter(value, row, index) {
+        if (row.deductAmount === 0) {
+            return value;
+        }
+        return '<a href="javascript:;" onclick="showDeductDetail('+row.id+','+row.reverse+');return false;">'+value+'</a>';
+    }
+
+    /** 查看抵扣详情 */
+    function showDeductDetail(id, reverse) {
+        bs4pop.dialog({
+            id:'dialog-show-deduct',
+            content: '/settleOrder/showDeductDetail.action?id=' + id + '&reverse=' + reverse,
+            title:'扣减详情',
+            isIframe:true,
+            width: '70%',
+            height: 500,
+            btns:[
+                {label: '取消',className: 'btn-secondary'}
+            ]
+        });
+    }
+
+    /** 转抵金额格式器 */
+    function transferAmountFormatter(value, row, index) {
+        if (row.transferAmount === 0) {
+            return value;
+        }
+        return '<a href="javascript:;" onclick="showTransferDetail('+row.id+','+row.reverse+');return false;">'+value+'</a>';
+    }
+
+    /** 查看转抵详情 */
+    function showTransferDetail(id, reverse) {
+        bs4pop.dialog({
+            id:'dialog-show-transfer',
+            content: '/settleOrder/showTransferDetail.action?id=' + id + '&reverse=' + reverse,
+            title:'转抵详情',
+            isIframe:true,
+            width: '70%',
+            height: 500,
+            btns:[
+                {label: '取消',className: 'btn-secondary'}
+            ]
+        });
     }
 
     /** 票据打印处理器 */

@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.settlement.mapper.SettleFeeItemMapper">
-  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.SettleFeeItem">
+<mapper namespace="com.dili.settlement.mapper.TransferDetailMapper">
+  <resultMap id="BaseResultMap" type="com.dili.settlement.domain.TransferDetail">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="settle_order_id" jdbcType="BIGINT" property="settleOrderId" />
     <result column="settle_order_code" jdbcType="VARCHAR" property="settleOrderCode" />
-    <result column="charge_item_type" jdbcType="INTEGER" property="chargeItemType" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="customer_phone" jdbcType="VARCHAR" property="customerPhone" />
+    <result column="customer_certificate" jdbcType="VARCHAR" property="customerCertificate" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
     <result column="charge_item_id" jdbcType="BIGINT" property="chargeItemId" />
     <result column="charge_item_name" jdbcType="VARCHAR" property="chargeItemName" />
-    <result column="fee_type" jdbcType="INTEGER" property="feeType" />
-    <result column="fee_name" jdbcType="VARCHAR" property="feeName" />
-    <result column="amount" jdbcType="BIGINT" property="amount" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    `id`, `settle_order_id`, `settle_order_code`, `charge_item_type`,`charge_item_id`, `charge_item_name`, `fee_type`, `fee_name`, `amount`
+    `id`, `settle_order_id`, `settle_order_code`, `customer_id`, `customer_name`, `customer_phone`,
+    `customer_certificate`, `amount`, `charge_item_id`, `charge_item_name`
   </sql>
 
-  <!-- 根据结算单ID查询费用项列表 -->
+  <!-- 根据结算单ID查询转抵项列表 -->
   <select id="listBySettleOrderId" resultMap="BaseResultMap">
     select
-        <include refid="Base_Column_List"/>
-    from settle_fee_item where settle_order_id = #{settleOrderId}
+    <include refid="Base_Column_List"/>
+    from transfer_detail where settle_order_id = #{settleOrderId}
   </select>
 
   <!-- 根据结算单ID列表批量查询 -->
   <select id="listBySettleOrderIdList" resultMap="BaseResultMap">
     select
-        <include refid="Base_Column_List"/>
-    from settle_fee_item where settle_order_id in
+    <include refid="Base_Column_List"/>
+    from transfer_detail where settle_order_id in
     <foreach collection="settleOrderIdList" item="settleOrderId" open="(" close=")" separator=",">
       #{settleOrderId}
     </foreach>
@@ -41,6 +43,7 @@
 
   <!-- 根据结算单ID删除 -->
   <delete id="deleteBySettleOrderId">
-    delete from settle_fee_item where settle_order_id = #{settleOrderId}
+    delete from transfer_detail where settle_order_id = #{settleOrderId}
   </delete>
+
 </mapper>

@@ -16,6 +16,8 @@
     <result column="customer_certificate" jdbcType="VARCHAR" property="customerCertificate" />
     <result column="amount" jdbcType="BIGINT" property="amount" />
     <result column="frozen_amount" jdbcType="BIGINT" property="frozenAmount" />
+    <result column="transfer_amount" jdbcType="BIGINT" property="transferAmount" />
+    <result column="frozen_transfer_amount" jdbcType="BIGINT" property="frozenTransferAmount" />
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -23,7 +25,7 @@
       WARNING - @mbg.generated
     -->
     `id`, `market_id`, `market_code`, `mch_id`, `mch_name`, `customer_id`, `customer_name`, `customer_phone`, `customer_certificate`,
-    `amount`, `frozen_amount`, `version`
+    `amount`, `frozen_amount`, `transfer_amount`, `frozen_transfer_amount`, `version`
   </sql>
 
   <!-- 新增 -->
@@ -38,7 +40,9 @@
         `customer_phone`,
         `customer_certificate`,
         `amount`,
-        `frozen_amount`
+        `frozen_amount`,
+        `transfer_amount`,
+        `frozen_transfer_amount`
     )
     values(
         #{marketId},
@@ -50,7 +54,9 @@
         #{customerPhone},
         #{customerCertificate},
         #{amount},
-        #{frozenAmount}
+        #{frozenAmount},
+        #{transferAmount},
+        #{frozenTransferAmount}
     )
   </insert>
 
@@ -77,9 +83,14 @@
     limit 1
   </select>
 
-    <!-- 修改金额 -->
+    <!-- 修改定金账户金额 -->
     <update id="updateAmount" parameterType="com.dili.settlement.domain.CustomerAccount">
-        update customer_account set amount = #{amount},frozen_amount = #{frozenAmount} where id = #{id}
+        update customer_account set amount = #{amount}, frozen_amount = #{frozenAmount} where id = #{id}
+    </update>
+
+    <!-- 修改转抵账户金额 -->
+    <update id="updateTransferAmount" parameterType="com.dili.settlement.domain.CustomerAccount">
+        update customer_account set transfer_amount = #{transferAmount}, frozen_transfer_amount = #{frozenTransferAmount} where id = #{id}
     </update>
 
     <!-- 查询列表 -->

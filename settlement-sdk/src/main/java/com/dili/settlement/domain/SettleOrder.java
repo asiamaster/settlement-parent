@@ -65,9 +65,6 @@ public class SettleOrder extends BaseDomain {
     //金额
     private Long amount;
 
-    //抵扣金额
-    private Long deductAmount;
-
     //提交人ID
     private Long submitterId;
 
@@ -155,9 +152,6 @@ public class SettleOrder extends BaseDomain {
     /** 是否冲正 0-否 1-是*/
     private Integer reverse;
 
-    /** 是否可抵扣 0-否 1-是*/
-    private Integer deductEnable;
-
     /** 挂号(沈阳特有)*/
     private String trailerNumber;
 
@@ -167,6 +161,10 @@ public class SettleOrder extends BaseDomain {
     private String holdCertificateNumber;
     /** 持卡人联系电话 */
     private String holdContactsPhone;
+    /** 扣减总额 */
+    private Long deductAmount;
+    /** 转抵总额 */
+    private Long transferAmount;
 
     /**
      * @return id
@@ -414,22 +412,6 @@ public class SettleOrder extends BaseDomain {
      */
     public void setAmount(Long amount) {
         this.amount = amount;
-    }
-
-    /**
-     * getter
-     * @return
-     */
-    public Long getDeductAmount() {
-        return deductAmount;
-    }
-
-    /**
-     * setter
-     * @param deductAmount
-     */
-    public void setDeductAmount(Long deductAmount) {
-        this.deductAmount = deductAmount;
     }
 
     /**
@@ -736,14 +718,6 @@ public class SettleOrder extends BaseDomain {
         this.reverse = reverse;
     }
 
-    public Integer getDeductEnable() {
-        return deductEnable;
-    }
-
-    public void setDeductEnable(Integer deductEnable) {
-        this.deductEnable = deductEnable;
-    }
-
     public String getTrailerNumber() {
         return trailerNumber;
     }
@@ -774,5 +748,21 @@ public class SettleOrder extends BaseDomain {
 
     public void setHoldContactsPhone(String holdContactsPhone) {
         this.holdContactsPhone = holdContactsPhone;
+    }
+
+    public Long getDeductAmount() {
+        return deductAmount;
+    }
+
+    public void setDeductAmount(Long deductAmount) {
+        this.deductAmount = deductAmount;
+    }
+
+    public Long getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(Long transferAmount) {
+        this.transferAmount = transferAmount;
     }
 }

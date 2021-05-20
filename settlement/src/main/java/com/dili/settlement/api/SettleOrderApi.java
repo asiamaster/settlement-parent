@@ -5,11 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import com.dili.settlement.dispatcher.OrderDispatcher;
 import com.dili.settlement.domain.SettleFeeItem;
 import com.dili.settlement.domain.SettleOrder;
+import com.dili.settlement.domain.TransferDetail;
 import com.dili.settlement.dto.InvalidRequestDto;
 import com.dili.settlement.dto.SettleOrderDto;
-import com.dili.settlement.enums.EnableEnum;
-import com.dili.settlement.enums.ReverseEnum;
-import com.dili.settlement.enums.SettleStateEnum;
+import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.service.SettleOrderService;
@@ -20,6 +19,7 @@ import com.dili.uid.sdk.rpc.feign.UidFeignRpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,7 +60,6 @@ public class SettleOrderApi {
         settleOrderDto.setCode(RpcResultResolver.resolver(uidFeignRpc.getBizNumber(settleOrderDto.getMarketCode() + "_settleOrder"), ServiceNameHolder.UID_SERVICE_NAME));
         settleOrderDto.setState(SettleStateEnum.WAIT_DEAL.getCode());
         settleOrderDto.setSubmitTime(DateUtil.nowDateTime());
-        settleOrderDto.setDeductEnable(settleOrderDto.getDeductEnable() == null ? EnableEnum.NO.getCode() : settleOrderDto.getDeductEnable());
         settleOrderDto.setReverse(ReverseEnum.NO.getCode());
         SettleOrder settleOrder = orderDispatcher.save(settleOrderDto);
         return BaseOutput.success().setData(settleOrder);
@@ -119,21 +118,83 @@ public class SettleOrderApi {
         if (CollUtil.isEmpty(settleOrderDto.getSettleOrderLinkList())) {
             throw new BusinessException("", "链接列表为空");
         }
-        long totalFeeAmount = 0L;
+        //验证费用项
+        long feeAmount = 0L;
         for (SettleFeeItem feeItem : settleOrderDto.getSettleFeeItemList()) {
-            if (feeItem.getChargeItemId() == null) {
-                throw new BusinessException("", "费用项ID为空");
-            }
-            if (StrUtil.isBlank(feeItem.getChargeItemName())) {
-                throw new BusinessException("", "费用项名称为空");
-            }
-            if (feeItem.getAmount() == null || feeItem.getAmount() < 0L) {
-                throw new BusinessException("", "费用项金额不合法");
-            }
-            totalFeeAmount += feeItem.getAmount();
+            feeItem.setChargeItemType(ChargeItemTypeEnum.FEE.getCode());
+            validateFeeItem(feeItem, "");
+            feeAmount += feeItem.getAmount();
         }
-        if (!settleOrderDto.getAmount().equals(totalFeeAmount)) {
+        if (!settleOrderDto.getAmount().equals(feeAmount)) {
             throw new BusinessException("", "结算金额与费用项总额不相符");
+        }
+        //验证扣减项
+        settleOrderDto.setDeductFeeItemList(CollUtil.isEmpty(settleOrderDto.getDeductFeeItemList()) ? new ArrayList<>(0) : settleOrderDto.getDeductFeeItemList());
+        long deductAmount = 0L;
+        for (SettleFeeItem feeItem : settleOrderDto.getDeductFeeItemList()) {
+            feeItem.setChargeItemType(ChargeItemTypeEnum.DEDUCT.getCode());
+            validateFeeItem(feeItem, "抵扣");
+            deductAmount += feeItem.getAmount();
+        }
+        if (deductAmount > settleOrderDto.getAmount()) {
+            throw new BusinessException("", "抵扣金额不能大于支付总金额");
+        }
+        settleOrderDto.setDeductAmount(deductAmount);
+        //交费单不存在转抵
+        if (settleOrderDto.getType().equals(SettleTypeEnum.PAY.getCode())) {
+            settleOrderDto.setTransferAmount(0L);
+            return;
+        }
+        //验证转抵
+        settleOrderDto.setTransferDetailList(CollUtil.isEmpty(settleOrderDto.getTransferDetailList()) ? new ArrayList<>(0) : settleOrderDto.getTransferDetailList());
+        long transferAmount = 0L;
+        for (TransferDetail detail : settleOrderDto.getTransferDetailList()) {
+            if (detail.getCustomerId() == null) {
+                throw new BusinessException("", "转抵客户ID为空");
+            }
+            if (StrUtil.isBlank(detail.getCustomerName())) {
+                throw new BusinessException("", "转抵客户姓名为空");
+            }
+            if (StrUtil.isBlank(detail.getCustomerPhone())) {
+                throw new BusinessException("", "转抵客户手机号为空");
+            }
+            if (StrUtil.isBlank(detail.getCustomerCertificate())) {
+                throw new BusinessException("", "转抵客户证件号为空");
+            }
+            if (detail.getAmount() == null || detail.getAmount() < 0L) {
+                throw new BusinessException("", "转抵金额不合法");
+            }
+            if (detail.getChargeItemId() == null) {
+                throw new BusinessException("", "转抵费用项ID为空");
+            }
+            if (StrUtil.isBlank(detail.getChargeItemName())) {
+                throw new BusinessException("", "转抵费用项名称为空");
+            }
+            transferAmount += detail.getAmount();
+        }
+        if (transferAmount > settleOrderDto.getAmount()) {
+            throw new BusinessException("", "抵扣金额不能大于退款总金额");
+        }
+        settleOrderDto.setTransferAmount(transferAmount);
+        //扣减总额 + 转抵总额 不能大于结算总金额
+        if (deductAmount + transferAmount > settleOrderDto.getAmount()) {
+            throw new BusinessException("", "扣减总金额加转抵总金额不能大于结算金额");
+        }
+    }
+
+    /**
+     * 验证费用项合法性
+     * @param feeItem
+     */
+    private void validateFeeItem(SettleFeeItem feeItem, String prefix) {
+        if (feeItem.getChargeItemId() == null) {
+            throw new BusinessException("", prefix + "费用项ID为空");
+        }
+        if (StrUtil.isBlank(feeItem.getChargeItemName())) {
+            throw new BusinessException("", prefix + "费用项名称为空");
+        }
+        if (feeItem.getAmount() == null || feeItem.getAmount() < 0L) {
+            throw new BusinessException("", prefix + "费用项金额不合法");
         }
     }
 

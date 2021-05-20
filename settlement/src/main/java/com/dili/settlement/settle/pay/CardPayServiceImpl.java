@@ -64,7 +64,7 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         if (StrUtil.isBlank(settleOrderDto.getTradePassword())) {
             throw new BusinessException("", "交易密码为空");
         }
-        MchIdHolder.set(settleOrderDto.getMarketId());
+        MchIdHolder.set(settleOrderDto.getMchId());
         //校验密码
         PasswordRequestDto passwordRequestDto = PasswordRequestDto.build(settleOrderDto.getTradeFundAccountId(), settleOrderDto.getTradePassword());
         BaseOutput baseOutput = payRpc.validateTradePassword(passwordRequestDto);
@@ -73,8 +73,8 @@ public class CardPayServiceImpl extends PayServiceImpl implements PayService {
         }
         //验证余额
         CreateTradeRequestDto createTradeRequestDto = CreateTradeRequestDto.build(settleOrderDto.getTradeFundAccountId());
-        BalanceResponseDto balanceResponseDto= RpcResultResolver.resolver(payRpc.getAccountBalance(createTradeRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
-        if (settleOrderDto.getSettleAmount() > balanceResponseDto.getAvailableAmount()) {
+        BalanceResponseDto balanceResponseDto = RpcResultResolver.resolver(payRpc.getAccountBalance(createTradeRequestDto), ServiceNameHolder.PAY_SERVICE_NAME);
+        if (settleOrderDto.getSettleAmountDto().countPaySettleAmount() > balanceResponseDto.getAvailableAmount()) {
             throw new BusinessException("", "账户余额不足");
         }
         MchIdHolder.clear();

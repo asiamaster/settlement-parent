@@ -53,8 +53,8 @@ public class MixedPayServiceImpl extends PayServiceImpl implements PayService {
             }
             tempAmount += detail.getAmount();
         }
-        if (!Long.valueOf(tempAmount).equals(settleOrderDto.getSettleAmount())) {
-            throw new BusinessException("", "收款金额与结算金额不相等");
+        if (!Long.valueOf(tempAmount).equals(settleOrderDto.getSettleAmountDto().countPaySettleAmount())) {
+            throw new BusinessException("", "收款金额与实付金额不相等");
         }
     }
 

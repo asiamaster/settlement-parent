@@ -22,7 +22,6 @@
     <result column="customer_phone" jdbcType="VARCHAR" property="customerPhone" />
     <result column="customer_certificate" jdbcType="VARCHAR" property="customerCertificate"/>
     <result column="amount" jdbcType="BIGINT" property="amount" />
-    <result column="deduct_amount" jdbcType="BIGINT" property="deductAmount" />
     <result column="submitter_id" jdbcType="BIGINT" property="submitterId" />
     <result column="submitter_name" jdbcType="VARCHAR" property="submitterName" />
     <result column="submitter_dep_id" jdbcType="BIGINT" property="submitterDepId" />
@@ -50,18 +49,19 @@
     <result column="trade_card_no" jdbcType="VARCHAR" property="tradeCardNo" />
     <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
     <result column="reverse" jdbcType="TINYINT" property="reverse"/>
-    <result column="deduct_enable" jdbcType="TINYINT" property="deductEnable"/>
     <result column="hold_name" jdbcType="VARCHAR" property="holdName"/>
     <result column="hold_certificate_number" jdbcType="VARCHAR" property="holdCertificateNumber"/>
     <result column="hold_contacts_phone" jdbcType="VARCHAR" property="holdContactsPhone"/>
+    <result column="deduct_amount" jdbcType="BIGINT" property="deductAmount"/>
+    <result column="transfer_amount" jdbcType="BIGINT" property="transferAmount"/>
   </resultMap>
   <sql id="Base_Column_List">
     `id`, `market_id`, `market_code`,`mch_id`, `mch_name`, `app_id`, `code`, `order_code`, `business_code`, `business_type`, `business_dep_id`, `business_dep_name`,
-    `customer_id`, `customer_name`, `customer_phone`, `customer_certificate`, `amount`, `deduct_amount`,`submitter_id`, `submitter_name`,
+    `customer_id`, `customer_name`, `customer_phone`, `customer_certificate`, `amount`, `submitter_id`, `submitter_name`,
     `submitter_dep_id`, `submitter_dep_name`, `submit_time`, `type`, `way`, `state`, `operator_id`,
     `operator_name`, `operate_time`, `account_number`, `bank_name`, `bank_card_holder`, `serial_number`,
     `notes` ,`version`,`charge_date`, `trade_fund_account_id`,`trade_account_id`,`trade_customer_id`,
-    `trade_customer_name`, `trade_customer_code`,`trade_card_no`,`trade_no`,`reverse`, `deduct_enable`, `hold_name`, `hold_certificate_number`, `hold_contacts_phone`
+    `trade_customer_name`, `trade_customer_code`,`trade_card_no`,`trade_no`,`reverse`, `hold_name`, `hold_certificate_number`, `hold_contacts_phone`, `deduct_amount`, `transfer_amount`
   </sql>
 
   <!-- 用于单表的条件判断 -->
@@ -181,7 +181,6 @@
   <!-- 结算修改 -->
   <update id="settleUpdate" parameterType="com.dili.settlement.domain.SettleOrder">
     update settle_order set
-        deduct_amount = #{deductAmount},
         way = #{way},
         state = #{state},
         operator_id = #{operatorId},
@@ -211,7 +210,6 @@
   <update id="batchSettleUpdate">
     <foreach collection="settleOrderList" item="item" open="" close="" separator=";">
       update settle_order set
-        deduct_amount = #{item.deductAmount},
         way = #{item.way},
         state = #{item.state},
         operator_id = #{item.operatorId},
@@ -241,7 +239,8 @@
   <!-- 根据id列表查询总金额 -->
   <select id="queryAmount" parameterType="com.dili.settlement.domain.SettleOrder" resultType="com.dili.settlement.dto.SettleAmountDto">
     SELECT IFNULL(SUM(amount), 0) AS totalAmount
-        ,IFNULL(SUM(case when deduct_enable = 1 then amount ELSE 0 END), 0) AS totalDeductAmount
+        ,IFNULL(SUM(deduct_amount), 0) AS totalDeductAmount
+        ,IFNULL(sum(transfer_amount),0) as totalTransferAmount
     FROM settle_order where id in
         <foreach collection="idList" item="id" open="(" close=")" separator=",">
           #{id}

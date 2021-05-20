@@ -2,6 +2,7 @@ package com.dili.settlement.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.settlement.domain.CustomerAccount;
 import com.dili.settlement.domain.CustomerAccountSerial;
@@ -51,11 +52,6 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         return getActualDao().lockGetById(id);
     }
 
-    @Override
-    public CustomerAccount getBy(Long mchId, Long customerId) {
-        return getActualDao().getBy(mchId, customerId);
-    }
-
     @Transactional
     @Override
     public void create(CustomerAccount customerAccount) {
@@ -65,88 +61,17 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
             }
             getActualDao().save(customerAccount);
         } catch (SQLIntegrityConstraintViolationException e) {
-            //捕获调唯一索引冲突异常
+            //捕获唯一索引冲突异常
         }
     }
 
     /**
+     * 冻结定金
      * @param mchId
      * @param customerId
-     * @param amount 有正负值
-     * @param accountSerialList
-     */
-    @Transactional
-    @Override
-    public void handle(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
-        if ((amount == 0L && CollUtil.isEmpty(accountSerialList)) || customerId == null) {
-            return;
-        }
-        CustomerAccount customerAccount = lockGet(mchId, customerId);
-        if (customerAccount == null) {
-            throw new BusinessException("", "客户定金账户不存在");
-        }
-        if (amount != 0L) {
-            long availableAmount = customerAccount.getAmount() - customerAccount.getFrozenAmount();
-            if (availableAmount + amount < 0) {
-                throw new BusinessException("", "客户定金账户余额不足");
-            }
-            customerAccount.setAmount(customerAccount.getAmount() + amount);
-            getActualDao().updateAmount(customerAccount);
-        }
-        customerAccountSerialService.batchInsert(accountSerialList, customerAccount.getId());
-    }
-
-    /**
-     *
-     * @param mchId
-     * @param customerId
-     * @param amount 负值
-     * @param accountSerialList
-     */
-    @Transactional
-    @Override
-    public void handleRefund(Long mchId, Long customerId, Long amount, List<CustomerAccountSerial> accountSerialList) {
-        if ((amount == 0L && CollUtil.isEmpty(accountSerialList)) || customerId == null) {
-            return;
-        }
-        CustomerAccount customerAccount = lockGet(mchId, customerId);
-        if (customerAccount == null) {
-            throw new BusinessException("", "客户定金账户不存在");
-        }
-        if (amount != 0L) {
-            if (customerAccount.getFrozenAmount() + amount < 0L) {
-                throw new BusinessException("", "客户定金账户冻结金额不足");
-            }
-            customerAccount.setAmount(customerAccount.getAmount() + amount);
-            customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() + amount);
-            getActualDao().updateAmount(customerAccount);
-        }
-        customerAccountSerialService.batchInsert(accountSerialList, customerAccount.getId());
-    }
-
-    /**
-     *
-     * @param id
      * @param amount 正值
      */
     @Transactional
-    @Override
-    public void freeze(Long id, Long amount) {
-        if (amount == 0L) {
-            return;
-        }
-        CustomerAccount customerAccount = lockGetById(id);
-        if (customerAccount == null) {
-            throw new BusinessException("", "客户定金账户不存在");
-        }
-        long availableAmount = customerAccount.getAmount() - customerAccount.getFrozenAmount();
-        if (availableAmount - amount < 0) {
-            throw new BusinessException("", "客户定金账户余额不足");
-        }
-        customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() + amount);
-        getActualDao().updateAmount(customerAccount);
-    }
-
     @Override
     public void freeze(Long mchId, Long customerId, Long amount) {
         if (amount == 0L) {
@@ -164,28 +89,7 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
         getActualDao().updateAmount(customerAccount);
     }
 
-    /**
-     *
-     * @param id
-     * @param amount 正值
-     */
     @Transactional
-    @Override
-    public void unfreeze(Long id, Long amount) {
-        if (amount == 0L) {
-            return;
-        }
-        CustomerAccount customerAccount = lockGetById(id);
-        if (customerAccount == null) {
-            throw new BusinessException("", "客户定金账户不存在");
-        }
-        if (customerAccount.getFrozenAmount() - amount < 0) {
-            throw new BusinessException("", "客户定金账户冻结金额不足");
-        }
-        customerAccount.setFrozenAmount(customerAccount.getFrozenAmount() - amount);
-        getActualDao().updateAmount(customerAccount);
-    }
-
     @Override
     public void unfreeze(Long mchId, Long customerId, Long amount) {
         if (amount == 0L) {
@@ -241,13 +145,118 @@ public class CustomerAccountServiceImpl extends BaseServiceImpl<CustomerAccount,
 
         LocalDateTime localDateTime = DateUtil.nowDateTime();
         getActualDao().updateAmount(payAccount);
-        CustomerAccountSerial payAccountSerial = CustomerAccountSerial.build(ActionEnum.EXPENSE.getCode(), SceneEnum.TRANSFER_OUT.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("转出到：%s；转移原因：%s；", receiveAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
+        CustomerAccountSerial payAccountSerial = CustomerAccountSerial.build(BusinessChargeItemEnum.SystemSubjectType.定金.getCode(), ActionEnum.EXPENSE.getCode(), SceneEnum.TRANSFER_OUT.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("转出到：%s；转移原因：%s；", receiveAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
         payAccountSerial.setCustomerAccountId(payAccount.getId());
         customerAccountSerialService.insertSelective(payAccountSerial);
         getActualDao().updateAmount(receiveAccount);
-        CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("来源：%s；转移原因：%s；", payAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
+        CustomerAccountSerial receiveAccountSerial = CustomerAccountSerial.build(BusinessChargeItemEnum.SystemSubjectType.定金.getCode(), ActionEnum.INCOME.getCode(), SceneEnum.TRANSFER_IN.getCode(), transferDto.getAmount(), localDateTime, transferDto.getOperatorId(), transferDto.getOperatorName(), transferDto.getRelationCode(), RelationTypeEnum.TRANSFER_ORDER.getCode(), String.format("来源：%s；转移原因：%s；", payAccount.getCustomerName(), StrUtil.isBlank(transferDto.getNotes()) ? "" : transferDto.getNotes()));
         receiveAccountSerial.setCustomerAccountId(receiveAccount.getId());
         customerAccountSerialService.insertSelective(receiveAccountSerial);
+    }
+
+    /**
+     * 操作定金账户及流水
+     * @param mchId
+     * @param customerId
+     * @param amount 正负值
+     * @param frozenAmount 正负值
+     * @param serialList
+     */
+    @Transactional
+    @Override
+    public void handleEarnest(Long mchId, Long customerId, Long amount, Long frozenAmount, List<CustomerAccountSerial> serialList) {
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户定金账户不存在");
+        }
+        long totalFrozenAmount = customerAccount.getFrozenAmount() + frozenAmount;
+        if (totalFrozenAmount < 0) {
+            throw new BusinessException("", "客户定金账户冻结金额不足");
+        }
+        customerAccount.setFrozenAmount(totalFrozenAmount);
+        long totalAmount = (customerAccount.getAmount() - customerAccount.getFrozenAmount()) + amount;
+        if (totalAmount < 0) {
+            throw new BusinessException("", "客户定金账户余额不足");
+        }
+        customerAccount.setAmount(totalAmount);
+        getActualDao().updateAmount(customerAccount);
+        customerAccountSerialService.batchInsert(serialList, customerAccount.getId());
+    }
+
+    /**
+     * 冻结转抵金额
+     * @param mchId
+     * @param customerId
+     * @param amount 正值
+     */
+    @Transactional
+    @Override
+    public void freezeTransfer(Long mchId, Long customerId, Long amount) {
+        if (amount == 0L) {
+            return;
+        }
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户转抵账户不存在");
+        }
+        long availableAmount = customerAccount.getTransferAmount() - customerAccount.getFrozenTransferAmount();
+        if (availableAmount - amount < 0) {
+            throw new BusinessException("", "客户转抵账户余额不足");
+        }
+        customerAccount.setFrozenTransferAmount(customerAccount.getFrozenTransferAmount() + amount);
+        getActualDao().updateTransferAmount(customerAccount);
+    }
+
+    /**
+     * 操作转抵账户及流水
+     * @param mchId
+     * @param customerId
+     * @param amount 正负值
+     * @param frozenAmount 正负值
+     * @param serialList
+     */
+    @Transactional
+    @Override
+    public void handleTransfer(Long mchId, Long customerId, Long amount, Long frozenAmount, List<CustomerAccountSerial> serialList) {
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户转抵账户不存在");
+        }
+        long totalFrozenAmount = customerAccount.getFrozenTransferAmount() + frozenAmount;
+        if (totalFrozenAmount < 0) {
+            throw new BusinessException("", "客户转抵账户冻结金额不足");
+        }
+        customerAccount.setFrozenTransferAmount(totalFrozenAmount);
+        long totalAmount = (customerAccount.getTransferAmount() - customerAccount.getFrozenTransferAmount()) + amount;
+        if (totalAmount < 0) {
+            throw new BusinessException("", "客户转抵账户余额不足");
+        }
+        customerAccount.setTransferAmount(totalAmount);
+        getActualDao().updateTransferAmount(customerAccount);
+        customerAccountSerialService.batchInsert(serialList, customerAccount.getId());
+    }
+
+    /**
+     * 解冻转抵金额
+     * @param mchId
+     * @param customerId
+     * @param amount 正值
+     */
+    @Transactional
+    @Override
+    public void unfreezeTransfer(Long mchId, Long customerId, long amount) {
+        if (amount == 0L) {
+            return;
+        }
+        CustomerAccount customerAccount = lockGet(mchId, customerId);
+        if (customerAccount == null) {
+            throw new BusinessException("", "客户转抵账户不存在");
+        }
+        if (customerAccount.getFrozenTransferAmount() - amount < 0) {
+            throw new BusinessException("", "客户转抵账户冻结金额不足");
+        }
+        customerAccount.setFrozenTransferAmount(customerAccount.getFrozenTransferAmount() - amount);
+        getActualDao().updateTransferAmount(customerAccount);
     }
 
     @Transactional

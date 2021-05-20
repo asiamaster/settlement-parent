@@ -32,6 +32,15 @@ public class CustomerAccountSerial extends BaseDomain {
     @Column(name = "`customer_account_id`")
     private Long customerAccountId;
 
+    /**
+     * 费用类型
+     */
+    @Column(name = "`fee_type`")
+    private Integer feeType;
+
+    /**
+     * 资金动作
+     */
     @Column(name = "`action`")
     private Integer action;
 
@@ -124,6 +133,22 @@ public class CustomerAccountSerial extends BaseDomain {
      */
     public void setCustomerAccountId(Long customerAccountId) {
         this.customerAccountId = customerAccountId;
+    }
+
+    /**
+     * getter
+     * @return
+     */
+    public Integer getFeeType() {
+        return feeType;
+    }
+
+    /**
+     * setter
+     * @param feeType
+     */
+    public void setFeeType(Integer feeType) {
+        this.feeType = feeType;
     }
 
     /**
@@ -302,8 +327,9 @@ public class CustomerAccountSerial extends BaseDomain {
         this.notes = notes;
     }
 
-    public static CustomerAccountSerial build(Integer action, Integer scene, Long amount, LocalDateTime operateTime, Long operatorId, String operatorName, String relationCode, Integer relationType, String notes) {
+    public static CustomerAccountSerial build(Integer feeType, Integer action, Integer scene, Long amount, LocalDateTime operateTime, Long operatorId, String operatorName, String relationCode, Integer relationType, String notes) {
         CustomerAccountSerial accountSerial = new CustomerAccountSerial();
+        accountSerial.setFeeType(feeType);
         accountSerial.setAction(action);
         accountSerial.setScene(scene);
         accountSerial.setAmount(amount);
