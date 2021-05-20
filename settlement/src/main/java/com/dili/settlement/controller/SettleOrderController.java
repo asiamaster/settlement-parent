@@ -337,6 +337,24 @@ public class SettleOrderController extends AbstractController {
     }
 
     /**
+     * 跳转到费用详情页面
+     * @param
+     */
+    @RequestMapping(value = "/showAmountDetail.action")
+    public String showAmountDetail(Long id, Integer reverse, ModelMap modelMap) {
+        if (id == null || reverse == null) {
+            throw new BusinessException("", "查询费用详情参数错误");
+        }
+        //按照作废业务逻辑，如果是冲正单，则转换为原单ID，从而查看详情
+        if (Integer.valueOf(ReverseEnum.YES.getCode()).equals(reverse)) {
+            id = settleOrderService.convertReverseOrderId(id);
+        }
+        List<SettleFeeItem> settleFeeItemList = settleFeeItemService.listBySettleOrderId(id);
+        modelMap.addAttribute("amountItemList", settleFeeItemList.stream().filter(temp -> temp.getChargeItemType().equals(ChargeItemTypeEnum.FEE.getCode())).collect(Collectors.toList()));
+        return "settleOrder/amount_detail";
+    }
+
+    /**
      * 跳转到抵扣详情页面
      * @param
      */

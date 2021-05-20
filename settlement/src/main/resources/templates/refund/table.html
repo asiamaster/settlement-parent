@@ -56,9 +56,15 @@
                         <td class="text-center align-middle">
                             ${@com.dili.settlement.enums.BizTypeEnum.getNameByCode(settleOrder.businessType)}
                         </td>
+                        <% if (settleOrder.amount == 0) { %>
                         <td class="text-center align-middle">
                             ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}
                         </td>
+                        <% } else { %>
+                        <td>
+                            <a href="javascript:;" onclick="showAmountDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}</a>
+                        </td>
+                        <% } %>
                         <% if (settleOrder.deductAmount == 0) { %>
                         <td class="text-center align-middle">
                             ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}
@@ -149,9 +155,15 @@
                         <td class="text-center align-middle">
                             ${@com.dili.settlement.enums.BizTypeEnum.getNameByCode(settleOrder.businessType)}
                         </td>
+                        <% if (settleOrder.amount == 0) { %>
                         <td class="text-center align-middle">
                             ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}
                         </td>
+                        <% } else { %>
+                        <td>
+                            <a href="javascript:;" onclick="showAmountDetail(${settleOrder.id}, ${settleOrder.reverse});return false;">${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.amount)}</a>
+                        </td>
+                        <% } %>
                         <% if (settleOrder.deductAmount == 0) { %>
                         <td class="text-center align-middle">
                             ${@com.dili.ss.util.MoneyUtils.centToYuan(settleOrder.deductAmount)}

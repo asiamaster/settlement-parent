@@ -13,6 +13,29 @@
         bs4pop.dialog({content:url, title:'业务详情',isIframe:true,width:'80%',height:'95%',btns:[{label: '取消',className: 'btn-secondary'}]});
     }
 
+    /** 金额格式器 */
+    function amountFormatter(value, row, index) {
+        if (row.amount === 0) {
+            return value;
+        }
+        return '<a href="javascript:;" onclick="showAmountDetail('+row.id+','+row.reverse+');return false;">'+value+'</a>';
+    }
+
+    /** 查看抵扣详情 */
+    function showAmountDetail(id, reverse) {
+        bs4pop.dialog({
+            id:'dialog-show-amount',
+            content: '/settleOrder/showAmountDetail.action?id=' + id + '&reverse=' + reverse,
+            title:'费用详情',
+            isIframe:true,
+            width: '70%',
+            height: 500,
+            btns:[
+                {label: '取消',className: 'btn-secondary'}
+            ]
+        });
+    }
+
     /** 扣减金额格式器 */
     function deductAmountFormatter(value, row, index) {
         if (row.deductAmount === 0) {
