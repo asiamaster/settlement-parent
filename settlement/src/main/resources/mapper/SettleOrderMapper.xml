@@ -111,9 +111,6 @@
     <if test="submitterId != null">
       and `submitter_id` = #{submitterId}
     </if>
-    <if test="multiCustomer != null and multiCustomer">
-      and `business_type` &lt;&gt; 2
-    </if>
     <if test="trailerNumber != null and trailerNumber != ''">
       and `trailer_number` = #{trailerNumber}
     </if>

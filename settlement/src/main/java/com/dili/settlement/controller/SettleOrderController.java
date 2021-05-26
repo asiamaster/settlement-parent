@@ -131,7 +131,6 @@ public class SettleOrderController extends AbstractController {
     public String listPayOrdersByTrailerNumber(String trailerNumber, ModelMap modelMap) {
         SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.PAY.getCode());
         query.setTrailerNumber(trailerNumber);
-        query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
         List<SettleOrder> settleOrderList = StrUtil.isBlank(trailerNumber) ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
         modelMap.addAttribute("groupOrderList", items);
@@ -147,7 +146,6 @@ public class SettleOrderController extends AbstractController {
     public String listPayOrdersBySubmitterId(Long submitterId, ModelMap modelMap) {
         SettleOrderDto query = buildSettleListQuery(SettleTypeEnum.PAY.getCode());
         query.setSubmitterId(submitterId);
-        query.setMultiCustomer(true);//如果查询有多客户则屏蔽定金单
         List<SettleOrder> settleOrderList = submitterId == null ? new ArrayList<>(0) : settleOrderService.list(query);
         List<SettleGroupDto> items = buildSettleGroupDto(settleOrderList);
         modelMap.addAttribute("groupOrderList", items);
