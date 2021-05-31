@@ -896,6 +896,7 @@ public class SettleOrder extends BaseDomain {
      * 获取实付/实退金额
      * @return
      */
+    @Transient
     public String getActualAmountText() {
         if (this.type == null || this.amount == null || this.deductAmount == null || this.transferAmount == null) {
             return null;
