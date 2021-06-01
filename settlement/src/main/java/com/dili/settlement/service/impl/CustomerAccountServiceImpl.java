@@ -1,6 +1,5 @@
 package com.dili.settlement.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
