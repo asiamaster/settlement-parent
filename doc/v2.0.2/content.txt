@@ -1,0 +1,5 @@
+1、园区卡缴费、退款、作废增加短信发送；
+
+要求：
+1、消息中心配置通道及模板；
+   您尾号为${tradeCard}的卡账户于${tradeTime}发生一笔${amount}元的${tradeType}，当前余额为${balance}元。

@@ -267,6 +267,7 @@ public class SettleOrderController extends AbstractController {
             throw new BusinessException("", "非法请求");
         }
         settleOrderDto.setMarketId(userTicket.getFirmId());
+        settleOrderDto.setMarketCode(userTicket.getFirmCode());
         settleOrderDto.setOperatorId(userTicket.getId());
         settleOrderDto.setOperatorName(userTicket.getRealName());
         settleOrderDto.setOperatorNo(userTicket.getUserName());

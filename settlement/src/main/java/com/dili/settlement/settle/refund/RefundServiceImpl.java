@@ -9,10 +9,7 @@ import com.dili.settlement.domain.SettleOrder;
 import com.dili.settlement.dto.SettleDataDto;
 import com.dili.settlement.dto.SettleOrderDto;
 import com.dili.settlement.dto.pay.*;
-import com.dili.settlement.enums.ActionEnum;
-import com.dili.settlement.enums.RelationTypeEnum;
-import com.dili.settlement.enums.SceneEnum;
-import com.dili.settlement.enums.TradeTypeEnum;
+import com.dili.settlement.enums.*;
 import com.dili.settlement.handler.ServiceNameHolder;
 import com.dili.settlement.resolver.RpcResultResolver;
 import com.dili.settlement.service.RetryRecordService;
@@ -96,6 +93,11 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
 
             //保存流水
             createAccountSerial(settleOrderDto, tradeResponseDto, createTradeResponseDto.getTradeId());
+
+            //如果是账户支付则发送短信
+            if (getTradeChannel().equals(TradeChannelEnum.BALANCE.getCode())) {
+                asyncSendMessage(settleOrderDto.getMarketCode(), settleOrderDto.getTradeAccountId(), tradeResponseDto.getWhen(), tradeResponseDto.getAmount(), "收款", tradeResponseDto.getBalance());
+            }
         }
         return settleOrderList;
     }

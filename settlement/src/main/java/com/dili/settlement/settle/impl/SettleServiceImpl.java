@@ -12,9 +12,7 @@ import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.settlement.config.SerialMQConfig;
 import com.dili.settlement.domain.SettleOrder;
-import com.dili.settlement.dto.InvalidRequestDto;
-import com.dili.settlement.dto.SerialRecordDto;
-import com.dili.settlement.dto.SettleOrderDto;
+import com.dili.settlement.dto.*;
 import com.dili.settlement.dto.pay.FeeItemDto;
 import com.dili.settlement.dto.pay.TradeResponseDto;
 import com.dili.settlement.enums.ActionEnum;
@@ -30,15 +28,21 @@ import com.dili.settlement.service.RetryRecordService;
 import com.dili.settlement.service.SettleFeeItemService;
 import com.dili.settlement.service.SettleOrderService;
 import com.dili.settlement.settle.SettleService;
+import com.dili.settlement.task.AsyncTaskExecutor;
 import com.dili.settlement.util.DateUtil;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.BusinessException;
+import com.dili.ss.util.MoneyUtils;
 import com.dili.uid.sdk.rpc.feign.UidFeignRpc;
+import com.diligrp.message.sdk.domain.input.MessageInfoInput;
+import com.diligrp.message.sdk.rpc.SmsMessageRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,6 +83,9 @@ public abstract class SettleServiceImpl implements SettleService {
 
     @Autowired
     protected CustomerRpc customerRpc;
+
+    @Autowired
+    private SmsMessageRpc smsMessageRpc;
 
     @Override
     public List<SettleOrder> canSettle(List<Long> ids) {
@@ -259,5 +266,48 @@ public abstract class SettleServiceImpl implements SettleService {
             LOGGER.error("query customer info", e);
         }
         return "";
+    }
+
+    /**
+     * 异步发送手机短信
+     * @param marketCode
+     * @param accountId
+     * @param localDateTime
+     * @param amount
+     * @param tradeType
+     * @param balance
+     */
+    protected void asyncSendMessage(String marketCode, Long accountId, LocalDateTime localDateTime, Long amount, String tradeType, Long balance) {
+        try {
+            AsyncTaskExecutor.submit(() -> {
+                boolean result;
+                UserAccountCardResponseDto account = RpcResultResolver.resolver(accountQueryRpc.findSingle(UserAccountSingleQueryDto.newDto(accountId)), ServiceNameHolder.ACCOUNT_SERVICE_NAME);
+                if (account != null) {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("tradeCard", account.getCardNo().substring(account.getCardNo().length() - 4));
+                    params.put("tradeTime", DateUtil.formatDateTime(localDateTime, "MM月dd日 HH:mm"));
+                    params.put("amount", MoneyUtils.centToYuan(Math.abs(amount)));
+                    params.put("tradeType", tradeType);
+                    params.put("balance", MoneyUtils.centToYuan(balance + amount));
+                    MessageInfoInput message = new MessageInfoInput();
+                    message.setMarketCode(marketCode);
+                    message.setBusinessMarketCode(marketCode);
+                    message.setSystemCode("toll");
+                    message.setSceneCode("consumerNotice");
+                    message.setCellphone(account.getCustomerContactsPhone());
+                    message.setParameters(JSON.toJSONString(params));
+                    BaseOutput baseOutput = smsMessageRpc.receiveMessage(message);
+                    if (!baseOutput.isSuccess()) {
+                        LOGGER.error("Send phone message error, result is " + JSON.toJSONString(baseOutput));
+                    }
+                    result = baseOutput.isSuccess();
+                } else {
+                    result = false;
+                }
+                return result;
+            });
+        } catch (Exception e) {
+            LOGGER.error("Send phone message error", e);
+        }
     }
 }
