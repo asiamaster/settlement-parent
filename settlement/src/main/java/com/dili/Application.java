@@ -18,11 +18,11 @@ import tk.mybatis.spring.annotation.MapperScan;
  */
 @SpringBootApplication
 @MapperScan(basePackages = {"com.dili.settlement.mapper", "com.dili.ss.dao"})
-@ComponentScan(basePackages={"com.dili.ss","com.dili.settlement","com.dili.uap.sdk","com.dili.uid", "com.dili.commons", "com.dili.logger"})
+@ComponentScan(basePackages={"com.dili", "com.diligrp"})
 @RestfulScan({"com.dili.uap.sdk.rpc"})
 @DTOScan(value={"com.dili.ss", "com.dili.settlement.domain"})
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.dili", "com.diligrp"})
 
 public class Application extends SpringBootServletInitializer {
 

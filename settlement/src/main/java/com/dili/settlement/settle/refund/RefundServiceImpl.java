@@ -96,6 +96,11 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
 
             //保存流水
             createAccountSerial(settleOrderDto, tradeResponseDto, createTradeResponseDto.getTradeId());
+
+            //如果是账户支付则发送短信
+            if (getTradeChannel().equals(TradeChannelEnum.BALANCE.getCode())) {
+                asyncSendMessage(settleOrderDto.getMarketCode(), settleOrderDto.getTradeAccountId(), tradeResponseDto.getWhen(), tradeResponseDto.getAmount(), "收款", tradeResponseDto.getBalance());
+            }
         }
         return settleOrderList;
     }

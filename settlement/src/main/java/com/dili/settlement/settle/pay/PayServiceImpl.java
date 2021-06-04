@@ -87,6 +87,10 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
             //保存流水
             createAccountSerial(settleOrderDto, tradeResponseDto, createTradeResponseDto.getTradeId());
 
+            //如果是账户支付则发送短信
+            if (getTradeChannel().equals(TradeChannelEnum.BALANCE.getCode())) {
+                asyncSendMessage(settleOrderDto.getMarketCode(), settleOrderDto.getTradeAccountId(), tradeResponseDto.getWhen(), tradeResponseDto.getAmount(), "扣款", tradeResponseDto.getBalance());
+            }
         }
         return settleOrderList;
     }
@@ -226,5 +230,10 @@ public abstract class PayServiceImpl extends SettleServiceImpl implements PaySer
         BeanUtil.copyProperties(po, settleOrderDto);
         settleOrderDto.setOperatorNo(param.getOperatorNo());
         createAccountSerial(settleOrderDto, tradeResponseDto, po.getTradeNo());
+
+        //如果是账户支付则发送短信
+        if (po.getWay().equals(SettleWayEnum.CARD.getCode())) {
+            asyncSendMessage(param.getMarketCode(), po.getTradeAccountId(), tradeResponseDto.getWhen(), tradeResponseDto.getAmount(), "收款", tradeResponseDto.getBalance());
+        }
     }
 }
