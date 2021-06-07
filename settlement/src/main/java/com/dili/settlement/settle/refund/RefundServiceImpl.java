@@ -147,10 +147,10 @@ public abstract class RefundServiceImpl extends SettleServiceImpl implements Ref
         for (TransferDetail detail : transferDetailList) {
             SettleOrder temp = settleOrderMap.get(detail.getSettleOrderId());
             addFeeItem(deductFeeItemList, FeeItemDto.build(detail.getAmount(), detail.getChargeItemId(), detail.getChargeItemName(), String.format("%s|转抵，退款单号%s", temp.getBusinessType(), temp.getOrderCode())));
-            AccountMergeDto accountMergeDto = transferMap.get(temp.getCustomerId());
+            AccountMergeDto accountMergeDto = transferMap.get(detail.getCustomerId());
             accountMergeDto = accountMergeDto == null ? AccountMergeDto.build(temp.getMchId(), temp.getCustomerId()) : accountMergeDto;
             accountMergeDto.addAmount(detail.getAmount(), CustomerAccountSerial.build(BusinessChargeItemEnum.SystemSubjectType.转抵.getCode(), ActionEnum.INCOME.getCode(), SceneEnum.REFUND_TRANSFER_IN.getCode(), detail.getAmount(), localDateTime, settleOrderDto.getOperatorId(), settleOrderDto.getOperatorName(), detail.getSettleOrderCode(), RelationTypeEnum.SETTLE_ORDER.getCode(), temp.getOrderCode()));
-            transferMap.put(temp.getCustomerId(), accountMergeDto);
+            transferMap.put(detail.getCustomerId(), accountMergeDto);
         }
         //设置值
         settleDataDto.setEarnestMap(earnestMap);
