@@ -291,8 +291,8 @@ public abstract class SettleServiceImpl implements SettleService {
                     MessageInfoInput message = new MessageInfoInput();
                     message.setMarketCode(marketCode);
                     message.setBusinessMarketCode(marketCode);
-                    message.setSystemCode("toll");
-                    message.setSceneCode("consumerNotice");
+                    message.setSystemCode("settlement");
+                    message.setSceneCode("accountNotice");
                     message.setCellphone(account.getCustomerContactsPhone());
                     message.setParameters(JSON.toJSONString(params));
                     BaseOutput baseOutput = smsMessageRpc.receiveMessage(message);
