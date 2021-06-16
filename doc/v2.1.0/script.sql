@@ -39,3 +39,7 @@ CREATE TABLE transfer_detail(
 ENGINE = InnoDB
 COLLATE = UTF8_GENERAL_CI;
 CREATE INDEX ix_settle_order_id ON transfer_detail(settle_order_id);
+
+-- 修改 虚拟支付/组合支付 文案为 虚拟收款/组合收款
+UPDATE dili_settlement.settle_config SET `val` = '组合收款' WHERE `group_code` IN (101, 102) AND `code` = 6;
+UPDATE dili_settlement.settle_config SET `val` = '虚拟收款' WHERE `group_code` IN (101, 102) AND `code` = 7;
